@@ -1,0 +1,65 @@
+name: Feature request
+description: Suggest a new capability or improvement for quickli.
+title: "feature: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement.
+
+        Please describe the user problem first, then the proposed solution. That makes it much
+        easier to evaluate scope and fit.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What user or developer problem would this feature solve?
+      placeholder: It is currently hard to ... because ...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the feature you would like to see.
+      placeholder: quickli could support ...
+    validations:
+      required: true
+  - type: textarea
+    id: api-shape
+    attributes:
+      label: Example API or CLI shape
+      description: If possible, show a small example of how the feature might look.
+      render: python
+      placeholder: |
+        @app.command(...)
+        def example(...):
+            ...
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe workarounds or alternative designs you considered.
+      placeholder: I currently work around this by ...
+    validations:
+      required: false
+  - type: checkboxes
+    id: expectations
+    attributes:
+      label: Contribution expectations
+      description: Help us understand the intended scope.
+      options:
+        - label: This should stay dependency-light.
+        - label: This should be documented for beginners as well as experienced users.
+        - label: This likely needs tests if implemented.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add links, prior art, or related discussions if relevant.
+    validations:
+      required: false

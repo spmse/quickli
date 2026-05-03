@@ -1,0 +1,64 @@
+name: Documentation request
+description: Request new documentation or report unclear, missing, or outdated docs.
+title: "docs: "
+labels:
+  - documentation
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve the documentation.
+
+        Please be as specific as possible about what is confusing, missing, or outdated.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Request type
+      description: What kind of documentation issue is this?
+      options:
+        - Missing documentation
+        - Outdated documentation
+        - Confusing explanation
+        - Missing example
+        - Broken link or navigation problem
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Current location
+      description: Which file, page, section, or example is affected?
+      placeholder: README.md, docs/usage.md, examples/simple/cat-cli/README.md
+    validations:
+      required: false
+  - type: textarea
+    id: issue
+    attributes:
+      label: What is the documentation problem?
+      description: Explain what is missing, incorrect, or hard to understand.
+      placeholder: The validation section explains ... but does not show ...
+    validations:
+      required: true
+  - type: textarea
+    id: suggested-change
+    attributes:
+      label: Suggested improvement
+      description: What would make the documentation easier to use?
+      placeholder: Add a short example showing ...
+    validations:
+      required: true
+  - type: textarea
+    id: audience
+    attributes:
+      label: Who is affected?
+      description: Tell us who would benefit most from this change.
+      placeholder: New users, contributors, maintainers, plugin authors, ...
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Include links, screenshots, or related examples if useful.
+    validations:
+      required: false

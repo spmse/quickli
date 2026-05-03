@@ -1,0 +1,10 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security issue
+    url: https://github.com/spmse/quickli/security/advisories/new
+    about: Please report security vulnerabilities through GitHub Security Advisories
+      when available.
+  - name: Contribution guide
+    url: https://github.com/spmse/quickli/blob/main/CONTRIBUTING.md
+    about: Read the contribution workflow and local validation expectations before
+      opening a pull request.

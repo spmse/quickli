@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quickli"
+version = "0.1.0"
+description = "quickli is a minimal Python framework for building simple command-line interfaces."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [
+    { name = "Sven Patrick Meier" },
+]
+keywords = ["cli", "framework", "python"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries",
+]
+
+[project.optional-dependencies]
+dev = [
+    "build>=1.2",
+    "coverage[toml]>=7.6",
+    "ruff>=0.11",
+]
+
+[project.urls]
+Documentation = "https://github.com/spmse/quickli/tree/main/docs"
+Repository = "https://github.com/spmse/quickli"
+Issues = "https://github.com/spmse/quickli/issues"
+Changelog = "https://github.com/spmse/quickli/releases"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.coverage.run]
+branch = true
+source = ["quickli"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F"]
+

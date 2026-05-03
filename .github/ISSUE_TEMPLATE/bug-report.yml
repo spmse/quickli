@@ -1,0 +1,84 @@
+name: Bug report
+description: Report a reproducible problem in quickli.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug.
+
+        Please keep the report focused on one problem. If you have multiple unrelated issues,
+        open separate reports.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Describe the problem in one or two sentences.
+      placeholder: When I run ..., quickli does ... instead of ...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Provide the smallest set of steps needed to reproduce the problem.
+      placeholder: |
+        1. Create an Application with ...
+        2. Run ...
+        3. See the error ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened instead?
+      placeholder: The command should return ...
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened in practice?
+      placeholder: The command raised ... or returned ...
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Minimal example or traceback
+      description: Paste a minimal code sample, traceback, or CLI command output if
+        available.
+      render: text
+      placeholder: |
+        from quickli import Application
+        ...
+    validations:
+      required: false
+  - type: input
+    id: python-version
+    attributes:
+      label: Python version
+      description: Which Python version are you using?
+      placeholder: 3.12.4
+    validations:
+      required: false
+  - type: input
+    id: quickli-version
+    attributes:
+      label: quickli version
+      description: Which quickli version are you using?
+      placeholder: 0.1.0
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add anything else that may help, such as environment details or
+        related links.
+    validations:
+      required: false
