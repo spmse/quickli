@@ -5,6 +5,9 @@
 The repository now includes GitHub Actions workflows for linting, tests, package builds,
 coverage artifacts, and tag-based releases.
 
+Tag-based releases now build and test the package, create the GitHub release object, and
+only then publish the same built distributions to PyPI.
+
 The project license is MIT.
 Project metadata already points to the GitHub repository.
 
