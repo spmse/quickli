@@ -80,20 +80,13 @@ jobs:
           name: release-assets
           path: release-assets
 
-      - name: Create GitHub release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref_name }}
-          release_name: ${{ github.ref_name }}
-          body_path: release-assets/release-changelog.md
-
-      - name: Upload release assets
+      - name: Create GitHub release with assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload "${{ github.ref_name }}" --repo "${{ github.repository }}" \
+          gh release create "${{ github.ref_name }}" --repo "${{ github.repository }}" \
+            --title "${{ github.ref_name }}" \
+            --notes-file release-assets/release-changelog.md \
             release-assets/dist/* \
             release-assets/coverage.xml \
             release-assets/coverage-summary.txt \
