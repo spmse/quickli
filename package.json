@@ -1,0 +1,18 @@
+{
+  "name": "quickli-monorepo",
+  "version": "0.0.1",
+  "private": true,
+  "description": "quiCkLI monorepo — Python CLI framework and documentation",
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "test": "pnpm --filter core run test",
+    "lint": "pnpm --filter core run lint",
+    "format:check": "pnpm --filter core run format:check",
+    "coverage": "pnpm --filter core run coverage",
+    "build": "pnpm --filter core run build"
+  },
+  "packageManager": "pnpm@9.15.9"
+}

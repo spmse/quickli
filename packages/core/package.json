@@ -1,0 +1,13 @@
+{
+  "name": "core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "quickli Python core library package",
+  "scripts": {
+    "test": "PYTHONPATH=src python -m unittest discover -s tests -v",
+    "lint": "python -m ruff check .",
+    "format:check": "python -m ruff format --check .",
+    "coverage": "python -m coverage run -m unittest discover -s tests -v",
+    "build": "python -m build --sdist --wheel"
+  }
+}
