@@ -8,11 +8,11 @@
     "pnpm": ">=9"
   },
   "scripts": {
-    "test": "pnpm --filter core run test",
-    "lint": "pnpm --filter core run lint",
-    "format:check": "pnpm --filter core run format:check",
-    "coverage": "pnpm --filter core run coverage",
-    "build": "pnpm --filter core run build"
+    "test:core": "pnpm --filter core run test",
+    "lint:core": "pnpm --filter core run lint",
+    "format:check:core": "pnpm --filter core run format:check",
+    "coverage:core": "pnpm --filter core run coverage",
+    "build:core": "pnpm --filter core run build"
   },
   "packageManager": "pnpm@9.15.9"
 }
