@@ -20,7 +20,7 @@ function HomepageHeader() {
                             Build command-line tools you can understand.
                         </Heading>
                         <p className={styles.heroSubtitle}>
-                            {siteConfig.title} is an educational minimal framework lite for learning how
+                            {siteConfig.title} is an educational minimal framework for learning how
                             Python command-line applications are put together.
                         </p>
                         <div className={styles.buttons}>

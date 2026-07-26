@@ -32,21 +32,7 @@ uv init
 uv add quickli`,
 };
 
-type TProgrammingLanguage = "bash"
-    | "python"
-    | "powershell"
-    | "typescript"
-    | "javascript"
-    | "dockerfile"
-    | "json"
-    | "yaml"
-    | "toml"
-    | "ini"
-    | "markdown"
-    | "sql"
-    | "go"
-    | "rust"
-    | "hcl";
+type TProgrammingLanguage = "bash" | "python";
 
 type TCodePanelProps = {
     title: string;
@@ -55,12 +41,12 @@ type TCodePanelProps = {
     showLineNumbers?: boolean;
 };
 
-interface ICodeExampleProps {
+interface CodeExampleProps {
     codeExample?: string;
     language?: TProgrammingLanguage;
     title?: string;
     output?: string;
-};
+}
 
 
 function CodePanel({ title, code, language, showLineNumbers }: TCodePanelProps) {
@@ -79,7 +65,7 @@ function CodePanel({ title, code, language, showLineNumbers }: TCodePanelProps) 
 }
 
 export function MinimalExample(
-    { title, codeExample, language, output }: ICodeExampleProps
+    { title, codeExample, language, output }: CodeExampleProps
 ): ReactNode {
     return (
         <div className={styles.example}>

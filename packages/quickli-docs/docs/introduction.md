@@ -9,7 +9,7 @@ import { MinimalExample } from '@site/src/components/QuickliExamples';
 
 # Introduction
 
-quiCkLI is an **educational minimal framework lite** for building Python command-line
+quiCkLI is an **educational minimal framework** for building Python command-line
 interfaces. It provides a small set of explicit building blocks without hiding the command
 line behind a large abstraction layer.
 
