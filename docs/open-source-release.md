@@ -30,7 +30,8 @@ Governance files now included:
 ## Risk Notes
 
 - Renaming the package after publication will be more expensive than it is now.
-- Publishing before the plugin story is designed may create user expectations the project does not yet meet.
+- Publishing before the plugin story is designed may create user expectations the project
+	does not yet meet.
 
 ## Confirmed Release Facts
 
@@ -43,4 +44,4 @@ Governance files now included:
 ## Maintainer Process
 
 The current release workflow is defined in `.github/workflows/release.yml`. Release Please is
-approved future work and will require a separate implementation change.
+approved future work, not an implemented release mechanism, and requires a separate change.

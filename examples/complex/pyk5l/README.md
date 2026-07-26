@@ -45,7 +45,8 @@ PYTHONPATH=src python examples/complex/pyk5l/app.py --namespace ops get pods --o
 PYTHONPATH=src python examples/complex/pyk5l/app.py get services --service-type NodePort --verbose
 PYTHONPATH=src python examples/complex/pyk5l/app.py describe pod api-7d4f5f6b89-l2xq9
 PYTHONPATH=src python examples/complex/pyk5l/app.py logs web-6b5dd6cb6f-ptm8k --tail 2 --timestamps
-PYTHONPATH=src python examples/complex/pyk5l/app.py apply examples/complex/pyk5l/manifests/web-pod.yaml --dry-run
+PYTHONPATH=src python examples/complex/pyk5l/app.py apply \
+	examples/complex/pyk5l/manifests/web-pod.yaml --dry-run
 ```
 
 ## Included commands

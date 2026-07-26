@@ -21,7 +21,10 @@ app = Application(
         Option("config", short_name="c", converter=Path),
         Option("uppercase", short_name="u", is_flag=True),
         Option("tag", short_name="t", multiple=True),
-        Option("limit", short_name="l", converter=int, validators=[number_range(min_value=1, max_value=10)]),
+        Option(
+            "limit", short_name="l", converter=int,
+            validators=[number_range(min_value=1, max_value=10)],
+        ),
     ],
 )
 def greet(
@@ -69,7 +72,8 @@ print(
 
 `Application.run()` is a library-core dispatcher. It receives explicit tokens,
 dispatches the matching handler, and returns that handler's result.
-By default, it does not read `sys.argv`, print the result, render process-level errors, or select an exit code.
+By default, it does not read `sys.argv`, print the result, render process-level errors, or
+select an exit code.
 The caller decides how to adapt the returned value to an executable program.
 
 ## Current Behavior
@@ -86,7 +90,8 @@ The caller decides how to adapt the returned value to an executable program.
 - Options can be marked with `multiple=True` to collect repeated values.
 - Applications can define global options that are parsed before or after the command name.
 - Flags are modeled as boolean options.
-- Calling `run([])` returns generated help text unless a root entrypoint is registered and can run directly.
+- Calling `run([])` returns generated help text unless a root entrypoint is registered and
+    can run directly.
 
 ## Resource Model
 
@@ -183,7 +188,8 @@ Use `@app.entrypoint(...)` when the CLI does not need subcommands.
 
 The current scaffold focuses on package structure, registration, argument and option
 resources, conversion, validation, execution, and help output.
-Plugins, nested subcommands, shell completion, configuration files, and a standard executable runtime remain planned or out of scope.
+Plugins, nested subcommands, shell completion, configuration files, and a standard executable
+runtime remain planned or out of scope.
 JSON and YAML are not output formats provided by the core framework.
 
 ## Naming
@@ -194,7 +200,8 @@ JSON and YAML are not output formats provided by the core framework.
 ## Examples
 
 - See `examples/README.md` for the full examples index.
-- See `examples/simple/cat-cli/README.md` for a step-by-step guide that builds a small `cat` command.
+- See `examples/simple/cat-cli/README.md` for a step-by-step guide that builds a small `cat`
+    command.
 - See `examples/simple/ls-cli/README.md` for a directory-listing example.
 - See `examples/simple/mkdir-cli/README.md` for a small directory-creation example.
 - See `examples/simple/quickhead/README.md` for a validation-focused `head` example.

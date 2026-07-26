@@ -30,7 +30,8 @@ It owns the command registry and dispatches explicit input tokens to a handler.
 - Help output includes generated usage, argument descriptions, and option descriptions.
 - Global and local options are rendered separately in help output.
 - Global options may appear before or after the command name.
-- When both commands and an application entrypoint exist, command names take precedence and the entrypoint acts as a fallback.
+- When both commands and an application entrypoint exist, command names take precedence and
+	the entrypoint acts as a fallback.
 - `Application.run(argv)` receives explicit tokens and returns the selected handler result or
 	generated help text.
 - `Application.run()` does not read `sys.argv`, print results, render process-level errors,

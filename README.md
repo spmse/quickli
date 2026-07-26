@@ -26,13 +26,14 @@ The Python package name is `quickli`. The stylized project name is `quiCkLI`.
 
 ## Philosophies
 
-The very basic philosophy behind the library uses the following key concepts to create simple and intuitive CLIs:
+The very basic philosophy behind the library uses the following key concepts to create
+simple and intuitive CLIs:
 
-- application: the instance of the program, which is responsible for managing the commands and their execution on the installed machine
-- command: a single function of the application that performs a specific task, which can be executed by the user through the command line interface
-- argument: arguments are input values that are passed to a command when it is executed, which can be used to customize the behavior of the command and provide additional (mandatory) information for its execution
-- option: options are similar to arguments, but they are typically optional and provide additional functionality or customization for a command, which can be specified by the user when executing the command through the command line interface
-    - flags: special type of option that does not require a value, but instead is interpreted as a boolean value (true or false) based on its presence or absence in the command line input
+- application: the program instance that manages commands and their execution
+- command: a function that performs a specific task when selected by the user
+- argument: an input value passed to a command, typically for required information
+- option: optional named input that provides additional command functionality
+    - flags: options without values, interpreted as booleans by their presence or absence
 - plugin: planned extension support; no plugin loading or registration API is implemented
 
 ## Concept Relationships
@@ -135,11 +136,13 @@ separate directories.
 - [Usage](docs/usage.md)
 - [Validation](docs/validation.md)
 - [Developer Guide](docs/developer-guide.md)
+- [Current State and Agent Guide](docs/current-state.md)
 - [Open Source Release Notes](docs/open-source-release.md)
 
 ## ADRs
 
-- [ADR 0001: Support Commandless Applications Through a Root Entrypoint](docs/adr/0001-commandless-entrypoint.md)
+- [ADR 0001: Support Commandless Applications Through a Root Entrypoint](
+    docs/adr/0001-commandless-entrypoint.md)
 
 ## Examples
 
@@ -188,6 +191,9 @@ table, JSON, and wide renderers; that does not add JSON or YAML output support t
 
 ## Sources of Truth
 
+See [Current State and Agent Guide](docs/current-state.md) for the source-of-truth hierarchy,
+feature summary, parsing and exception matrices, and validation guidance.
+
 - `README.md` is the concise public overview and first-start path.
 - `docs/` contains user and developer guidance.
 - `specs/` describes resource contracts and explicitly labels planned work.
@@ -201,8 +207,8 @@ table, JSON, and wide renderers; that does not add JSON or YAML output support t
 - Releases are created only from Git tags matching `v*`.
 - Python package publication is configured for PyPI rather than a GitHub Packages Python registry.
 
-Release Please is approved as future work, but it is not implemented in this branch. Until
-that work is completed, the documented release trigger remains a version tag matching `v*`.
+Release Please is approved future work, not an implemented release mechanism. Until that work
+is completed, the release trigger remains a version tag matching `v*`.
 
 ## Decisions
 

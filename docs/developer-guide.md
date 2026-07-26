@@ -59,6 +59,9 @@ PYTHONPATH=src python examples/complex/pyk5l/app.py get pods --verbose
 
 ## Documentation Maintenance
 
+- Keep [Current State and Agent Guide](current-state.md) aligned with implementation,
+  tests, specifications, and documented limitations.
+
 - Update `README.md` when the public feature set changes.
 - Update `docs/usage.md` when the API shape or examples change.
 - Update `docs/validation.md` when built-in validators or validation behavior change.
