@@ -53,4 +53,4 @@ In a typical flow:
 1. create an `Application`
 2. register one or more `Command` handlers
 3. define each command's `Argument` and `Option` resources
-4. run the application with explicit command-line tokens (`argv`)
+4. run the application with command-line arguments (`argv` tokens)
