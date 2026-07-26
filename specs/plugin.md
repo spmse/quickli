@@ -2,16 +2,17 @@
 
 ## Purpose
 
-A plugin extends the base application without modifying the core package directly.
+A plugin is a planned extension that **could** extend the base application without modifying the
+core package directly.
 
-## Current Status
+> [!WARNING] Current Status
 
-- The plugin system is not implemented in the initial scaffold.
-- The project keeps the concept explicit because it is a primary product goal.
-- Current examples and public documentation focus on the core application, command,
-  argument, option, conversion, validation, and help layers.
+> - The plugin system is not implemented in the initial scaffold.
+> - The concept is documented for future design only; it is not part of the current public API.
+> - Current examples and public documentation focus on the core application, command,
+>   argument, option, conversion, validation, and help layers.
 
-## Planned Technical Direction
+## Planned Technical Direction (Not Implemented)
 
 - Discover plugins through Python package metadata or explicit loading.
 - Allow plugins to register commands and resources against an application instance.

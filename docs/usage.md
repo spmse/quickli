@@ -67,6 +67,11 @@ print(
 )
 ```
 
+`Application.run()` is a library-core dispatcher. It receives explicit tokens,
+dispatches the matching handler, and returns that handler's result.
+By default, it does not read `sys.argv`, print the result, render process-level errors, or select an exit code.
+The caller decides how to adapt the returned value to an executable program.
+
 ## Current Behavior
 
 - Applications can expose a root entrypoint without defining commands.
@@ -96,6 +101,8 @@ print(
 The validation layer runs after conversion and before the handler is called.
 
 ```python
+from pathlib import Path
+
 from quickli import Application, Argument, file_path
 
 app = Application(name="demo")
@@ -119,7 +126,7 @@ Built-in numeric validators:
 
 Validators also contribute metadata to generated help output when they expose descriptions.
 
-See [docs/validation.md](docs/validation.md) for a detailed guide to built-in validators,
+See [validation.md](validation.md) for a detailed guide to built-in validators,
 default validation, and custom validator patterns.
 
 ## Multi-Command Applications
@@ -175,8 +182,9 @@ Use `@app.entrypoint(...)` when the CLI does not need subcommands.
 ## Scope of the Initial Scaffold
 
 The current scaffold focuses on package structure, registration, argument and option
-resources, execution, help output, tests, and documentation. Plugins and advanced parsing
-remain planned work.
+resources, conversion, validation, execution, and help output.
+Plugins, nested subcommands, shell completion, configuration files, and a standard executable runtime remain planned or out of scope.
+JSON and YAML are not output formats provided by the core framework.
 
 ## Naming
 

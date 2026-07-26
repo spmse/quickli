@@ -15,7 +15,7 @@ The example demonstrates:
 
 - a multi-command application through `@app.command(...)`
 - a kubectl-like verb-resource command shape such as `get pods`
-- shared global options such as `--context`, `--namespace`, and `--output`
+- shared global options such as `--context`, `--namespace`, and the example's `--output`
 - local command options for filtering, formatting, and log tail length
 - built-in file validation for a simulated `apply` workflow
 - reusable helper functions for rendering and resource lookup
@@ -68,6 +68,7 @@ PYTHONPATH=src python examples/complex/pyk5l/app.py apply examples/complex/pyk5l
 ## Notes
 
 - The example uses static in-memory cluster data. It does not talk to a real Kubernetes API.
-- `--output` supports `table`, `json`, and `wide` for list-oriented commands.
+- This example's list commands support `table`, `json`, and `wide` through its own handlers;
+	quickli itself does not provide JSON or YAML output rendering.
 - `--verbose` prepends the active context and namespace to the output.
 - The example is intentionally minimal and focuses on CLI structure rather than cluster logic.

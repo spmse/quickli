@@ -40,12 +40,16 @@ Run examples manually when changing user-facing CLI behavior.
 ```bash
 PYTHONPATH=src python examples/simple/quickhead/app.py AGENTS.md -n 5
 PYTHONPATH=src python examples/simple/ls-cli/quickls.py . --suffix .md
-PYTHONPATH=src python examples/complex/pyk5l/app.py get-pods --verbose
+PYTHONPATH=src python examples/complex/pyk5l/app.py get pods --verbose
 ```
 
-## Open Decisions
+## Planned Work
 
-- Plugin and option APIs should be designed from a written proposal before implementation.
+- Plugin support is planned but not implemented. Design it from a written proposal before
+	implementation.
+- A standard executable runtime is planned separately. `Application.run()` currently accepts
+	explicit tokens and returns handler results; callers own `sys.argv`, output, and exit codes.
+- Release Please is approved future work, not an implemented release mechanism.
 
 ## Naming and License
 
@@ -58,7 +62,7 @@ PYTHONPATH=src python examples/complex/pyk5l/app.py get-pods --verbose
 - Update `README.md` when the public feature set changes.
 - Update `docs/usage.md` when the API shape or examples change.
 - Update `docs/validation.md` when built-in validators or validation behavior change.
-- Update `docs/github-publishing-guide.md` when release automation changes.
+- Update the release documentation and workflow when release automation changes.
 - Update the relevant file in `specs/` when behavior changes.
 - Add or update an ADR in `docs/adr` when a significant design decision affects future evolution.
 - Keep example READMEs aligned with the runnable code in the same folder.

@@ -15,10 +15,11 @@ Current GitHub documentation does not list a Python package registry under GitHu
 For Python projects, the supported publishing path documented by GitHub Actions is PyPI,
 with release artifacts attached to GitHub Releases.
 
-## Required Decisions Before Public Release
+## Current Release Status
 
-- Decide whether to publish the current API as experimental or stable.
-- Decide whether production releases should publish to PyPI through Trusted Publishing.
+The package is in Alpha. The current release workflow is tag-driven: a `v*` tag runs the
+release workflow and may publish to PyPI when the protected `pypi` environment is configured.
+Release Please is approved future work and is not implemented here.
 
 Governance files now included:
 
@@ -41,5 +42,5 @@ Governance files now included:
 
 ## Maintainer Process
 
-See [docs/github-publishing-guide.md](github-publishing-guide.md) for the step-by-step
-push and release workflow.
+The current release workflow is defined in `.github/workflows/release.yml`. Release Please is
+approved future work and will require a separate implementation change.
