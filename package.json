@@ -5,7 +5,7 @@
   "description": "quiCkLI monorepo — Python CLI framework and documentation",
   "engines": {
     "node": ">=24",
-    "pnpm": ">=9"
+    "pnpm": ">=11"
   },
   "scripts": {
     "test:core": "pnpm --filter core run test",
@@ -14,5 +14,5 @@
     "coverage:core": "pnpm --filter core run coverage",
     "build:core": "pnpm --filter core run build"
   },
-  "packageManager": "pnpm@9.15.9"
+  "packageManager": "pnpm@11.17.0"
 }
