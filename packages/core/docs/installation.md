@@ -46,4 +46,4 @@ The target support range is Python 3.12, 3.13, and 3.14.
 - The package name is `quickli`.
 - The repository uses the `src` layout.
 - The project is licensed under MIT.
-- Tag-based releases are documented in `docs/github-publishing-guide.md`.
+- Tag-based releases are implemented by `.github/workflows/release.yml`.

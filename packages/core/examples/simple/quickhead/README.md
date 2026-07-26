@@ -36,4 +36,5 @@ PYTHONPATH=src python examples/simple/quickhead/app.py AGENTS.md -t -n 25
 ## Help behavior
 
 - Validator metadata appears in generated help output.
-- The example can rely on generated help instead of manually documenting file and number constraints in the handler.
+- The example can rely on generated help instead of manually documenting file and number
+	constraints in the handler.

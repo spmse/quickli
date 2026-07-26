@@ -5,8 +5,7 @@
 [![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13%20%7C%203.14-blue)](https://www.python.org/)
 
 quiCkLI is a simple Python CLI development framework.
-Like Click, it is designed to be easy to use and allows further extension through a plugin
-system.
+Like Click, it is designed to be easy to use and keep the core small.
 
 The framework prioritizes simplicity for developers who are new to CLI development or who
 want a small tool without the overhead of a larger framework.
@@ -27,14 +26,15 @@ The Python package name is `quickli`. The stylized project name is `quiCkLI`.
 
 ## Philosophies
 
-The very basic philosophy behind the library uses the following key concepts to create simple and intuitive CLIs:
+The very basic philosophy behind the library uses the following key concepts to create
+simple and intuitive CLIs:
 
-- application: the instance of the program, which is responsible for managing the commands and their execution on the installed machine
-- command: a single function of the application that performs a specific task, which can be executed by the user through the command line interface
-- argument: arguments are input values that are passed to a command when it is executed, which can be used to customize the behavior of the command and provide additional (mandatory) information for its execution
-- option: options are similar to arguments, but they are typically optional and provide additional functionality or customization for a command, which can be specified by the user when executing the command through the command line interface
-    - flags: special type of option that does not require a value, but instead is interpreted as a boolean value (true or false) based on its presence or absence in the command line input
-- plugin: a plugin is a separate module or package that can be added to the application to extend its functionality, which can include additional commands, options, or other features that are not included in the core application but can be easily integrated through the plugin system
+- application: the program instance that manages commands and their execution
+- command: a function that performs a specific task when selected by the user
+- argument: an input value passed to a command, typically for required information
+- option: optional named input that provides additional command functionality
+    - flags: options without values, interpreted as booleans by their presence or absence
+- plugin: planned extension support; no plugin loading or registration API is implemented
 
 ## Concept Relationships
 
@@ -136,12 +136,13 @@ separate directories.
 - [Usage](docs/usage.md)
 - [Validation](docs/validation.md)
 - [Developer Guide](docs/developer-guide.md)
-- [GitHub Publishing Guide](docs/github-publishing-guide.md)
+- [Current State and Agent Guide](docs/current-state.md)
 - [Open Source Release Notes](docs/open-source-release.md)
 
 ## ADRs
 
-- [ADR 0001: Support Commandless Applications Through a Root Entrypoint](docs/adr/0001-commandless-entrypoint.md)
+- [ADR 0001: Support Commandless Applications Through a Root Entrypoint](
+    docs/adr/0001-commandless-entrypoint.md)
 
 ## Examples
 
@@ -169,7 +170,7 @@ PYTHONPATH=src python examples/complex/pyk5l/app.py describe pod api-7d4f5f6b89-
 - [Option](specs/option.md)
 - [Plugin](specs/plugin.md)
 
-## Current Scope
+## Current Capabilities and Limitations
 
 The current implementation provides a minimal but functional CLI framework with:
 
@@ -179,6 +180,25 @@ The current implementation provides a minimal but functional CLI framework with:
 - generated help output with metadata and docstring fallback
 - complex examples that illustrate kubectl-like command shapes through validated resource arguments
 - unit tests, specifications, and runnable examples
+- `Application.run()` accepts explicit argument tokens and returns the selected handler's
+    result (or generated help text)
+
+The current library does not read `sys.argv`, print handler results, render process-level
+errors, or choose exit codes. A small executable wrapper must own those responsibilities.
+Nested subcommands, shell completion, configuration files, structured output as a core
+framework feature, and plugins are not implemented. The `pyk5l` example has example-specific
+table, JSON, and wide renderers; that does not add JSON or YAML output support to quickli.
+
+## Sources of Truth
+
+See [Current State and Agent Guide](docs/current-state.md) for the source-of-truth hierarchy,
+feature summary, parsing and exception matrices, and validation guidance.
+
+- `README.md` is the concise public overview and first-start path.
+- `docs/` contains user and developer guidance.
+- `specs/` describes resource contracts and explicitly labels planned work.
+- `tests/` and the implementation establish the behavior currently verified by the project.
+- `docs/adr/` records accepted architectural decisions.
 
 ## Release Model
 
@@ -186,6 +206,9 @@ The current implementation provides a minimal but functional CLI framework with:
 - Coverage artifacts are built in a dedicated workflow.
 - Releases are created only from Git tags matching `v*`.
 - Python package publication is configured for PyPI rather than a GitHub Packages Python registry.
+
+Release Please is approved future work, not an implemented release mechanism. Until that work
+is completed, the release trigger remains a version tag matching `v*`.
 
 ## Decisions
 

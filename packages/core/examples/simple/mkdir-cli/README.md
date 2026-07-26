@@ -22,13 +22,16 @@ From the repository root:
 ```bash
 PYTHONPATH=src python examples/simple/mkdir-cli/quickmkdir.py sandbox
 PYTHONPATH=src python examples/simple/mkdir-cli/quickmkdir.py sandbox --parents --exist-ok
-PYTHONPATH=src python examples/simple/mkdir-cli/quickmkdir.py --verbose sandbox --extra sandbox/logs --extra sandbox/data
+PYTHONPATH=src python examples/simple/mkdir-cli/quickmkdir.py --verbose sandbox \
+	--extra sandbox/logs --extra sandbox/data
 ```
 
 ## Notes
 
-- `Argument("path", validators=[directory_path(exists=None)])` accepts missing paths but rejects existing files.
-- `Option("extra", multiple=True, validators=[directory_path(exists=None)])` applies the same rule to extra directories.
+- `Argument("path", validators=[directory_path(exists=None)])` accepts missing paths but
+	rejects existing files.
+- `Option("extra", multiple=True, validators=[directory_path(exists=None)])` applies the same
+	rule to extra directories.
 - `--verbose` is global and can appear before or after the positional arguments.
 - The handler can focus on `mkdir()` instead of checking whether an existing path is a file.
 - The example uses a commandless application entrypoint instead of a named subcommand.

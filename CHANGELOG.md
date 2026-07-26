@@ -4,9 +4,9 @@ All notable changes to this project should be reflected in GitHub Releases.
 
 ## Unreleased
 
-- Initial public release preparation is in progress.
+- Documentation normalization for the Alpha implementation is in progress.
 
 ## Release Notes Source
 
-- Tag-based releases generate release notes automatically on GitHub.
-- Each release also attaches a generated changelog asset built from git history.
+- The current release workflow is tag-driven and documented in the repository's release workflow.
+- Release Please is approved future work and has not been implemented.
