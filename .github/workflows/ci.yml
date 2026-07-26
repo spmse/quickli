@@ -2,7 +2,15 @@ name: CI
 
 on:
   push:
+    branches:
+      - main
+    paths:
+      - "packages/core/**"
+      - ".github/workflows/ci.yml"
   pull_request:
+    paths:
+      - "packages/core/**"
+      - ".github/workflows/ci.yml"
 
 jobs:
   lint:
