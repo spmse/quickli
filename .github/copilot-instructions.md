@@ -29,8 +29,8 @@
 
 ## Documentation Rules
 
-- Keep documentation consistent with the implementation.
-- Update documentation for every functional change.
+- Always keep documentation consistent with the implementation.
+- Ensure to always update documentation for every functional change.
 - Use the `docs` directory for user and developer documentation.
 - Use the `.github` directory for GitHub-specific automation and AI guidance.
 - Keep documentation clear and concise, avoiding unnecessary complexity.

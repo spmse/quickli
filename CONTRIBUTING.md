@@ -60,5 +60,5 @@ When opening a pull request, include:
 
 ## Releases
 
-Releases are currently created from Git tags through the release workflow. Release Please is
-approved future work and has not yet been implemented.
+Releases are currently created from Git tags through the release workflow. 
+Release Please is approved future work and has not yet been implemented.
