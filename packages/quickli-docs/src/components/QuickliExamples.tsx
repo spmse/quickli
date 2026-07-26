@@ -32,24 +32,24 @@ uv init
 uv add quickli`,
 };
 
-type TProgrammingLanguage = "bash" | "python";
+type ProgrammingLanguage = "bash" | "python";
 
-type TCodePanelProps = {
+type CodePanelProps = {
     title: string;
     code: string;
-    language: TProgrammingLanguage;
+    language: ProgrammingLanguage;
     showLineNumbers?: boolean;
 };
 
 interface CodeExampleProps {
     codeExample?: string;
-    language?: TProgrammingLanguage;
+    language?: ProgrammingLanguage;
     title?: string;
     output?: string;
 }
 
 
-function CodePanel({ title, code, language, showLineNumbers }: TCodePanelProps) {
+function CodePanel({ title, code, language, showLineNumbers }: CodePanelProps) {
     return (
         <div className={styles.codePanel}>
             <div className={styles.codeHeader}>{title}</div>
