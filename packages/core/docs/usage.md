@@ -22,7 +22,9 @@ app = Application(
         Option("uppercase", short_name="u", is_flag=True),
         Option("tag", short_name="t", multiple=True),
         Option(
-            "limit", short_name="l", converter=int,
+            "limit",
+            short_name="l",
+            converter=int,
             validators=[number_range(min_value=1, max_value=10)],
         ),
     ],

@@ -59,8 +59,17 @@ from quickli import Application, Option, positive_number
 app = Application(name="head")
 
 
-@app.entrypoint(options=[Option("lines", short_name="n", converter=int,
-                               validators=[positive_number()], default=10)])
+@app.entrypoint(
+    options=[
+        Option(
+            "lines",
+            short_name="n",
+            converter=int,
+            validators=[positive_number()],
+            default=10,
+        )
+    ]
+)
 def show(lines: int) -> str:
     return f"showing {lines} lines"
 ```
@@ -167,7 +176,13 @@ That means a misconfigured option default fails early instead of silently introd
 invalid state.
 
 ```python
-Option("lines", short_name="n", converter=int, validators=[positive_number()], default=10)
+Option(
+    "lines",
+    short_name="n",
+    converter=int,
+    validators=[positive_number()],
+    default=10,
+)
 ```
 
 If the default were `0`, quickli would reject it because it does not satisfy the validator.

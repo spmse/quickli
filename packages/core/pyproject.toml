@@ -51,6 +51,13 @@ source = ["quickli"]
 show_missing = true
 skip_empty = true
 
+[tool.scripts]
+test = "PYTHONPATH=src python -m unittest discover -s tests -v"
+lint = "python -m ruff check ."
+format-check = "python -m ruff format --check ."
+coverage = "python -m coverage run -m unittest discover -s tests -v"
+build = "python -m build --sdist --wheel"
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"
