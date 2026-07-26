@@ -59,24 +59,24 @@ not add JSON or YAML output support to the core framework.
 
 ## Parsing Behavior Matrix
 
-| Input or operation | Current behavior | Evidence |
-| --- | --- | --- |
-| Input or operation | Current behavior | Evidence |
-| --- | --- | --- |
-| `run([])` without entrypoint | Returns generated application help | application, tests |
-| `run([])` with entrypoint | Invokes entrypoint with defaults | application, tests |
-| Named command token | Dispatches to matching command | application, tests |
-| Unknown command without entrypoint | Raises `CommandNotFoundError` | application |
-| Unknown token with entrypoint | Passes token to entrypoint | implementation, tests |
-| Global option around command | Parses as global option | application, command specs |
-| Local option | Parses after command selection | command spec |
-| `--long value`, `--long=value`, `-s value` | Supports these forms | option spec |
-| `--` | Remaining tokens are positional | command |
-| Repeated non-flag option | Accumulates converted values in a list | option spec |
-| Repeated flag | Accumulates occurrences as an integer | option spec |
-| Converter | Runs before validators and handler | validation guide |
-| Validator | Runs after conversion and before handler | validation guide |
-| Handler exception | Propagates; no process policy | command, runtime boundary |
+| Input or operation                         | Current behavior                         | Evidence                   |
+| ------------------------------------------ | ---------------------------------------- | -------------------------- |
+| Input or operation                         | Current behavior                         | Evidence                   |
+| ---                                        | ---                                      | ---                        |
+| `run([])` without entrypoint               | Returns generated application help       | application, tests         |
+| `run([])` with entrypoint                  | Invokes entrypoint with defaults         | application, tests         |
+| Named command token                        | Dispatches to matching command           | application, tests         |
+| Unknown command without entrypoint         | Raises `CommandNotFoundError`            | application                |
+| Unknown token with entrypoint              | Passes token to entrypoint               | implementation, tests      |
+| Global option around command               | Parses as global option                  | application, command specs |
+| Local option                               | Parses after command selection           | command spec               |
+| `--long value`, `--long=value`, `-s value` | Supports these forms                     | option spec                |
+| `--`                                       | Remaining tokens are positional          | command                    |
+| Repeated non-flag option                   | Accumulates converted values in a list   | option spec                |
+| Repeated flag                              | Accumulates occurrences as an integer    | option spec                |
+| Converter                                  | Runs before validators and handler       | validation guide           |
+| Validator                                  | Runs after conversion and before handler | validation guide           |
+| Handler exception                          | Propagates; no process policy            | command, runtime boundary  |
 
 The approved future behavior for an unknown command is to fail with the command and root help
 when both named commands and an entrypoint exist. That behavior is implementation-deferred and
@@ -85,15 +85,15 @@ tests.
 
 ## Exception Matrix
 
-| Exception | Raised for | Owner |
-| --- | --- | --- |
-| Exception | Raised for | Owner |
-| --- | --- | --- |
-| `CLIError` | Base class for framework errors | exceptions |
-| `CommandRegistrationError` | Invalid or duplicate registration | registration |
-| `CommandNotFoundError` | Unknown command without entrypoint | application dispatch |
-| `CommandExecutionError` | Parsing, conversion, validation, or binding failures | command |
-| Any handler exception | Failure in application handler code | caller; not wrapped |
+| Exception                  | Raised for                                           | Owner                |
+| -------------------------- | ---------------------------------------------------- | -------------------- |
+| Exception                  | Raised for                                           | Owner                |
+| ---                        | ---                                                  | ---                  |
+| `CLIError`                 | Base class for framework errors                      | exceptions           |
+| `CommandRegistrationError` | Invalid or duplicate registration                    | registration         |
+| `CommandNotFoundError`     | Unknown command without entrypoint                   | application dispatch |
+| `CommandExecutionError`    | Parsing, conversion, validation, or binding failures | command              |
+| Any handler exception      | Failure in application handler code                  | caller; not wrapped  |
 
 Framework exceptions are library errors. The current library does not decide whether to print
 them, convert them to a process status, or show a traceback. A future executable runtime must
@@ -114,16 +114,16 @@ define that contract separately.
 
 ## Validation Matrix
 
-| Change area | Required validation | Scope |
-| --- | --- | --- |
-| Change area | Required validation | Scope |
-| --- | --- | --- |
-| Agent guidance or Markdown | Check links, tables, YAML, and line length | Required |
-| Public behavior docs | Compare claims with implementation, tests, and specs | Required |
-| Python runtime behavior | Ruff and the unit suite | Baseline; no source changes |
-| Runnable examples | Run when behavior is described or changed | Recommended |
-| Packaging | Build distributions when packaging files change | Not required |
-| GitHub workflows | Validate workflow files when workflows change | Out of scope |
+| Change area                | Required validation                                  | Scope                       |
+| -------------------------- | ---------------------------------------------------- | --------------------------- |
+| Change area                | Required validation                                  | Scope                       |
+| ---                        | ---                                                  | ---                         |
+| Agent guidance or Markdown | Check links, tables, YAML, and line length           | Required                    |
+| Public behavior docs       | Compare claims with implementation, tests, and specs | Required                    |
+| Python runtime behavior    | Ruff and the unit suite                              | Baseline; no source changes |
+| Runnable examples          | Run when behavior is described or changed            | Recommended                 |
+| Packaging                  | Build distributions when packaging files change      | Not required                |
+| GitHub workflows           | Validate workflow files when workflows change        | Out of scope                |
 
 For this work, inspect the final diff and verify that only documentation or repository guidance
 changed. Do not commit the changes; user acceptance remains a separate step.
