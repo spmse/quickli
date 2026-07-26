@@ -51,6 +51,8 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
+          routeBasePath: 'docs',
+          showLastUpdateTime: true,
         },
         blog: false,
         theme: {
@@ -82,8 +84,8 @@ const config: Config = {
         {
           type: 'docSidebar',
           sidebarId: 'docsSidebar',
-          position: 'left',
           label: 'Docs',
+          position: 'left',
         },
         {
           href: 'https://github.com/spmse/quickli',
