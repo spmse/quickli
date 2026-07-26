@@ -29,7 +29,7 @@ Commands are selected by name and executed through the application.
 An **argument** is a positional input value for a command.
 
 Arguments are typically required, can define conversion logic, and can run validators
-after conversion.
+after conversion. An argument becomes optional when it defines a default value.
 
 ## Option
 
@@ -53,4 +53,4 @@ In a typical flow:
 1. create an `Application`
 2. register one or more `Command` handlers
 3. define each command's `Argument` and `Option` resources
-4. run the application with explicit argument tokens
+4. run the application with explicit command-line tokens (`argv`)
