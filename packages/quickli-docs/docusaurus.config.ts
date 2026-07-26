@@ -49,8 +49,9 @@ const config: Config = {
     [
       'classic',
       {
-        // Docs and blog are disabled until content is added.
-        docs: false,
+        docs: {
+          sidebarPath: './sidebars.ts',
+        },
         blog: false,
         theme: {
           customCss: './src/css/custom.css',
@@ -78,6 +79,12 @@ const config: Config = {
         src: 'img/logo.svg',
       },
       items: [
+        {
+          type: 'docSidebar',
+          sidebarId: 'docsSidebar',
+          position: 'left',
+          label: 'Docs',
+        },
         {
           href: 'https://github.com/spmse/quickli',
           label: 'GitHub',
