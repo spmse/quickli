@@ -203,12 +203,13 @@ feature summary, parsing and exception matrices, and validation guidance.
 ## Release Model
 
 - CI runs on pushes and pull requests.
-- Coverage artifacts are built in a dedicated workflow.
-- Releases are created only from Git tags matching `v*`.
+- Release Please opens independent release pull requests for `core` and `docs` on the default
+    branch.
+- Merging a release pull request creates the corresponding GitHub release and version tag.
+- The release workflow tests and packages the core library, builds the documentation site,
+    uploads release evidence, and deploys the site to GitHub Pages.
+- Core and documentation changelogs are maintained independently in their package directories.
 - Python package publication is configured for PyPI rather than a GitHub Packages Python registry.
-
-Release Please is approved future work, not an implemented release mechanism. Until that work
-is completed, the release trigger remains a version tag matching `v*`.
 
 ## Decisions
 

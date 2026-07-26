@@ -2,8 +2,8 @@
 
 ## GitHub Readiness
 
-The repository now includes GitHub Actions workflows for linting, tests, package builds,
-coverage artifacts, and tag-based releases.
+The repository includes GitHub Actions workflows for linting, tests, package builds, coverage
+artifacts, Release Please versioning, GitHub releases, and GitHub Pages deployment.
 
 Tag-based releases now build and test the package, create the GitHub release object, and
 only then publish the same built distributions to PyPI.
@@ -17,9 +17,10 @@ with release artifacts attached to GitHub Releases.
 
 ## Current Release Status
 
-The package is in Alpha. The current release workflow is tag-driven: a `v*` tag runs the
-release workflow and may publish to PyPI when the protected `pypi` environment is configured.
-Release Please is approved future work and is not implemented here.
+The package is in Alpha. Release Please maintains independent versions and changelogs for the
+core library and documentation site. Merging a Release Please pull request creates the release
+tag and GitHub release. The release workflow may publish the core package to PyPI when the
+protected `pypi` environment is configured.
 
 Governance files now included:
 
@@ -39,9 +40,11 @@ Governance files now included:
 - Stylized project name: `quiCkLI`
 - License: MIT
 - Repository: `https://github.com/spmse/quickli`
-- Release trigger: Git tags matching `v*`
+- Release trigger: merged Release Please pull requests on `main`
+- Documentation site: `https://spmse.github.io/quickli/`
 
 ## Maintainer Process
 
-The current release workflow is defined in `.github/workflows/release.yml`. Release Please is
-approved future work, not an implemented release mechanism, and requires a separate change.
+Release Please is configured in `release-please-config.json` and
+`.release-please-manifest.json`. Release evidence is produced by
+`.github/workflows/release-evidence.yml`.

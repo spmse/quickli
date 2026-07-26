@@ -60,5 +60,10 @@ When opening a pull request, include:
 
 ## Releases
 
-Releases are currently created from Git tags through the release workflow. Release Please is
-approved future work and has not yet been implemented.
+Release Please creates independent release pull requests for the core library and documentation
+site. Merging a release pull request creates the version tag and GitHub release. The release
+workflow validates both packages, attaches core-library and documentation release evidence, and
+deploys the documentation site to GitHub Pages.
+
+Maintain package-specific release notes in [packages/core/CHANGELOG.md](packages/core/CHANGELOG.md)
+and [packages/quickli-docs/CHANGELOG.md](packages/quickli-docs/CHANGELOG.md).

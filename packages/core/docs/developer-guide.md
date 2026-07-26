@@ -49,7 +49,8 @@ PYTHONPATH=src python examples/complex/pyk5l/app.py get pods --verbose
 	implementation.
 - A standard executable runtime is planned separately. `Application.run()` currently accepts
 	explicit tokens and returns handler results; callers own `sys.argv`, output, and exit codes.
-- Release Please is approved future work, not an implemented release mechanism.
+- Release Please maintains independent releases for the core library and documentation site.
+	Merging its release pull requests creates GitHub releases and triggers evidence generation.
 
 ## Naming and License
 
