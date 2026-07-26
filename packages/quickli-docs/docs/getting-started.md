@@ -5,6 +5,8 @@ sidebar_position: 2
 description: Install quickli and build your first command-line application.
 ---
 
+import { AddToProject } from '@site/src/components/QuickliExamples';
+
 # Getting Started
 
 This guide creates a small command-line application with one entrypoint, one positional
@@ -26,6 +28,8 @@ When working from the quickli repository, install the package in editable mode i
 ```bash
 python -m pip install -e packages/core
 ```
+
+<AddToProject />
 
 ## Create an application
 

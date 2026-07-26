@@ -5,6 +5,8 @@ sidebar_position: 1
 description: Learn why quickli exists and what the framework provides.
 ---
 
+import { MinimalExample } from '@site/src/components/QuickliExamples';
+
 # Introduction
 
 quiCkLI is an **educational minimal framework lite** for building Python command-line
@@ -31,21 +33,6 @@ Those responsibilities remain visible in the application that uses quickli.
 
 The following commandless application accepts a name and returns a greeting:
 
-```python
-import sys
-
-from quickli import Application, Argument
-
-app = Application(name="hello", description="A small greeting CLI.")
-
-
-@app.entrypoint(arguments=[Argument("name")])
-def greet(name: str) -> str:
-    return f"Hello, {name}!"
-
-
-if __name__ == "__main__":
-    print(app.run(sys.argv[1:]))
-```
+<MinimalExample />
 
 The next page shows how to install quickli and run a complete example.
