@@ -1,0 +1,22 @@
+{
+  "separate-pull-requests": true,
+  "include-component-in-tag": true,
+  "include-v-in-tag": true,
+  "packages": {
+    "packages/core": {
+      "release-type": "python",
+      "package-name": "quickli",
+      "component": "core",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        "package.json"
+      ]
+    },
+    "packages/quickli-docs": {
+      "release-type": "node",
+      "package-name": "quickli-docs",
+      "component": "docs",
+      "changelog-path": "CHANGELOG.md"
+    }
+  }
+}
