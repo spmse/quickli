@@ -47,4 +47,4 @@ Governance files now included:
 
 Release Please is configured in `release-please-config.json` and
 `.release-please-manifest.json`. Release evidence is produced by
-`.github/workflows/release-evidence.yml`.
+`.github/workflows/release-please.yml`.

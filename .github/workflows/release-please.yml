@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      releases-created: ${{ steps.release.outputs.releases_created }}
-      core-tag: ${{ steps.release.outputs['packages/core--tag_name'] }}
-      docs-tag: ${{ steps.release.outputs['packages/quickli-docs--tag_name'] }}
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      core_tag: ${{ steps.release.outputs['packages/core--tag_name'] }}
+      docs_tag: ${{ steps.release.outputs['packages/quickli-docs--tag_name'] }}
 
     steps:
       - name: Create or update release PRs
@@ -30,7 +30,7 @@ jobs:
 
   build-release-evidence:
     needs: release-please
-    if: needs.release-please.outputs.releases-created == 'true'
+    if: needs.release-please.outputs.releases_created == 'true'
     runs-on: ubuntu-latest
 
     permissions:
@@ -89,8 +89,8 @@ jobs:
 
       - name: Create release evidence summary
         env:
-          CORE_TAG: ${{ needs.release-please.outputs.core-tag }}
-          DOCS_TAG: ${{ needs.release-please.outputs.docs-tag }}
+          CORE_TAG: ${{ needs.release-please.outputs.core_tag }}
+          DOCS_TAG: ${{ needs.release-please.outputs.docs_tag }}
         run: |
           {
             echo "# Release Evidence"
@@ -109,10 +109,10 @@ jobs:
           path: packages/quickli-docs/build
 
       - name: Upload core release evidence
-        if: needs.release-please.outputs.core-tag != ''
+        if: needs.release-please.outputs.core_tag != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CORE_TAG: ${{ needs.release-please.outputs.core-tag }}
+          CORE_TAG: ${{ needs.release-please.outputs.core_tag }}
         run: |
           gh release upload "${CORE_TAG}" \
             packages/core/dist/* \
@@ -124,10 +124,10 @@ jobs:
             --clobber
 
       - name: Upload documentation release evidence
-        if: needs.release-please.outputs.docs-tag != ''
+        if: needs.release-please.outputs.docs_tag != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCS_TAG: ${{ needs.release-please.outputs.docs-tag }}
+          DOCS_TAG: ${{ needs.release-please.outputs.docs_tag }}
         run: |
           gh release upload "${DOCS_TAG}" \
             packages/quickli-docs/CHANGELOG.md \
@@ -142,33 +142,7 @@ jobs:
       pages: write
       id-token: write
 
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
       - name: Deploy documentation to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-name: Release Please
-
-on:
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: write
-  pull-requests: write
-
-jobs:
-  release-please:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Create or update release PR
-        uses: googleapis/release-please-action@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          manifest-file: .release-please-manifest.json
-          config-file: release-please-config.json
