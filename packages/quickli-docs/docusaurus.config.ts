@@ -60,7 +60,13 @@ const config: Config = {
           routeBasePath: 'docs',
           showLastUpdateTime: true,
         },
-        blog: false,
+        blog: {
+          showReadingTime: true,
+          blogTitle: 'quiCkLI Blog',
+          blogDescription: 'News, guides, and deep dives from the quiCkLI project.',
+          postsPerPage: 10,
+          routeBasePath: 'blog',
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -92,6 +98,11 @@ const config: Config = {
           sidebarId: 'docsSidebar',
           position: 'left',
           label: 'Docs',
+        },
+        {
+          to: '/blog',
+          label: 'Blog',
+          position: 'left',
         },
         {
           href: 'https://github.com/spmse/quickli',

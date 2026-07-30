@@ -8,8 +8,9 @@ from typing import Callable
 
 from quickli.argument import Argument
 from quickli.command import Command
-from quickli.exceptions import CommandNotFoundError, CommandRegistrationError
+from quickli.exceptions import CommandNotFoundError, CommandRegistrationError, PluginLoadError
 from quickli.option import Option
+from quickli.plugin import Plugin
 
 
 class Application:
@@ -31,6 +32,7 @@ class Application:
             handler=lambda **_: None,
             options=self._global_options,
         )
+        self._plugins: list[Plugin] = []
 
     @property
     def commands(self) -> dict[str, Command]:
@@ -46,6 +48,30 @@ class Application:
     def entrypoint_command(self) -> Command | None:
         """Returns the application entrypoint when configured."""
         return self._entrypoint
+
+    @property
+    def plugins(self) -> list[Plugin]:
+        """Returns a copy of the loaded plugin list."""
+        return list(self._plugins)
+
+    def load_plugin(self, plugin: Plugin) -> None:
+        """Loads a plugin by calling its register method against this application.
+
+        :param plugin: A :class:`~quickli.Plugin` instance to register.
+        :raises PluginLoadError: When the plugin name is empty, the plugin is
+            already loaded, or the plugin's register method fails.
+        """
+        if not plugin.name or not plugin.name.strip():
+            raise PluginLoadError("Plugin name cannot be empty.")
+        if any(loaded.name == plugin.name for loaded in self._plugins):
+            raise PluginLoadError(f"Plugin '{plugin.name}' is already loaded.")
+        try:
+            plugin.register(self)
+        except PluginLoadError:
+            raise
+        except Exception as error:
+            raise PluginLoadError(f"Plugin '{plugin.name}' failed to register: {error}") from error
+        self._plugins.append(plugin)
 
     def register(
         self,

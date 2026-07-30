@@ -38,12 +38,13 @@ implemented:
   - boolean_flags
   - generated_help
   - docstring_help_fallback
+  - plugin_loading
 not_implemented:
   - standard_executable_runtime
   - nested_subcommands
   - shell_completion
   - configuration_files
-  - plugin_loading
+  - plugin_discovery_via_entry_points
   - core_json_or_yaml_rendering
   - combined_short_flags
 release_process: tag-driven
@@ -78,6 +79,10 @@ not add JSON or YAML output support to the core framework.
 | Converter                                  | Runs before validators and handler       | validation guide           |
 | Validator                                  | Runs after conversion and before handler | validation guide           |
 | Handler exception                          | Propagates; no process policy            | command, runtime boundary  |
+| `load_plugin` with valid plugin            | Calls register, appends to plugin list   | plugin spec, tests         |
+| `load_plugin` with empty name              | Raises `PluginLoadError`                 | plugin spec, tests         |
+| `load_plugin` with duplicate name          | Raises `PluginLoadError`                 | plugin spec, tests         |
+| `load_plugin` when register fails          | Wraps exception in `PluginLoadError`     | plugin spec, tests         |
 
 The approved future behavior for an unknown command is to fail with the command and root help
 when both named commands and an entrypoint exist. That behavior is implementation-deferred and
@@ -94,6 +99,7 @@ tests.
 | `CommandRegistrationError` | Invalid or duplicate registration                    | registration         |
 | `CommandNotFoundError`     | Unknown command without entrypoint                   | application dispatch |
 | `CommandExecutionError`    | Parsing, conversion, validation, or binding failures | command              |
+| `PluginLoadError`          | Invalid plugin name, duplicate plugin, or register failure | plugin loading |
 | Any handler exception      | Failure in application handler code                  | caller; not wrapped  |
 
 Framework exceptions are library errors. The current library does not decide whether to print
@@ -106,8 +112,8 @@ define that contract separately.
 - Do not assume a returned string is printed; the caller must print or otherwise use it.
 - Do not assume unknown commands already follow the approved future failure behavior.
 - Do not assume `pyk5l` renderers are core JSON or YAML support.
-- Do not assume plugin classes, discovery, or registration APIs exist because `specs/plugin.md`
-  describes a planned direction.
+- Do not assume plugin discovery via entry points is supported; only explicit loading through
+  `Application.load_plugin()` is implemented.
 - Do not assume nested subcommands, shell completion, configuration files, or combined short
   flags are supported.
 - Do not change `src/quickli` or `tests/` for documentation-only work.

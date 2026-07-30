@@ -189,10 +189,50 @@ Use `@app.entrypoint(...)` when the CLI does not need subcommands.
 ## Scope of the Initial Scaffold
 
 The current scaffold focuses on package structure, registration, argument and option
-resources, conversion, validation, execution, and help output.
-Plugins, nested subcommands, shell completion, configuration files, and a standard executable
-runtime remain planned or out of scope.
+resources, conversion, validation, execution, and help output, and a rudimentary plugin
+loading system.
+Nested subcommands, shell completion, configuration files, plugin discovery via package
+metadata, and a standard executable runtime remain planned or out of scope.
 JSON and YAML are not output formats provided by the core framework.
+
+## Plugin System
+
+Plugins extend an application without modifying the core package.  A plugin subclasses
+`quickli.Plugin`, which defines a three-method contract: `name`, `description`, and
+`register`.  Load a plugin by calling `Application.load_plugin(plugin)`.
+
+```python
+import quickli
+
+
+class VersionPlugin(quickli.Plugin):
+    @property
+    def name(self) -> str:
+        return "version-plugin"
+
+    @property
+    def description(self) -> str:
+        return "Adds a version command."
+
+    def register(self, application: quickli.Application) -> None:
+        @application.command(help_text="Prints the application version.")
+        def version() -> str:
+            return "1.0.0"
+
+
+app = quickli.Application(name="demo")
+app.load_plugin(VersionPlugin())
+print(app.run(["version"]))  # 1.0.0
+```
+
+`Application.plugins` returns a copy of the loaded plugins list.
+
+`PluginLoadError` is raised when:
+- the plugin name is empty,
+- a plugin with the same name is already loaded,
+- or the plugin's `register` method fails.
+
+See `specs/plugin.md` for the full plugin contract.
 
 ## Naming
 
