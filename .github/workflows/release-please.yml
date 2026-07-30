@@ -41,12 +41,29 @@ jobs:
     steps:
       - name: Check out released revision
         uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release-please.outputs.core_tag || github.sha }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
+
+      - name: Set package version from release tag
+        if: needs.release-please.outputs.core_tag != ''
+        working-directory: packages/core
+        env:
+          CORE_TAG: ${{ needs.release-please.outputs.core_tag }}
+        run: |
+          package_version="${CORE_TAG#v}"
+          package_version="${package_version#core-v}"
+          package_version="${package_version%-core}"
+          test -n "${package_version}"
+          sed -i "s/^version = \"[^\"]*\"$/version = \"${package_version}\"/" pyproject.toml
+          actual_version="$(sed -n 's/^version = "\([^"].*\)"$/\1/p' pyproject.toml)"
+          test "${actual_version}" = "${package_version}"
+          echo "QUICKLI_VERSION=${package_version}" >> "${GITHUB_ENV}"
 
       - name: Install core development dependencies
         working-directory: packages/core
@@ -64,6 +81,14 @@ jobs:
           python -m coverage report -m > coverage-summary.txt
           python -m build --sdist --wheel
           zip -r htmlcov.zip htmlcov
+
+      - name: Publish core package to PyPI
+        if: needs.release-please.outputs.core_tag != ''
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: packages/core/dist/
+          print-hash: true
+          skip-existing: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -85,6 +110,8 @@ jobs:
 
       - name: Build documentation site
         working-directory: packages/quickli-docs
+        env:
+          QUICKLI_VERSION: ${{ env.QUICKLI_VERSION }}
         run: pnpm run build
 
       - name: Create release evidence summary

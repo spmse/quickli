@@ -1,8 +1,14 @@
 import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+
+const coreProject = readFileSync(resolve(__dirname, '../core/pyproject.toml'), 'utf8');
+const coreVersion = coreProject.match(/^version = "([^"]+)"$/m)?.[1] ?? 'unreleased';
+const quickliVersion = process.env.QUICKLI_VERSION ?? coreVersion;
 
 const config: Config = {
   title: 'quiCkLI',
@@ -49,8 +55,11 @@ const config: Config = {
     [
       'classic',
       {
-        // Docs and blog are disabled until content is added.
-        docs: false,
+        docs: {
+          sidebarPath: './sidebars.ts',
+          routeBasePath: 'docs',
+          showLastUpdateTime: true,
+        },
         blog: false,
         theme: {
           customCss: './src/css/custom.css',
@@ -78,6 +87,12 @@ const config: Config = {
         src: 'img/logo.svg',
       },
       items: [
+        {
+          type: 'docSidebar',
+          sidebarId: 'docsSidebar',
+          position: 'left',
+          label: 'Docs',
+        },
         {
           href: 'https://github.com/spmse/quickli',
           label: 'GitHub',
@@ -111,7 +126,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} quiCkLI contributors. Built with Docusaurus.`,
+      copyright: `quiCkLI ${quickliVersion} · Copyright © ${new Date().getFullYear()} quiCkLI contributors. Built with Docusaurus.`,
     },
 
     prism: {

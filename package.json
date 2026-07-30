@@ -12,7 +12,8 @@
     "lint:core": "pnpm --filter core run lint",
     "format:check:core": "pnpm --filter core run format:check",
     "coverage:core": "pnpm --filter core run coverage",
-    "build:core": "pnpm --filter core run build"
+    "build:core": "pnpm --filter core run build",
+    "start:docs": "pnpm --filter quickli-docs run start"
   },
   "packageManager": "pnpm@11.17.0"
 }

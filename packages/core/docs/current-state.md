@@ -47,7 +47,8 @@ not_implemented:
   - core_json_or_yaml_rendering
   - combined_short_flags
 release_process: tag-driven
-release_please: approved_but_not_implemented
+release_please: implemented
+release_version_source: core_release_tag
 ```
 
 `Application.run(tokens)` accepts explicit tokens and returns a handler result or help text.

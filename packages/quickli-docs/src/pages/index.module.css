@@ -1,23 +1,135 @@
-/**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
- */
-
 .heroBanner {
-  padding: 4rem 0;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
+  background: linear-gradient(135deg,
+      var(--ifm-background-surface-color),
+      var(--ifm-background-color) 60%,
+      var(--ifm-color-emphasis-100));
+  padding: 6rem 0 5rem;
 }
 
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
-  }
+.heroGrid {
+  align-items: center;
+  display: grid;
+  gap: 4rem;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+}
+
+.eyebrow {
+  color: var(--ifm-color-primary-dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.heroTitle {
+  color: var(--ifm-heading-color);
+  font-size: clamp(2.7rem, 6vw, 5rem);
+  letter-spacing: -0.055em;
+  line-height: 0.98;
+  max-width: 680px;
+}
+
+.heroSubtitle {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin: 1.75rem 0 2rem;
+  max-width: 600px;
 }
 
 .buttons {
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+
+.overview {
+  background: var(--ifm-background-color);
+  padding: 5.5rem 0;
+}
+
+.sectionIntro {
+  max-width: 600px;
+}
+
+.sectionIntro h2,
+.nextStep h2 {
+  color: var(--ifm-heading-color);
+  letter-spacing: -0.03em;
+}
+
+.sectionIntro>p:last-child,
+.nextStep p:last-child {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.cards {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 3rem;
+}
+
+.card {
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 10px;
+  padding: 1.5rem;
+}
+
+.cardNumber {
+  color: var(--ifm-color-primary);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.card h3 {
+  margin-top: 1.2rem;
+}
+
+.card p {
+  color: var(--ifm-color-emphasis-700);
+  line-height: 1.6;
+}
+
+.nextStep {
   align-items: center;
-  justify-content: center;
+  background: var(--ifm-background-surface-color);
+  border-radius: 12px;
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+  margin-top: 4rem;
+  padding: 2rem 2.25rem;
+}
+
+.addToProject {
+  background: var(--ifm-background-surface-color);
+  border-top: 1px solid var(--ifm-color-emphasis-100);
+  padding: 5.5rem 0;
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 4rem 0;
+  }
+
+  .heroGrid {
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .nextStep {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }

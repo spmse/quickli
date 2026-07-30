@@ -5,8 +5,9 @@
 The repository includes GitHub Actions workflows for linting, tests, package builds, coverage
 artifacts, Release Please versioning, GitHub releases, and GitHub Pages deployment.
 
-Tag-based releases now build and test the package, create the GitHub release object, and
-only then publish the same built distributions to PyPI.
+Tag-based releases derive the package version from the core release tag, build and test the
+package, publish the same built distributions to PyPI, and attach release evidence to the
+GitHub release object. The documentation footer receives the same core version.
 
 The project license is MIT.
 Project metadata already points to the GitHub repository.
@@ -41,6 +42,7 @@ Governance files now included:
 - License: MIT
 - Repository: `https://github.com/spmse/quickli`
 - Release trigger: merged Release Please pull requests on `main`
+- Core package version: derived from the `quickli` release tag during the release build
 - Documentation site: `https://spmse.github.io/quickli/`
 
 ## Maintainer Process
