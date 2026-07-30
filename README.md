@@ -206,8 +206,10 @@ feature summary, parsing and exception matrices, and validation guidance.
 - Release Please opens independent release pull requests for `core` and `docs` on the default
     branch.
 - Merging a release pull request creates the corresponding GitHub release and version tag.
-- The release workflow tests and packages the core library, builds the documentation site,
-    uploads release evidence, and deploys the site to GitHub Pages.
+- The release workflow derives the core package version from its release tag, tests and
+    packages the library, publishes the tested distributions to PyPI, builds the documentation
+    site with that version in its footer, uploads release evidence, and deploys the site to
+    GitHub Pages.
 - Core and documentation changelogs are maintained independently in their package directories.
 - Python package publication is configured for PyPI rather than a GitHub Packages Python registry.
 
