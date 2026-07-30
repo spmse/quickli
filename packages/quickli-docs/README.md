@@ -39,4 +39,6 @@ pnpm deploy
 - **i18n**: English as default locale; additional locales can be added to `docusaurus.config.ts`.
 - **Mermaid**: Diagram support is enabled via `@docusaurus/theme-mermaid`.
 - **Syntax highlighting**: Python, Shell (`bash`), PowerShell, HCL, Docker (container), and YAML (Kubernetes) are enabled in addition to the Docusaurus defaults.
-
+- **AI discoverability**: `static/robots.txt` allows crawling of the documentation site and
+  `static/llms.txt` provides a machine-readable project summary with links back to the
+  canonical repository documentation and specifications.
