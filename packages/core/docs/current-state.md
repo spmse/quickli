@@ -40,9 +40,9 @@ implemented:
   - docstring_help_fallback
   - core_json_or_yaml_rendering
   - nested_subcommands
+  - shell_completion
 not_implemented:
   - standard_executable_runtime
-  - shell_completion
   - configuration_files
   - plugin_loading
   - combined_short_flags
@@ -109,7 +109,7 @@ define that contract separately.
 - Do not assume advanced YAML syntax is supported by the minimal core YAML parser.
 - Do not assume plugin classes, discovery, or registration APIs exist because `specs/plugin.md`
   describes a planned direction.
-- Do not assume shell completion, configuration files, or combined short flags are supported.
+- Do not assume configuration files or combined short flags are supported.
 - Do not change `src/quickli` or `tests/` for documentation-only work.
 - Do not use release notes or the changelog to infer an API contract.
 

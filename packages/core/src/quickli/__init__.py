@@ -7,6 +7,12 @@ from quickli.exceptions import CLIError, CommandExecutionError, CommandNotFoundE
 from quickli.exceptions import CommandRegistrationError
 from quickli.option import Option
 from quickli.parsers import core_json_or_yaml_loading, core_json_or_yaml_rendering
+from quickli.shell_completion import (
+    SUPPORTED_SHELLS,
+    generate_bash_completion,
+    generate_powershell_completion,
+    generate_zsh_completion,
+)
 from quickli.validators import directory_path, file_path, number_range, positive_number
 
 __all__ = [
@@ -21,6 +27,10 @@ __all__ = [
     "Option",
     "core_json_or_yaml_loading",
     "core_json_or_yaml_rendering",
+    "SUPPORTED_SHELLS",
+    "generate_bash_completion",
+    "generate_powershell_completion",
+    "generate_zsh_completion",
     "directory_path",
     "file_path",
     "number_range",
