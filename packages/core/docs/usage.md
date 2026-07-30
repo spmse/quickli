@@ -5,7 +5,7 @@
 ```python
 from pathlib import Path
 
-from quickli import Application, Argument, Option, file_path, number_range
+from quickli import Application, Argument, Option, Subcommand, file_path, number_range
 
 app = Application(
     name="demo",
@@ -92,6 +92,7 @@ The caller decides how to adapt the returned value to an executable program.
 - Options can be marked with `multiple=True` to collect repeated values.
 - Applications can define global options that are parsed before or after the command name.
 - Flags are modeled as boolean options.
+- Commands can expose nested `Subcommand` resources.
 - Calling `run([])` returns generated help text unless a root entrypoint is registered and
     can run directly.
 
@@ -154,6 +155,34 @@ def version() -> str:
 print(app.run(["version"]))
 ```
 
+## Nested Subcommands
+
+Use `Subcommand` resources when a command needs nested operations.
+
+```python
+from quickli import Application, Argument, Subcommand
+
+app = Application(name="demo")
+
+
+@app.command(
+    name="env",
+    subcommands=[
+        Subcommand(
+            name="create",
+            help_text="Creates an environment.",
+            arguments=[Argument("name")],
+            handler=lambda name: f"created:{name}",
+        )
+    ],
+)
+def env() -> str:
+    return "env"
+
+
+print(app.run(["env", "create", "dev"]))
+```
+
 ## Help Output
 
 `render_help()` builds application help from the registered resources.
@@ -189,9 +218,9 @@ Use `@app.entrypoint(...)` when the CLI does not need subcommands.
 ## Scope of the Initial Scaffold
 
 The current scaffold focuses on package structure, registration, argument and option
-resources, conversion, validation, execution, and help output.
-Plugins, nested subcommands, shell completion, configuration files, and a standard executable
-runtime remain planned or out of scope.
+resources, nested subcommands, conversion, validation, execution, and help output.
+Plugins, shell completion, configuration files, and a standard executable runtime remain
+planned or out of scope.
 JSON and YAML rendering/loading helpers are provided through `quickli.parsers`.
 
 ## JSON and YAML Helpers

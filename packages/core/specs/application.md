@@ -27,6 +27,7 @@ It owns the command registry and dispatches explicit input tokens to a handler.
 - Options currently support `--long value`, `--long=value`, and `-s value` forms.
 - Flags are represented as boolean options.
 - Arguments and options may convert raw string input through callables.
+- Commands may include nested subcommands.
 - Help output includes generated usage, argument descriptions, and option descriptions.
 - Global and local options are rendered separately in help output.
 - Global options may appear before or after the command name.
@@ -43,7 +44,6 @@ It owns the command registry and dispatches explicit input tokens to a handler.
 ## Future Extensions
 
 - Typed argument conversion beyond booleans and raw strings.
-- Command Groups and Subcommands (nested commands)
 - Nested command groups.
 - Shell completion.
 - Config-driven application setup.

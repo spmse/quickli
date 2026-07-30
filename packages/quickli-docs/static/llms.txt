@@ -34,11 +34,11 @@ It is designed to stay small, educational, and easy to learn.
 - generated help output
 - docstring-based help text fallback
 - core JSON or YAML rendering and loading
+- nested subcommands
 
 ## Not implemented
 
 - standard executable runtime
-- nested subcommands
 - shell completion
 - configuration files
 - plugin loading

@@ -39,9 +39,9 @@ implemented:
   - generated_help
   - docstring_help_fallback
   - core_json_or_yaml_rendering
+  - nested_subcommands
 not_implemented:
   - standard_executable_runtime
-  - nested_subcommands
   - shell_completion
   - configuration_files
   - plugin_loading
@@ -67,6 +67,7 @@ example still keeps its own table and wide renderers.
 | `run([])` without entrypoint               | Returns generated application help       | application, tests         |
 | `run([])` with entrypoint                  | Invokes entrypoint with defaults         | application, tests         |
 | Named command token                        | Dispatches to matching command           | application, tests         |
+| Nested subcommand token                    | Dispatches to matching nested subcommand | command, tests             |
 | Unknown command without entrypoint         | Raises `CommandNotFoundError`            | application                |
 | Unknown token with entrypoint              | Passes token to entrypoint               | implementation, tests      |
 | Global option around command               | Parses as global option                  | application, command specs |
@@ -108,8 +109,7 @@ define that contract separately.
 - Do not assume advanced YAML syntax is supported by the minimal core YAML parser.
 - Do not assume plugin classes, discovery, or registration APIs exist because `specs/plugin.md`
   describes a planned direction.
-- Do not assume nested subcommands, shell completion, configuration files, or combined short
-  flags are supported.
+- Do not assume shell completion, configuration files, or combined short flags are supported.
 - Do not change `src/quickli` or `tests/` for documentation-only work.
 - Do not use release notes or the changelog to infer an API contract.
 
