@@ -15,3 +15,11 @@ class CommandNotFoundError(CLIError):
 
 class CommandExecutionError(CLIError):
     """Raised when a command cannot be executed with the provided input."""
+
+
+class ConfigError(CLIError):
+    """Base exception for configuration file errors."""
+
+
+class ConfigValidationError(ConfigError):
+    """Raised when a configuration file fails schema validation."""
