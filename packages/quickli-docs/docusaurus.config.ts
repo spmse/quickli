@@ -84,8 +84,8 @@ const config: Config = {
         {
           type: 'docSidebar',
           sidebarId: 'docsSidebar',
-          label: 'Docs',
           position: 'left',
+          label: 'Docs',
         },
         {
           href: 'https://github.com/spmse/quickli',
