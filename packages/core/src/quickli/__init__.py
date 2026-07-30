@@ -6,6 +6,7 @@ from quickli.command import Command, Subcommand
 from quickli.exceptions import CLIError, CommandExecutionError, CommandNotFoundError
 from quickli.exceptions import CommandRegistrationError
 from quickli.option import Option
+from quickli.parsers import core_json_or_yaml_loading, core_json_or_yaml_rendering
 from quickli.shell_completion import (
     SUPPORTED_SHELLS,
     generate_bash_completion,
@@ -24,6 +25,8 @@ __all__ = [
     "CommandNotFoundError",
     "CommandRegistrationError",
     "Option",
+    "core_json_or_yaml_loading",
+    "core_json_or_yaml_rendering",
     "SUPPORTED_SHELLS",
     "generate_bash_completion",
     "generate_powershell_completion",

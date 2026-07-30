@@ -8,12 +8,14 @@ import TabItem from '@theme/TabItem';
 import styles from './QuickliExamples.module.css';
 
 const minimalExample = `from quickli import Application, Argument
+from quickli import core_json_or_yaml_loading, core_json_or_yaml_rendering
 
-app = Application(name="hello")
+app = Application(name="profile")
 
-@app.entrypoint(arguments=[Argument("name")])
-def greet(name: str) -> str:
-    return f"Hello, {name}!"`;
+@app.entrypoint(arguments=[Argument("payload")])
+def normalize(payload: str) -> str:
+    data = core_json_or_yaml_loading(payload)
+    return core_json_or_yaml_rendering(data, format_name="json")`;
 
 const existingProjectCommands = {
     pip: `pip install quickli`,
@@ -74,7 +76,9 @@ export function MinimalExample(
                 code={codeExample ?? minimalExample}
                 language={language ?? "python"}
             />
-            <p className={styles.output}>{output ?? `$ python hello.py Ada → Hello, Ada!`}</p>
+            <p className={styles.output}>
+                {output ?? `$ python profile.py "name: Ada" → {"name": "Ada"}`}
+            </p>
         </div>
     );
 }

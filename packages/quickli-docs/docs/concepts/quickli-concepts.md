@@ -13,6 +13,7 @@ documentation page so the model can evolve without overcrowding one document.
 - [Command](./command.md)
 - [Argument](./argument.md)
 - [Option](./option.md)
+- [Parsers](./parsers.md)
 - [Plugin](./plugin.md)
 
 ## How the concepts fit together

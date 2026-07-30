@@ -256,7 +256,22 @@ resources, nested subcommands, conversion, validation, execution, help output, a
 completion.
 Plugins, configuration files, and a standard executable runtime remain planned or out of
 scope.
-JSON and YAML are not output formats provided by the core framework.
+JSON and YAML rendering/loading helpers are provided through `quickli.parsers`.
+
+## JSON and YAML Helpers
+
+Use `core_json_or_yaml_rendering(...)` and `core_json_or_yaml_loading(...)` when a command
+needs structured text output or input.
+
+```python
+from quickli import core_json_or_yaml_loading, core_json_or_yaml_rendering
+
+data = core_json_or_yaml_loading("name: Ada\nroles:\n  - admin\n", format_name="yaml")
+output = core_json_or_yaml_rendering(data, format_name="json")
+```
+
+When `format_name` is omitted during loading, the helper detects JSON when payloads start
+with `{` or `[`. Otherwise, it parses the input as YAML.
 
 ## Naming
 
