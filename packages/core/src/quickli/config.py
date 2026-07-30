@@ -1,14 +1,27 @@
 """Configuration file handling for quickli applications.
 
-This module provides tools for reading, writing, and validating TOML configuration
-files.  The design is intentionally minimal: it covers the common cases that CLI
-tools need without adding external dependencies.
+This module provides tools for reading, writing, and validating configuration
+files.  YAML is the recommended and default format; JSON and TOML are also
+supported.  The design is intentionally minimal: it covers the common cases
+that CLI tools need without adding unnecessary complexity.
+
+Supported formats
+-----------------
+- **YAML** (``*.yaml``, ``*.yml``) — recommended default format.  Requires
+  `pyyaml`, which is installed automatically as a project dependency.
+- **JSON** (``*.json``) — fully supported via the standard library ``json``
+  module.
+- **TOML** (``*.toml``) — supported via the standard library ``tomllib``
+  module (read) and a built-in serialiser (write).
+
+The format is inferred automatically from the file extension.  When no
+recognised extension is present, YAML is used.
 
 Typical usage
 -------------
 Define a schema, create a ``Config`` object pointing to a file, then call
-``add_auto_init_config`` to create the file on first run or load it on subsequent
-runs::
+``add_auto_init_config`` to create the file on first run or load it on
+subsequent runs::
 
     from pathlib import Path
     from quickli.config import Config, ConfigField, ConfigSchema, add_auto_init_config
@@ -18,30 +31,70 @@ runs::
         ConfigField("retries", value_type=int, required=False, default=3),
     ])
 
-    config = Config(path=Path.home() / ".myapp" / "config.toml", schema=schema)
+    config = Config(path=Path.home() / ".myapp" / "config.yaml", schema=schema)
     data = add_auto_init_config(config)
     print(data["log_level"])
 
 Validation
 ----------
-Use ``validate_config`` to inspect a loaded configuration and receive a structured
-list of issues before deciding how to proceed::
+Use ``validate_config`` to inspect a loaded configuration and receive a
+structured list of issues before deciding how to proceed::
 
     from quickli.config import validate_config
 
     issues = validate_config(config)
     for issue in issues:
         print(f"[{issue.severity}] {issue.field}: {issue.message}")
+
+Schema JSON generation
+----------------------
+Use ``generate_schema_json`` to produce a JSON Schema dict from a
+``ConfigSchema``::
+
+    from quickli.config import generate_schema_json
+    import json
+
+    schema_dict = generate_schema_json(schema, title="MyApp Configuration")
+    Path("schema.json").write_text(json.dumps(schema_dict, indent=2))
 """
 
 from __future__ import annotations
 
+import json
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 from quickli.exceptions import ConfigError, ConfigValidationError
 from quickli.validators import Validator
+
+#: Recognised configuration format identifiers.
+ConfigFormat = Literal["yaml", "json", "toml"]
+
+_EXTENSION_TO_FORMAT: dict[str, ConfigFormat] = {
+    ".yaml": "yaml",
+    ".yml": "yaml",
+    ".json": "json",
+    ".toml": "toml",
+}
+
+_PYTHON_TO_JSON_SCHEMA_TYPE: dict[type, str] = {
+    str: "string",
+    int: "integer",
+    float: "number",
+    bool: "boolean",
+    list: "array",
+    dict: "object",
+}
+
+
+def _detect_format(path: Path) -> ConfigFormat:
+    """Returns the config format inferred from *path*'s extension.
+
+    Falls back to ``"yaml"`` when the extension is not recognised.
+    """
+    return _EXTENSION_TO_FORMAT.get(path.suffix.lower(), "yaml")
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,9 +104,9 @@ class ConfigField:
     Parameters
     ----------
     name:
-        The field name as it appears in the TOML file.
+        The field name as it appears in the configuration file.
     value_type:
-        The Python type the field value must have after TOML parsing.
+        The Python type the field value must have after parsing.
         Accepted types are ``str``, ``int``, ``float``, ``bool``, ``list``,
         and ``dict``.  Boolean fields must use ``value_type=bool``; they are
         never treated as integers.
@@ -65,7 +118,8 @@ class ConfigField:
         An absent field with a default is not treated as an error during
         validation.
     help_text:
-        A short human-readable description shown in generated documentation.
+        A short human-readable description shown in generated documentation
+        and included in the output of ``generate_schema_json``.
     validators:
         An optional tuple of validator callables.  Each callable receives the
         field value and must return it (possibly coerced) or raise
@@ -145,7 +199,7 @@ class ConfigSchema:
         Parameters
         ----------
         data:
-            A flat or nested dict as returned by ``tomllib.load``.
+            A flat or nested dict as returned by the format parser.
         """
         errors: list[str] = []
         for field in self.fields:
@@ -199,25 +253,30 @@ class ConfigIssue:
 
 
 class Config:
-    """Manages a TOML configuration file with optional schema validation.
+    """Manages a configuration file with optional schema validation.
 
     ``Config`` combines a file path with an optional ``ConfigSchema``.  Its
-    ``load`` and ``save`` methods handle reading and writing the TOML file.
-    Passing a schema enables automatic validation when the file is loaded.
+    ``load`` and ``save`` methods handle reading and writing.  The format is
+    inferred from the file extension (``*.yaml`` / ``*.yml`` → YAML,
+    ``*.json`` → JSON, ``*.toml`` → TOML).  YAML is used when the extension
+    is not recognised.
 
     Parameters
     ----------
     path:
-        Path to the TOML configuration file.  Tilde expansion is applied
+        Path to the configuration file.  Tilde expansion is applied
         automatically.
     schema:
         Optional schema that defines the expected fields and types.  When
         provided, ``load`` raises ``ConfigValidationError`` for hard errors
         such as missing required fields or type mismatches.
+    format:
+        Explicit format override (``"yaml"``, ``"json"``, or ``"toml"``).
+        When omitted, the format is inferred from the file extension.
 
     Examples
     --------
-    Load a config file and validate it::
+    Load a YAML config file and validate it::
 
         from pathlib import Path
         from quickli.config import Config, ConfigField, ConfigSchema
@@ -226,10 +285,10 @@ class Config:
             ConfigField("host", value_type=str, default="localhost"),
             ConfigField("port", value_type=int, default=8080),
         ])
-        config = Config(path=Path("~/.myapp/config.toml"), schema=schema)
+        config = Config(path=Path("~/.myapp/config.yaml"), schema=schema)
         data = config.load()
 
-    Save a dict to a config file::
+    Save a dict to a YAML config file::
 
         config.save({"host": "example.com", "port": 9000})
     """
@@ -238,10 +297,12 @@ class Config:
         self,
         path: str | Path,
         schema: ConfigSchema | None = None,
+        format: ConfigFormat | None = None,  # noqa: A002
     ) -> None:
         self._path = Path(path).expanduser()
         self._schema = schema
         self._data: dict[str, object] = {}
+        self._format: ConfigFormat = format if format is not None else _detect_format(self._path)
 
     @property
     def path(self) -> Path:
@@ -254,6 +315,11 @@ class Config:
         return self._schema
 
     @property
+    def format(self) -> ConfigFormat:
+        """The active configuration format (``"yaml"``, ``"json"``, or ``"toml"``)."""
+        return self._format
+
+    @property
     def data(self) -> dict[str, object]:
         """A copy of the currently loaded configuration data.
 
@@ -262,28 +328,24 @@ class Config:
         return dict(self._data)
 
     def load(self) -> dict[str, object]:
-        """Loads and returns configuration from the TOML file.
+        """Loads and returns configuration from the file.
 
-        When a schema is configured, this method validates the loaded data and
-        raises ``ConfigValidationError`` when required fields are missing or
-        values have the wrong type.
+        The format is determined by ``self.format``.  When a schema is
+        configured, this method validates the loaded data and raises
+        ``ConfigValidationError`` when required fields are missing or values
+        have the wrong type.
 
         Raises
         ------
         ConfigError
-            When the file does not exist or cannot be parsed as valid TOML.
+            When the file does not exist or cannot be parsed.
         ConfigValidationError
             When schema validation fails after a successful file read.
         """
         if not self._path.exists():
             raise ConfigError(f"Configuration file not found: {self._path}")
 
-        try:
-            with open(self._path, "rb") as fh:
-                loaded: dict[str, object] = tomllib.load(fh)
-        except tomllib.TOMLDecodeError as exc:
-            raise ConfigError(f"Failed to parse configuration file '{self._path}': {exc}") from exc
-
+        loaded = _load_file(self._path, self._format)
         self._data = loaded
 
         if self._schema is not None:
@@ -302,19 +364,16 @@ class Config:
         Parameters
         ----------
         data:
-            A dict containing the configuration values to persist.  Supported
-            value types are ``str``, ``int``, ``float``, ``bool``, ``list``
-            (of scalars), and ``dict`` (one level of nesting as a TOML table).
+            A dict containing the configuration values to persist.
             ``None`` values are silently skipped.
 
         Raises
         ------
         TypeError
-            When *data* contains a value of an unsupported type.
+            When *data* contains a value of an unsupported type (TOML only).
         """
         self._path.parent.mkdir(parents=True, exist_ok=True)
-        content = _render_toml(data)
-        self._path.write_text(content, encoding="utf-8")
+        _save_file(self._path, self._format, data)
         self._data = dict(data)
 
 
@@ -328,8 +387,8 @@ def add_auto_init_config(config: Config) -> dict[str, object]:
       in the schema, then returns those defaults.
     - **File present**: calls ``config.load()`` and returns the loaded data.
 
-    When no schema is attached to *config*, an absent file is created empty and
-    the function returns ``{}``.
+    When no schema is attached to *config*, an absent file is created empty
+    and the function returns ``{}``.
 
     Parameters
     ----------
@@ -361,7 +420,7 @@ def add_auto_init_config(config: Config) -> dict[str, object]:
             ConfigField("retries", value_type=int, required=False, default=3),
         ])
 
-        config = Config(path=Path.home() / ".myapp" / "config.toml", schema=schema)
+        config = Config(path=Path.home() / ".myapp" / "config.yaml", schema=schema)
         data = add_auto_init_config(config)
         # data == {"log_level": "info", "retries": 3} on first run
     """
@@ -418,7 +477,7 @@ def validate_config(config: Config) -> list[ConfigIssue]:
             ConfigField("port", value_type=int, default=8080),
         ])
 
-        config = Config(path="app.toml", schema=schema)
+        config = Config(path="app.yaml", schema=schema)
         config.load()
 
         issues = validate_config(config)
@@ -482,9 +541,160 @@ def validate_config(config: Config) -> list[ConfigIssue]:
     return issues
 
 
+def generate_schema_json(
+    schema: ConfigSchema,
+    title: str = "",
+    description: str = "",
+) -> dict[str, object]:
+    """Generates a JSON Schema dict from a ``ConfigSchema``.
+
+    The returned dict conforms to JSON Schema draft 2020-12 and can be
+    written to a ``schema.json`` file for editor auto-completion, CI
+    validation, or documentation tools.
+
+    Parameters
+    ----------
+    schema:
+        The ``ConfigSchema`` to convert.
+    title:
+        Optional title for the generated schema (e.g. the application name).
+    description:
+        Optional human-readable description of the configuration.
+
+    Returns
+    -------
+    dict
+        A JSON Schema object ready for ``json.dumps``.
+
+    Examples
+    --------
+    ::
+
+        import json
+        from pathlib import Path
+        from quickli.config import ConfigField, ConfigSchema, generate_schema_json
+
+        schema = ConfigSchema(fields=[
+            ConfigField("host", value_type=str, default="localhost",
+                        help_text="Remote host to connect to."),
+            ConfigField("port", value_type=int, default=8080,
+                        help_text="TCP port number.", required=False),
+        ])
+
+        schema_dict = generate_schema_json(schema, title="MyApp Configuration")
+        Path("schema.json").write_text(json.dumps(schema_dict, indent=2))
+    """
+    properties: dict[str, object] = {}
+    required_fields: list[str] = []
+
+    for field in schema.fields:
+        json_type = _PYTHON_TO_JSON_SCHEMA_TYPE.get(field.value_type, "string")
+        prop: dict[str, object] = {"type": json_type}
+        if field.help_text:
+            prop["description"] = field.help_text
+        if field.default is not None:
+            prop["default"] = field.default
+        properties[field.name] = prop
+        if field.required and field.default is None:
+            required_fields.append(field.name)
+
+    result: dict[str, object] = {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": properties,
+    }
+    if title:
+        result["title"] = title
+    if description:
+        result["description"] = description
+    if required_fields:
+        result["required"] = required_fields
+
+    return result
+
+
 # ---------------------------------------------------------------------------
-# Internal TOML serialisation helpers
+# Internal format-dispatch helpers
 # ---------------------------------------------------------------------------
+
+
+def _load_file(path: Path, fmt: ConfigFormat) -> dict[str, object]:
+    """Loads and parses *path* according to *fmt*."""
+    if fmt == "yaml":
+        return _load_yaml(path)
+    if fmt == "json":
+        return _load_json(path)
+    return _load_toml(path)
+
+
+def _save_file(path: Path, fmt: ConfigFormat, data: dict[str, object]) -> None:
+    """Serialises *data* and writes it to *path* according to *fmt*."""
+    if fmt == "yaml":
+        _save_yaml(path, data)
+    elif fmt == "json":
+        _save_json(path, data)
+    else:
+        path.write_text(_render_toml(data), encoding="utf-8")
+
+
+# ---------------------------------------------------------------------------
+# YAML helpers
+# ---------------------------------------------------------------------------
+
+
+def _load_yaml(path: Path) -> dict[str, object]:
+    import yaml  # pyyaml is a required project dependency
+
+    try:
+        with open(path, encoding="utf-8") as fh:
+            result = yaml.safe_load(fh)
+    except yaml.YAMLError as exc:
+        raise ConfigError(f"Failed to parse configuration file '{path}': {exc}") from exc
+
+    return result if isinstance(result, dict) else {}
+
+
+def _save_yaml(path: Path, data: dict[str, object]) -> None:
+    import yaml  # pyyaml is a required project dependency
+
+    filtered = {k: v for k, v in data.items() if v is not None}
+    path.write_text(
+        yaml.dump(filtered, default_flow_style=False, allow_unicode=True, sort_keys=False),
+        encoding="utf-8",
+    )
+
+
+# ---------------------------------------------------------------------------
+# JSON helpers
+# ---------------------------------------------------------------------------
+
+
+def _load_json(path: Path) -> dict[str, object]:
+    try:
+        with open(path, encoding="utf-8") as fh:
+            result = json.load(fh)
+    except json.JSONDecodeError as exc:
+        raise ConfigError(f"Failed to parse configuration file '{path}': {exc}") from exc
+
+    return result if isinstance(result, dict) else {}
+
+
+def _save_json(path: Path, data: dict[str, object]) -> None:
+    filtered = {k: v for k, v in data.items() if v is not None}
+    path.write_text(json.dumps(filtered, indent=2) + "\n", encoding="utf-8")
+
+
+# ---------------------------------------------------------------------------
+# TOML helpers
+# ---------------------------------------------------------------------------
+
+
+def _load_toml(path: Path) -> dict[str, object]:
+    try:
+        with open(path, "rb") as fh:
+            return tomllib.load(fh)
+    except tomllib.TOMLDecodeError as exc:
+        raise ConfigError(f"Failed to parse configuration file '{path}': {exc}") from exc
 
 
 def _render_toml(data: dict[str, object]) -> str:

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -11,10 +12,12 @@ from quickli.config import (
     ConfigField,
     ConfigIssue,
     ConfigSchema,
+    _detect_format,
     _render_toml,
     _toml_scalar,
     _type_matches,
     add_auto_init_config,
+    generate_schema_json,
     validate_config,
 )
 from quickli.exceptions import ConfigError, ConfigValidationError
@@ -616,6 +619,364 @@ class PublicApiTests(unittest.TestCase):
         self.assertTrue(hasattr(quickli, "ConfigValidationError"))
         self.assertTrue(hasattr(quickli, "add_auto_init_config"))
         self.assertTrue(hasattr(quickli, "validate_config"))
+        self.assertTrue(hasattr(quickli, "generate_schema_json"))
+
+
+# ---------------------------------------------------------------------------
+# Format detection
+# ---------------------------------------------------------------------------
+
+
+class DetectFormatTests(unittest.TestCase):
+    def test_yaml_extension(self) -> None:
+        self.assertEqual(_detect_format(Path("config.yaml")), "yaml")
+
+    def test_yml_extension(self) -> None:
+        self.assertEqual(_detect_format(Path("config.yml")), "yaml")
+
+    def test_json_extension(self) -> None:
+        self.assertEqual(_detect_format(Path("config.json")), "json")
+
+    def test_toml_extension(self) -> None:
+        self.assertEqual(_detect_format(Path("config.toml")), "toml")
+
+    def test_uppercase_extension(self) -> None:
+        self.assertEqual(_detect_format(Path("config.YAML")), "yaml")
+
+    def test_unknown_extension_defaults_to_yaml(self) -> None:
+        self.assertEqual(_detect_format(Path("config.cfg")), "yaml")
+
+    def test_no_extension_defaults_to_yaml(self) -> None:
+        self.assertEqual(_detect_format(Path("config")), "yaml")
+
+
+# ---------------------------------------------------------------------------
+# Config – YAML format
+# ---------------------------------------------------------------------------
+
+
+class ConfigYamlTests(unittest.TestCase):
+    def test_format_detected_from_yaml_extension(self) -> None:
+        config = Config(path="/tmp/app.yaml")
+        self.assertEqual(config.format, "yaml")
+
+    def test_format_detected_from_yml_extension(self) -> None:
+        config = Config(path="/tmp/app.yml")
+        self.assertEqual(config.format, "yaml")
+
+    def test_explicit_format_overrides_extension(self) -> None:
+        config = Config(path="/tmp/app.toml", format="yaml")
+        self.assertEqual(config.format, "yaml")
+
+    def test_load_yaml_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.yaml"
+            path.write_text("host: localhost\nport: 5432\n", encoding="utf-8")
+            config = Config(path=path)
+            data = config.load()
+            self.assertEqual(data["host"], "localhost")
+            self.assertEqual(data["port"], 5432)
+
+    def test_save_and_load_yaml_roundtrip(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.yaml"
+            config = Config(path=path)
+            original = {"name": "myapp", "count": 7, "enabled": True}
+            config.save(original)
+            loaded = config.load()
+            self.assertEqual(loaded, original)
+
+    def test_save_yaml_creates_parent_directories(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "subdir" / "config.yaml"
+            config = Config(path=path)
+            config.save({"key": "value"})
+            self.assertTrue(path.exists())
+
+    def test_save_yaml_skips_none_values(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.yaml"
+            config = Config(path=path)
+            config.save({"host": "localhost", "port": None})
+            content = path.read_text(encoding="utf-8")
+            self.assertIn("host", content)
+            self.assertNotIn("port", content)
+
+    def test_load_yaml_validates_against_schema(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.yaml"
+            path.write_text("host: localhost\n", encoding="utf-8")
+            schema = ConfigSchema(
+                fields=[
+                    ConfigField("host", value_type=str),
+                    ConfigField("port", value_type=int),
+                ]
+            )
+            config = Config(path=path, schema=schema)
+            with self.assertRaises(ConfigValidationError):
+                config.load()
+
+    def test_load_yaml_raises_on_invalid_syntax(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.yaml"
+            path.write_text("key: [\nunclosed bracket\n", encoding="utf-8")
+            config = Config(path=path)
+            with self.assertRaises(ConfigError):
+                config.load()
+
+    def test_load_yaml_raises_when_file_missing(self) -> None:
+        config = Config(path="/nonexistent/config.yaml")
+        with self.assertRaises(ConfigError):
+            config.load()
+
+    def test_load_empty_yaml_returns_empty_dict(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.yaml"
+            path.write_text("", encoding="utf-8")
+            config = Config(path=path)
+            data = config.load()
+            self.assertEqual(data, {})
+
+    def test_save_yaml_with_nested_dict(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.yaml"
+            config = Config(path=path)
+            config.save({"database": {"host": "localhost", "port": 5432}})
+            loaded = config.load()
+            self.assertEqual(loaded["database"]["host"], "localhost")  # type: ignore[index]
+
+
+# ---------------------------------------------------------------------------
+# Config – JSON format
+# ---------------------------------------------------------------------------
+
+
+class ConfigJsonTests(unittest.TestCase):
+    def test_format_detected_from_json_extension(self) -> None:
+        config = Config(path="/tmp/app.json")
+        self.assertEqual(config.format, "json")
+
+    def test_load_json_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.json"
+            path.write_text('{"host": "localhost", "port": 5432}\n', encoding="utf-8")
+            config = Config(path=path)
+            data = config.load()
+            self.assertEqual(data["host"], "localhost")
+            self.assertEqual(data["port"], 5432)
+
+    def test_save_and_load_json_roundtrip(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.json"
+            config = Config(path=path)
+            original = {"name": "myapp", "count": 7, "enabled": True}
+            config.save(original)
+            loaded = config.load()
+            self.assertEqual(loaded, original)
+
+    def test_save_json_skips_none_values(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.json"
+            config = Config(path=path)
+            config.save({"host": "localhost", "port": None})
+            content = path.read_text(encoding="utf-8")
+            parsed = json.loads(content)
+            self.assertIn("host", parsed)
+            self.assertNotIn("port", parsed)
+
+    def test_load_json_raises_on_invalid_syntax(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.json"
+            path.write_text("{not valid json}", encoding="utf-8")
+            config = Config(path=path)
+            with self.assertRaises(ConfigError):
+                config.load()
+
+    def test_load_json_raises_when_file_missing(self) -> None:
+        config = Config(path="/nonexistent/config.json")
+        with self.assertRaises(ConfigError):
+            config.load()
+
+    def test_load_empty_json_object_returns_empty_dict(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.json"
+            path.write_text("{}\n", encoding="utf-8")
+            config = Config(path=path)
+            data = config.load()
+            self.assertEqual(data, {})
+
+    def test_save_json_output_ends_with_newline(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.json"
+            config = Config(path=path)
+            config.save({"x": 1})
+            content = path.read_text(encoding="utf-8")
+            self.assertTrue(content.endswith("\n"))
+
+    def test_load_json_validates_against_schema(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.json"
+            path.write_text('{"host": "localhost"}\n', encoding="utf-8")
+            schema = ConfigSchema(
+                fields=[
+                    ConfigField("host", value_type=str),
+                    ConfigField("port", value_type=int),
+                ]
+            )
+            config = Config(path=path, schema=schema)
+            with self.assertRaises(ConfigValidationError):
+                config.load()
+
+
+# ---------------------------------------------------------------------------
+# add_auto_init_config – YAML default
+# ---------------------------------------------------------------------------
+
+
+class AddAutoInitConfigYamlTests(unittest.TestCase):
+    def test_creates_yaml_file_with_defaults(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.yaml"
+            schema = ConfigSchema(
+                fields=[
+                    ConfigField("log_level", value_type=str, required=False, default="info"),
+                ]
+            )
+            config = Config(path=path, schema=schema)
+            data = add_auto_init_config(config)
+            self.assertTrue(path.exists())
+            self.assertEqual(data["log_level"], "info")
+
+    def test_loads_existing_yaml_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.yaml"
+            path.write_text("log_level: debug\n", encoding="utf-8")
+            schema = ConfigSchema(
+                fields=[ConfigField("log_level", value_type=str, required=False, default="info")]
+            )
+            config = Config(path=path, schema=schema)
+            data = add_auto_init_config(config)
+            self.assertEqual(data["log_level"], "debug")
+
+
+# ---------------------------------------------------------------------------
+# generate_schema_json
+# ---------------------------------------------------------------------------
+
+
+class GenerateSchemaJsonTests(unittest.TestCase):
+    def _simple_schema(self) -> ConfigSchema:
+        return ConfigSchema(
+            fields=[
+                ConfigField(
+                    "host",
+                    value_type=str,
+                    required=True,
+                    help_text="Remote host.",
+                ),
+                ConfigField(
+                    "port",
+                    value_type=int,
+                    required=False,
+                    default=8080,
+                    help_text="TCP port.",
+                ),
+            ]
+        )
+
+    def test_returns_dict(self) -> None:
+        schema = self._simple_schema()
+        result = generate_schema_json(schema)
+        self.assertIsInstance(result, dict)
+
+    def test_schema_version_field(self) -> None:
+        result = generate_schema_json(self._simple_schema())
+        self.assertEqual(result["$schema"], "https://json-schema.org/draft/2020-12/schema")
+
+    def test_type_is_object(self) -> None:
+        result = generate_schema_json(self._simple_schema())
+        self.assertEqual(result["type"], "object")
+
+    def test_properties_present(self) -> None:
+        result = generate_schema_json(self._simple_schema())
+        props = result["properties"]
+        self.assertIn("host", props)  # type: ignore[operator]
+        self.assertIn("port", props)  # type: ignore[operator]
+
+    def test_string_field_maps_to_json_string_type(self) -> None:
+        result = generate_schema_json(self._simple_schema())
+        self.assertEqual(result["properties"]["host"]["type"], "string")  # type: ignore[index]
+
+    def test_int_field_maps_to_json_integer_type(self) -> None:
+        result = generate_schema_json(self._simple_schema())
+        self.assertEqual(result["properties"]["port"]["type"], "integer")  # type: ignore[index]
+
+    def test_required_fields_listed(self) -> None:
+        result = generate_schema_json(self._simple_schema())
+        self.assertIn("host", result["required"])  # type: ignore[operator]
+
+    def test_optional_field_with_default_not_in_required(self) -> None:
+        result = generate_schema_json(self._simple_schema())
+        self.assertNotIn("port", result.get("required", []))
+
+    def test_default_value_included(self) -> None:
+        result = generate_schema_json(self._simple_schema())
+        self.assertEqual(result["properties"]["port"]["default"], 8080)  # type: ignore[index]
+
+    def test_help_text_becomes_description(self) -> None:
+        result = generate_schema_json(self._simple_schema())
+        self.assertEqual(
+            result["properties"]["host"]["description"],
+            "Remote host.",  # type: ignore[index]
+        )
+
+    def test_title_included_when_provided(self) -> None:
+        result = generate_schema_json(self._simple_schema(), title="MyApp Config")
+        self.assertEqual(result["title"], "MyApp Config")
+
+    def test_description_included_when_provided(self) -> None:
+        result = generate_schema_json(self._simple_schema(), description="App settings.")
+        self.assertEqual(result["description"], "App settings.")
+
+    def test_no_title_key_when_empty(self) -> None:
+        result = generate_schema_json(self._simple_schema())
+        self.assertNotIn("title", result)
+
+    def test_no_description_key_when_empty(self) -> None:
+        result = generate_schema_json(self._simple_schema())
+        self.assertNotIn("description", result)
+
+    def test_no_required_key_when_all_optional(self) -> None:
+        schema = ConfigSchema(
+            fields=[ConfigField("opt", value_type=str, required=False, default="x")]
+        )
+        result = generate_schema_json(schema)
+        self.assertNotIn("required", result)
+
+    def test_type_mappings_for_all_supported_types(self) -> None:
+        schema = ConfigSchema(
+            fields=[
+                ConfigField("s", value_type=str, required=False, default=""),
+                ConfigField("i", value_type=int, required=False, default=0),
+                ConfigField("f", value_type=float, required=False, default=0.0),
+                ConfigField("b", value_type=bool, required=False, default=False),
+                ConfigField("lst", value_type=list, required=False, default=None),
+                ConfigField("dct", value_type=dict, required=False, default=None),
+            ]
+        )
+        result = generate_schema_json(schema)
+        props = result["properties"]  # type: ignore[index]
+        self.assertEqual(props["s"]["type"], "string")
+        self.assertEqual(props["i"]["type"], "integer")
+        self.assertEqual(props["f"]["type"], "number")
+        self.assertEqual(props["b"]["type"], "boolean")
+        self.assertEqual(props["lst"]["type"], "array")
+        self.assertEqual(props["dct"]["type"], "object")
+
+    def test_result_is_json_serialisable(self) -> None:
+        result = generate_schema_json(self._simple_schema(), title="Test")
+        serialised = json.dumps(result)
+        self.assertIsInstance(serialised, str)
 
 
 if __name__ == "__main__":
