@@ -69,7 +69,7 @@ PYTHONPATH=src python examples/complex/pyk5l/app.py apply \
 ## Notes
 
 - The example uses static in-memory cluster data. It does not talk to a real Kubernetes API.
-- This example's list commands support `table`, `json`, and `wide` through its own handlers;
-	quickli itself does not provide JSON or YAML output rendering.
+- This example's list commands support `table`, `json`, and `wide`; table and wide rendering
+	remain example-specific, while core JSON/YAML helpers now exist in `quickli.parsers`.
 - `--verbose` prepends the active context and namespace to the output.
 - The example is intentionally minimal and focuses on CLI structure rather than cluster logic.

@@ -10,6 +10,7 @@ the application.
 - Store the public command name.
 - Store user-facing help text.
 - Store argument and option resource definitions.
+- Store optional nested subcommand resource definitions.
 - Validate the handler call signature before execution.
 - Parse command line tokens into positional arguments and option values.
 - Generate detailed help output from the registered resources.
@@ -26,6 +27,10 @@ the application.
 - Local options are parsed after the command name.
 - Repeatable options can accumulate multiple values.
 - Global options may be filtered out from the command token stream before local parsing.
+- Commands can declare nested `Subcommand` resources.
+- Subcommands inherit the same command parsing and help behavior as commands.
+- When a matching subcommand name is the next positional token, execution dispatches to that
+  subcommand with the remaining tokens.
 
 ## Future Extensions
 

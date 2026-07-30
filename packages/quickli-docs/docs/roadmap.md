@@ -29,7 +29,6 @@ reviewed before it is treated as complete.
 - configuration files with an explicit precedence model
 - shell completion generated from registered commands and options
 - a deliberate plugin loading and registration API
-- optional structured output support without coupling the core to a renderer
 - combined short flags, if they can be added without making parsing ambiguous
 
 ## How priorities are chosen

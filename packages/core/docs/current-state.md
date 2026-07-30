@@ -38,6 +38,7 @@ implemented:
   - boolean_flags
   - generated_help
   - docstring_help_fallback
+<<<<<<< HEAD
   - plugin_loading
 not_implemented:
   - standard_executable_runtime
@@ -46,6 +47,15 @@ not_implemented:
   - configuration_files
   - plugin_discovery_via_entry_points
   - core_json_or_yaml_rendering
+=======
+  - core_json_or_yaml_rendering
+  - nested_subcommands
+  - shell_completion
+  - configuration_files
+not_implemented:
+  - standard_executable_runtime
+  - plugin_loading
+>>>>>>> origin/main
   - combined_short_flags
 release_process: tag-driven
 release_please: implemented
@@ -56,8 +66,8 @@ release_version_source: core_release_tag
 It does not read `sys.argv`, print results, render process-level errors, or choose exit codes.
 The caller owns those executable-program responsibilities.
 
-The `pyk5l` example has example-specific table, JSON, and wide renderers. Those renderers do
-not add JSON or YAML output support to the core framework.
+Core JSON/YAML rendering and loading helpers are available in `quickli.parsers`. The `pyk5l`
+example still keeps its own table and wide renderers.
 
 ## Parsing Behavior Matrix
 
@@ -68,6 +78,7 @@ not add JSON or YAML output support to the core framework.
 | `run([])` without entrypoint               | Returns generated application help       | application, tests         |
 | `run([])` with entrypoint                  | Invokes entrypoint with defaults         | application, tests         |
 | Named command token                        | Dispatches to matching command           | application, tests         |
+| Nested subcommand token                    | Dispatches to matching nested subcommand | command, tests             |
 | Unknown command without entrypoint         | Raises `CommandNotFoundError`            | application                |
 | Unknown token with entrypoint              | Passes token to entrypoint               | implementation, tests      |
 | Global option around command               | Parses as global option                  | application, command specs |
@@ -111,11 +122,18 @@ define that contract separately.
 - Do not assume `Application.run()` reads `sys.argv` or behaves like a complete executable.
 - Do not assume a returned string is printed; the caller must print or otherwise use it.
 - Do not assume unknown commands already follow the approved future failure behavior.
+<<<<<<< HEAD
 - Do not assume `pyk5l` renderers are core JSON or YAML support.
 - Do not assume plugin discovery via entry points is supported; only explicit loading through
   `Application.load_plugin()` is implemented.
 - Do not assume nested subcommands, shell completion, configuration files, or combined short
   flags are supported.
+=======
+- Do not assume advanced YAML syntax is supported by the minimal core YAML parser.
+- Do not assume plugin classes, discovery, or registration APIs exist because `specs/plugin.md`
+  describes a planned direction.
+- Do not assume combined short flags are supported.
+>>>>>>> origin/main
 - Do not change `src/quickli` or `tests/` for documentation-only work.
 - Do not use release notes or the changelog to infer an API contract.
 

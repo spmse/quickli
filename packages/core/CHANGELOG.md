@@ -15,3 +15,4 @@ the corresponding GitHub release.
 ## Unreleased
 
 - Repository restructuring and release automation improvements.
+- Add core JSON/YAML rendering and loading helpers in `quickli.parsers`.

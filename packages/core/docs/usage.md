@@ -5,7 +5,7 @@
 ```python
 from pathlib import Path
 
-from quickli import Application, Argument, Option, file_path, number_range
+from quickli import Application, Argument, Option, Subcommand, file_path, number_range
 
 app = Application(
     name="demo",
@@ -92,6 +92,7 @@ The caller decides how to adapt the returned value to an executable program.
 - Options can be marked with `multiple=True` to collect repeated values.
 - Applications can define global options that are parsed before or after the command name.
 - Flags are modeled as boolean options.
+- Commands can expose nested `Subcommand` resources.
 - Calling `run([])` returns generated help text unless a root entrypoint is registered and
     can run directly.
 
@@ -154,6 +155,34 @@ def version() -> str:
 print(app.run(["version"]))
 ```
 
+## Nested Subcommands
+
+Use `Subcommand` resources when a command needs nested operations.
+
+```python
+from quickli import Application, Argument, Subcommand
+
+app = Application(name="demo")
+
+
+@app.command(
+    name="env",
+    subcommands=[
+        Subcommand(
+            name="create",
+            help_text="Creates an environment.",
+            arguments=[Argument("name")],
+            handler=lambda name: f"created:{name}",
+        )
+    ],
+)
+def env() -> str:
+    return "env"
+
+
+print(app.run(["env", "create", "dev"]))
+```
+
 ## Help Output
 
 `render_help()` builds application help from the registered resources.
@@ -186,14 +215,105 @@ Use `@app.entrypoint(...)` when the CLI does not need subcommands.
 - The entrypoint uses the same `Argument` and `Option` resources as commands.
 - Global options still work with the root entrypoint.
 
+## Configuration Files
+
+quickli includes native TOML configuration file support.
+
+Define a schema, create a `Config` object, and call `add_auto_init_config` to
+initialise the file on first run or load it on subsequent runs.
+
+```python
+from pathlib import Path
+
+from quickli import (
+    Config,
+    ConfigField,
+    ConfigSchema,
+    add_auto_init_config,
+    validate_config,
+)
+
+schema = ConfigSchema(
+    fields=[
+        ConfigField("host", value_type=str, required=False, default="localhost"),
+        ConfigField("port", value_type=int, required=False, default=8080),
+    ]
+)
+
+config = Config(path=Path.home() / ".myapp" / "config.toml", schema=schema)
+data = add_auto_init_config(config)
+
+issues = validate_config(config)
+for issue in issues:
+    print(f"[{issue.severity.upper()}] {issue.field}: {issue.message}")
+```
+
+See [config.md](config.md) for the complete configuration file guide.
+
+## Shell Completion
+
+Enable shell completion by passing `shell_completion=True` to `Application`.
+This registers a built-in `shell-completion` command that generates scripts for
+**bash**, **zsh**, and **PowerShell**.
+
+```python
+app = Application(name="myapp", shell_completion=True)
+```
+
+Generate and install a bash script:
+
+```bash
+myapp shell-completion bash >> ~/.bash_completion
+source ~/.bash_completion
+```
+
+Generate and install a zsh script:
+
+```zsh
+myapp shell-completion zsh >> ~/.zshrc
+source ~/.zshrc
+```
+
+Generate and install a PowerShell script:
+
+```powershell
+myapp shell-completion powershell >> $PROFILE
+. $PROFILE
+```
+
+See [shell-completion.md](shell-completion.md) for the full guide including standalone
+generator functions and the `SUPPORTED_SHELLS` constant.
+
 ## Scope of the Initial Scaffold
 
 The current scaffold focuses on package structure, registration, argument and option
+<<<<<<< HEAD
 resources, conversion, validation, execution, and help output, and a rudimentary plugin
 loading system.
 Nested subcommands, shell completion, configuration files, plugin discovery via package
 metadata, and a standard executable runtime remain planned or out of scope.
 JSON and YAML are not output formats provided by the core framework.
+=======
+resources, nested subcommands, conversion, validation, execution, help output, shell
+completion, and configuration files.
+Plugins and a standard executable runtime remain planned or out of scope.
+JSON and YAML rendering/loading helpers are provided through `quickli.parsers`.
+
+## JSON and YAML Helpers
+
+Use `core_json_or_yaml_rendering(...)` and `core_json_or_yaml_loading(...)` when a command
+needs structured text output or input.
+
+```python
+from quickli import core_json_or_yaml_loading, core_json_or_yaml_rendering
+
+data = core_json_or_yaml_loading("name: Ada\nroles:\n  - admin\n", format_name="yaml")
+output = core_json_or_yaml_rendering(data, format_name="json")
+```
+
+When `format_name` is omitted during loading, the helper detects JSON when payloads start
+with `{` or `[`. Otherwise, it parses the input as YAML.
+>>>>>>> origin/main
 
 ## Plugin System
 

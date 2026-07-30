@@ -33,15 +33,15 @@ It is designed to stay small, educational, and easy to learn.
 - repeatable options and repeatable flags
 - generated help output
 - docstring-based help text fallback
+- core JSON or YAML rendering and loading
+- nested subcommands
+- shell completion (bash, zsh, PowerShell)
 
 ## Not implemented
 
 - standard executable runtime
-- nested subcommands
-- shell completion
 - configuration files
 - plugin loading
-- core JSON or YAML rendering
 - combined short flags
 
 ## Source-of-truth order
