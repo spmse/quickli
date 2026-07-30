@@ -1,0 +1,68 @@
+# quiCkLI
+
+quiCkLI (`quickli`) is a minimal Python framework for building command-line interfaces.
+It is designed to stay small, educational, and easy to learn.
+
+## Canonical facts
+
+- Package and distribution name: `quickli`
+- Stylized project name: `quiCkLI`
+- License: MIT
+- Repository: https://github.com/spmse/quickli
+- Documentation site: https://spmse.github.io/quickli/
+- Status: alpha
+- Supported Python versions: 3.12, 3.13, 3.14
+
+## Core concepts
+
+- Application: the top-level CLI object that owns commands, global options, and an optional
+  root entrypoint.
+- Command: a named handler with its own arguments and options.
+- Argument: positional command input.
+- Option: named command input; boolean flags are represented as boolean options.
+- Plugin: a planned concept only; plugin loading and registration are not implemented.
+
+## Current capabilities
+
+- commandless applications through a root entrypoint
+- multi-command applications
+- positional arguments
+- global and local options
+- converter callables for arguments and options
+- validators for file paths, directory paths, positive numbers, and numeric ranges
+- repeatable options and repeatable flags
+- generated help output
+- docstring-based help text fallback
+
+## Not implemented
+
+- standard executable runtime
+- nested subcommands
+- shell completion
+- configuration files
+- plugin loading
+- core JSON or YAML rendering
+- combined short flags
+
+## Source-of-truth order
+
+1. `src/quickli`
+2. `tests/`
+3. `specs/`
+4. `docs/`
+5. `docs/adr/`
+6. `README.md`
+
+## Key references
+
+- Overview: https://github.com/spmse/quickli#readme
+- Current state: https://github.com/spmse/quickli/blob/main/packages/core/docs/current-state.md
+- Installation: https://github.com/spmse/quickli/blob/main/packages/core/docs/installation.md
+- Usage: https://github.com/spmse/quickli/blob/main/packages/core/docs/usage.md
+- Validation: https://github.com/spmse/quickli/blob/main/packages/core/docs/validation.md
+- Developer guide: https://github.com/spmse/quickli/blob/main/packages/core/docs/developer-guide.md
+- Application spec: https://github.com/spmse/quickli/blob/main/packages/core/specs/application.md
+- Command spec: https://github.com/spmse/quickli/blob/main/packages/core/specs/command.md
+- Argument spec: https://github.com/spmse/quickli/blob/main/packages/core/specs/argument.md
+- Option spec: https://github.com/spmse/quickli/blob/main/packages/core/specs/option.md
+- Plugin spec: https://github.com/spmse/quickli/blob/main/packages/core/specs/plugin.md
