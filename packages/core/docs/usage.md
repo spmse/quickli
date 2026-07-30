@@ -186,12 +186,47 @@ Use `@app.entrypoint(...)` when the CLI does not need subcommands.
 - The entrypoint uses the same `Argument` and `Option` resources as commands.
 - Global options still work with the root entrypoint.
 
+## Configuration Files
+
+quickli includes native TOML configuration file support.
+
+Define a schema, create a `Config` object, and call `add_auto_init_config` to
+initialise the file on first run or load it on subsequent runs.
+
+```python
+from pathlib import Path
+
+from quickli import (
+    Config,
+    ConfigField,
+    ConfigSchema,
+    add_auto_init_config,
+    validate_config,
+)
+
+schema = ConfigSchema(
+    fields=[
+        ConfigField("host", value_type=str, required=False, default="localhost"),
+        ConfigField("port", value_type=int, required=False, default=8080),
+    ]
+)
+
+config = Config(path=Path.home() / ".myapp" / "config.toml", schema=schema)
+data = add_auto_init_config(config)
+
+issues = validate_config(config)
+for issue in issues:
+    print(f"[{issue.severity.upper()}] {issue.field}: {issue.message}")
+```
+
+See [config.md](config.md) for the complete configuration file guide.
+
 ## Scope of the Initial Scaffold
 
 The current scaffold focuses on package structure, registration, argument and option
-resources, conversion, validation, execution, and help output.
-Plugins, nested subcommands, shell completion, configuration files, and a standard executable
-runtime remain planned or out of scope.
+resources, conversion, validation, execution, help output, and configuration files.
+Plugins, nested subcommands, shell completion, and a standard executable runtime remain
+planned or out of scope.
 JSON and YAML are not output formats provided by the core framework.
 
 ## Naming

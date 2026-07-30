@@ -45,6 +45,5 @@ It owns the command registry and dispatches explicit input tokens to a handler.
 - Command Groups and Subcommands (nested commands)
 - Nested command groups.
 - Shell completion.
-- Config-driven application setup.
 - A standard executable runtime that owns `sys.argv`, output, errors, and exit codes.
 - Plugin discovery and registration.

@@ -38,11 +38,11 @@ implemented:
   - boolean_flags
   - generated_help
   - docstring_help_fallback
+  - configuration_files
 not_implemented:
   - standard_executable_runtime
   - nested_subcommands
   - shell_completion
-  - configuration_files
   - plugin_loading
   - core_json_or_yaml_rendering
   - combined_short_flags

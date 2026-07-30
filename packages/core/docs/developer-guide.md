@@ -25,6 +25,8 @@
 - `Argument` and `Option` support conversion and validation.
 - Global options may be parsed before or after the command name.
 - Help text may come from explicit `help_text` values or handler docstrings.
+- `Config`, `ConfigField`, `ConfigSchema`, `add_auto_init_config`, and `validate_config`
+  provide native TOML configuration file handling.
 
 ## Local Workflow
 
@@ -67,6 +69,7 @@ PYTHONPATH=src python examples/complex/pyk5l/app.py get pods --verbose
 - Update `docs/usage.md` when the API shape or examples change.
 - Update `docs/validation.md` when built-in validators or validation behavior change.
 - Update the release documentation and workflow when release automation changes.
+- Update `docs/config.md` when the config API or TOML handling behavior changes.
 - Update the relevant file in `specs/` when behavior changes.
 - Add or update an ADR in `docs/adr` when a significant design decision affects future evolution.
 - Keep example READMEs aligned with the runnable code in the same folder.
