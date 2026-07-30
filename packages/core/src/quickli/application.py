@@ -7,17 +7,11 @@ from inspect import getdoc
 from typing import Callable
 
 from quickli.argument import Argument
-<<<<<<< HEAD
-from quickli.command import Command
+from quickli.command import Command, Subcommand
 from quickli.exceptions import CommandNotFoundError, CommandRegistrationError, PluginLoadError
 from quickli.option import Option
 from quickli.plugin import Plugin
-=======
-from quickli.command import Command, Subcommand
-from quickli.exceptions import CommandNotFoundError, CommandRegistrationError
-from quickli.option import Option
 from quickli.shell_completion import SUPPORTED_SHELLS
->>>>>>> origin/main
 
 
 class Application:
@@ -40,12 +34,9 @@ class Application:
             handler=lambda **_: None,
             options=self._global_options,
         )
-<<<<<<< HEAD
         self._plugins: list[Plugin] = []
-=======
         if shell_completion:
             self._register_shell_completion_command()
->>>>>>> origin/main
 
     @property
     def commands(self) -> dict[str, Command]:

@@ -287,16 +287,10 @@ generator functions and the `SUPPORTED_SHELLS` constant.
 ## Scope of the Initial Scaffold
 
 The current scaffold focuses on package structure, registration, argument and option
-<<<<<<< HEAD
-resources, conversion, validation, execution, and help output, and a rudimentary plugin
-loading system.
-Nested subcommands, shell completion, configuration files, plugin discovery via package
-metadata, and a standard executable runtime remain planned or out of scope.
-JSON and YAML are not output formats provided by the core framework.
-=======
 resources, nested subcommands, conversion, validation, execution, help output, shell
-completion, and configuration files.
-Plugins and a standard executable runtime remain planned or out of scope.
+completion, configuration files, and a rudimentary plugin loading system.
+Plugin discovery via package metadata and a standard executable runtime remain planned
+or out of scope.
 JSON and YAML rendering/loading helpers are provided through `quickli.parsers`.
 
 ## JSON and YAML Helpers
@@ -313,7 +307,6 @@ output = core_json_or_yaml_rendering(data, format_name="json")
 
 When `format_name` is omitted during loading, the helper detects JSON when payloads start
 with `{` or `[`. Otherwise, it parses the input as YAML.
->>>>>>> origin/main
 
 ## Plugin System
 
