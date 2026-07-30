@@ -215,12 +215,47 @@ Use `@app.entrypoint(...)` when the CLI does not need subcommands.
 - The entrypoint uses the same `Argument` and `Option` resources as commands.
 - Global options still work with the root entrypoint.
 
+## Shell Completion
+
+Enable shell completion by passing `shell_completion=True` to `Application`.
+This registers a built-in `shell-completion` command that generates scripts for
+**bash**, **zsh**, and **PowerShell**.
+
+```python
+app = Application(name="myapp", shell_completion=True)
+```
+
+Generate and install a bash script:
+
+```bash
+myapp shell-completion bash >> ~/.bash_completion
+source ~/.bash_completion
+```
+
+Generate and install a zsh script:
+
+```zsh
+myapp shell-completion zsh >> ~/.zshrc
+source ~/.zshrc
+```
+
+Generate and install a PowerShell script:
+
+```powershell
+myapp shell-completion powershell >> $PROFILE
+. $PROFILE
+```
+
+See [shell-completion.md](shell-completion.md) for the full guide including standalone
+generator functions and the `SUPPORTED_SHELLS` constant.
+
 ## Scope of the Initial Scaffold
 
 The current scaffold focuses on package structure, registration, argument and option
-resources, nested subcommands, conversion, validation, execution, and help output.
-Plugins, shell completion, configuration files, and a standard executable runtime remain
-planned or out of scope.
+resources, nested subcommands, conversion, validation, execution, help output, and shell
+completion.
+Plugins, configuration files, and a standard executable runtime remain planned or out of
+scope.
 JSON and YAML are not output formats provided by the core framework.
 
 ## Naming

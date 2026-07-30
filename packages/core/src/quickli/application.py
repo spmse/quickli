@@ -10,6 +10,7 @@ from quickli.argument import Argument
 from quickli.command import Command, Subcommand
 from quickli.exceptions import CommandNotFoundError, CommandRegistrationError
 from quickli.option import Option
+from quickli.shell_completion import SUPPORTED_SHELLS
 
 
 class Application:
@@ -20,6 +21,7 @@ class Application:
         name: str,
         description: str = "",
         global_options: Iterable[Option] | None = None,
+        shell_completion: bool = False,
     ) -> None:
         self.name = name
         self.description = description.strip()
@@ -31,6 +33,8 @@ class Application:
             handler=lambda **_: None,
             options=self._global_options,
         )
+        if shell_completion:
+            self._register_shell_completion_command()
 
     @property
     def commands(self) -> dict[str, Command]:
@@ -217,6 +221,60 @@ class Application:
                 lines.pop()
 
         return "\n".join(lines)
+
+    def generate_completion(self, shell: str) -> str:
+        """Generates a shell completion script for the specified shell.
+
+        Args:
+            shell: The target shell name. Supported values: ``bash``, ``zsh``,
+                ``powershell``.
+
+        Returns:
+            A completion script string ready to be sourced in the target shell.
+
+        Raises:
+            ValueError: When an unsupported shell name is provided.
+
+        Example::
+
+            app = Application(name="demo", shell_completion=True)
+            print(app.generate_completion("bash"))
+        """
+        from quickli.shell_completion import (
+            generate_bash_completion,
+            generate_powershell_completion,
+            generate_zsh_completion,
+        )
+
+        command_names = list(self._commands.keys())
+        shell_lower = shell.lower().strip()
+
+        if shell_lower == "bash":
+            return generate_bash_completion(self.name, command_names)
+        if shell_lower == "zsh":
+            command_dict = {name: cmd.help_text for name, cmd in self._commands.items()}
+            return generate_zsh_completion(self.name, command_dict)
+        if shell_lower in ("powershell", "pwsh"):
+            return generate_powershell_completion(self.name, command_names)
+        raise ValueError(
+            f"Unsupported shell: '{shell}'. Supported shells: {', '.join(SUPPORTED_SHELLS)}."
+        )
+
+    def _register_shell_completion_command(self) -> None:
+        """Registers the built-in shell-completion command on the application."""
+        supported = ", ".join(SUPPORTED_SHELLS)
+
+        def _handler(shell: str) -> str:
+            return self.generate_completion(shell)
+
+        self.register(
+            _handler,
+            name="shell-completion",
+            help_text=f"Generates a shell completion script. Supported shells: {supported}.",
+            arguments=[
+                Argument("shell", help_text=f"Target shell ({supported})."),
+            ],
+        )
 
     def _render_command_help(self, command: Command) -> str:
         usage_prefix = self.name
