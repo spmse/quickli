@@ -7,7 +7,7 @@ from inspect import getdoc
 from typing import Callable
 
 from quickli.argument import Argument
-from quickli.command import Command
+from quickli.command import Command, Subcommand
 from quickli.exceptions import CommandNotFoundError, CommandRegistrationError
 from quickli.option import Option
 from quickli.shell_completion import SUPPORTED_SHELLS
@@ -59,6 +59,7 @@ class Application:
         help_text: str = "",
         arguments: Iterable[Argument] | None = None,
         options: Iterable[Option] | None = None,
+        subcommands: Iterable[Subcommand] | None = None,
     ) -> Callable[..., object]:
         """Registers a function as a command and returns the original handler."""
         command_name = (name or handler.__name__).strip().replace("_", "-")
@@ -69,7 +70,8 @@ class Application:
             raise CommandRegistrationError(f"Command '{command_name}' is already registered.")
 
         command_options = tuple(options or ())
-        self._validate_option_overlap(command_options)
+        command_subcommands = tuple(subcommands or ())
+        self._validate_option_overlap(command_options, command_subcommands)
 
         self._commands[command_name] = Command(
             name=command_name,
@@ -77,6 +79,7 @@ class Application:
             help_text=resolved_help_text,
             arguments=tuple(arguments or ()),
             options=command_options,
+            subcommands=command_subcommands,
         )
         return handler
 
@@ -87,6 +90,7 @@ class Application:
         help_text: str = "",
         arguments: Iterable[Argument] | None = None,
         options: Iterable[Option] | None = None,
+        subcommands: Iterable[Subcommand] | None = None,
     ) -> Callable[[Callable[..., object]], Callable[..., object]]:
         """Decorator for registering commands declaratively."""
 
@@ -97,6 +101,7 @@ class Application:
                 help_text=help_text,
                 arguments=arguments,
                 options=options,
+                subcommands=subcommands,
             )
 
         return decorator
@@ -171,10 +176,10 @@ class Application:
         )
         global_tokens = [*leading_global_tokens, *trailing_global_tokens]
         _, global_keyword_arguments = self._global_option_parser.parse_options_only(global_tokens)
-        positionals, local_keyword_arguments = command.parse(local_command_args)
-        merged_keyword_arguments = dict(global_keyword_arguments)
-        merged_keyword_arguments.update(local_keyword_arguments)
-        return command.invoke(positionals, merged_keyword_arguments)
+        return command.execute_with_inherited_options(
+            local_command_args,
+            global_keyword_arguments,
+        )
 
     def render_help(self) -> str:
         """Builds a plain-text help output for the current application."""
@@ -288,13 +293,19 @@ class Application:
 
         return command_help + "\n\nGlobal Options:\n" + "\n".join(global_option_lines)
 
-    def _validate_option_overlap(self, command_options: tuple[Option, ...]) -> None:
+    def _validate_option_overlap(
+        self,
+        command_options: tuple[Option, ...],
+        subcommands: tuple[Subcommand, ...] = (),
+    ) -> None:
         global_destinations = {option.destination for option in self._global_options}
         for option in command_options:
             if option.destination in global_destinations:
                 raise CommandRegistrationError(
                     f"Option destination '{option.destination}' conflicts with a global option."
                 )
+        for subcommand in subcommands:
+            self._validate_option_overlap(subcommand.options, subcommand.subcommands)
 
     def _consume_leading_global_tokens(
         self,
@@ -390,10 +401,10 @@ class Application:
         )
         global_tokens = [*leading_global_tokens, *trailing_global_tokens]
         _, global_keyword_arguments = self._global_option_parser.parse_options_only(global_tokens)
-        positionals, local_keyword_arguments = self._entrypoint.parse(local_arguments)
-        merged_keyword_arguments = dict(global_keyword_arguments)
-        merged_keyword_arguments.update(local_keyword_arguments)
-        return self._entrypoint.invoke(positionals, merged_keyword_arguments)
+        return self._entrypoint.execute_with_inherited_options(
+            local_arguments,
+            global_keyword_arguments,
+        )
 
     def _render_entrypoint_help(self) -> str:
         if self._entrypoint is None:
