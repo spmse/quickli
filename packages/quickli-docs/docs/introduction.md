@@ -31,7 +31,7 @@ Those responsibilities remain visible in the application that uses quickli.
 
 ## A small example
 
-The following commandless application accepts a name and returns a greeting:
+The following commandless application accepts JSON or YAML text and normalizes it to JSON:
 
 <MinimalExample />
 

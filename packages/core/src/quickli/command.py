@@ -23,12 +23,14 @@ class Command:
     help_text: str = ""
     arguments: tuple[Argument, ...] = field(default_factory=tuple)
     options: tuple[Option, ...] = field(default_factory=tuple)
+    subcommands: tuple["Subcommand", ...] = field(default_factory=tuple)
 
     def __post_init__(self) -> None:
         self.name = self.name.strip().replace("_", "-")
         self.help_text = self.help_text.strip()
         self.arguments = tuple(self.arguments)
         self.options = tuple(self.options)
+        self.subcommands = tuple(self.subcommands)
         self._validate_resources()
 
     @property
@@ -48,6 +50,8 @@ class Command:
             if not argument.required:
                 argument_usage = f"[{argument_usage}]"
             parts.append(argument_usage)
+        if self.subcommands:
+            parts.append("[<subcommand>]")
 
         return " ".join(parts)
 
@@ -77,12 +81,40 @@ class Command:
         if option_lines:
             lines.extend(["", "Options:", *option_lines])
 
+        subcommand_lines = self._render_subcommand_lines()
+        if subcommand_lines:
+            lines.extend(["", "Subcommands:", *subcommand_lines])
+
         return "\n".join(lines)
 
     def execute(self, tokens: list[str]) -> object:
         """Executes the command with parsed positional arguments and options."""
+        if tokens and self.subcommands and not tokens[0].startswith("-"):
+            subcommand = self._subcommand_map().get(tokens[0])
+            if subcommand is not None:
+                return subcommand.execute(tokens[1:])
+
         positionals, keyword_arguments = self.parse(tokens)
         return self.invoke(positionals, keyword_arguments)
+
+    def execute_with_inherited_options(
+        self,
+        tokens: list[str],
+        inherited_keyword_arguments: dict[str, object | None],
+    ) -> object:
+        """Executes a command while merging inherited keyword arguments."""
+        if tokens and self.subcommands and not tokens[0].startswith("-"):
+            subcommand = self._subcommand_map().get(tokens[0])
+            if subcommand is not None:
+                return subcommand.execute_with_inherited_options(
+                    tokens[1:],
+                    inherited_keyword_arguments,
+                )
+
+        positionals, keyword_arguments = self.parse(tokens)
+        merged_keyword_arguments = dict(inherited_keyword_arguments)
+        merged_keyword_arguments.update(keyword_arguments)
+        return self.invoke(positionals, merged_keyword_arguments)
 
     def invoke(
         self,
@@ -165,6 +197,9 @@ class Command:
             if option.short_token is not None:
                 option_map[option.short_token] = option
         return option_map
+
+    def _subcommand_map(self) -> dict[str, "Subcommand"]:
+        return {subcommand.name: subcommand for subcommand in self.subcommands}
 
     def parse_options_only(
         self,
@@ -282,6 +317,10 @@ class Command:
         if len(short_names) != len(set(short_names)):
             raise CommandRegistrationError("Option short names must be unique within a command.")
 
+        subcommand_names = [subcommand.name for subcommand in self.subcommands]
+        if len(subcommand_names) != len(set(subcommand_names)):
+            raise CommandRegistrationError("Subcommand names must be unique within a command.")
+
     def _render_argument_lines(self) -> list[str]:
         lines: list[str] = []
         for argument in self.arguments:
@@ -317,6 +356,13 @@ class Command:
             if details:
                 description = f"{description} {details}"
             lines.append(f"  {label:<18}{description}")
+        return lines
+
+    def _render_subcommand_lines(self) -> list[str]:
+        lines: list[str] = []
+        for subcommand in self.subcommands:
+            description = subcommand.help_text or "No description provided."
+            lines.append(f"  {subcommand.name:<18}{description}")
         return lines
 
     def _option_value_name(self, option: Option) -> str:
@@ -358,3 +404,8 @@ class Command:
         if not details:
             return ""
         return "[" + "; ".join(details) + "]"
+
+
+@dataclass(slots=True)
+class Subcommand(Command):
+    """Represents one executable nested CLI subcommand."""

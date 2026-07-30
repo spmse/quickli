@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from quickli import Application, Argument, Option, directory_path, file_path
+from quickli import Application, Argument, Option, Subcommand, directory_path, file_path
 from quickli import number_range, positive_number
 from quickli.exceptions import CommandExecutionError, CommandNotFoundError
 from quickli.exceptions import CommandRegistrationError
@@ -357,6 +357,71 @@ class ApplicationTests(unittest.TestCase):
         result = app.run(["cat", "README.md", "--number"])
 
         self.assertEqual(result, ("README.md", True))
+
+    def test_command_with_subcommand_executes_nested_handler(self) -> None:
+        app = Application(name="demo")
+
+        @app.command(
+            subcommands=[
+                Subcommand(
+                    name="create",
+                    handler=lambda path: path,
+                    arguments=[Argument("path")],
+                )
+            ]
+        )
+        def env() -> str:
+            return "root"
+
+        result = app.run(["env", "create", "dev"])
+
+        self.assertEqual(result, "dev")
+
+    def test_subcommand_receives_global_option(self) -> None:
+        app = Application(
+            name="demo",
+            global_options=[Option("verbose", short_name="v", is_flag=True)],
+        )
+
+        @app.command(
+            subcommands=[Subcommand(name="show", handler=lambda verbose=False: verbose)],
+        )
+        def env() -> str:
+            return "root"
+
+        result = app.run(["--verbose", "env", "show"])
+
+        self.assertTrue(result)
+
+    def test_command_help_includes_subcommands(self) -> None:
+        app = Application(name="demo")
+
+        @app.command(
+            help_text="Environment commands.",
+            subcommands=[Subcommand(name="show", handler=lambda: "show", help_text="Show env.")],
+        )
+        def env() -> str:
+            return "root"
+
+        output = app.render_help()
+
+        self.assertIn("Usage: demo env [<subcommand>]", output)
+        self.assertIn("Subcommands:", output)
+        self.assertIn("show", output)
+
+    def test_duplicate_subcommand_name_raises_error(self) -> None:
+        app = Application(name="demo")
+
+        with self.assertRaises(CommandRegistrationError):
+
+            @app.command(
+                subcommands=[
+                    Subcommand(name="show", handler=lambda: "a"),
+                    Subcommand(name="show", handler=lambda: "b"),
+                ]
+            )
+            def env() -> str:
+                return "root"
 
     def test_option_with_value_is_passed_as_keyword_argument(self) -> None:
         app = Application(name="demo")
