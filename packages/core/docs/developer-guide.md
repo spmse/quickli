@@ -25,6 +25,7 @@
 - `Argument` and `Option` support conversion and validation.
 - Global options may be parsed before or after the command name.
 - Help text may come from explicit `help_text` values or handler docstrings.
+- `quickli.parsers` provides JSON/YAML rendering and loading helpers.
 
 ## Local Workflow
 

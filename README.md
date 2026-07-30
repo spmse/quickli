@@ -23,6 +23,7 @@ The Python package name is `quickli`. The stylized project name is `quiCkLI`.
 - repeatable options and repeatable flags
 - built-in validation for file paths, directory paths, positive numbers, and numeric ranges
 - docstring-based help text fallback when `help_text` is omitted
+- core JSON/YAML rendering and loading helpers in `quickli.parsers`
 
 ## Philosophies
 
@@ -169,6 +170,7 @@ PYTHONPATH=src python examples/complex/pyk5l/app.py describe pod api-7d4f5f6b89-
 - [Argument](specs/argument.md)
 - [Option](specs/option.md)
 - [Plugin](specs/plugin.md)
+- [Parser](specs/parser.md)
 
 ## Current Capabilities and Limitations
 
@@ -185,9 +187,8 @@ The current implementation provides a minimal but functional CLI framework with:
 
 The current library does not read `sys.argv`, print handler results, render process-level
 errors, or choose exit codes. A small executable wrapper must own those responsibilities.
-Nested subcommands, shell completion, configuration files, structured output as a core
-framework feature, and plugins are not implemented. The `pyk5l` example has example-specific
-table, JSON, and wide renderers; that does not add JSON or YAML output support to quickli.
+Nested subcommands, shell completion, configuration files, and plugins are not implemented.
+The `pyk5l` example still has example-specific table and wide renderers.
 
 ## Sources of Truth
 

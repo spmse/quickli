@@ -36,7 +36,8 @@ It owns the command registry and dispatches explicit input tokens to a handler.
 	generated help text.
 - `Application.run()` does not read `sys.argv`, print results, render process-level errors,
 	or choose process exit codes; those responsibilities belong to the caller.
-- The core framework does not provide JSON or YAML output rendering.
+- The core package provides JSON/YAML rendering and loading helpers through
+  `quickli.parsers`.
 - The resource must remain dependency-light and compatible with Python `3.12` to `3.14`.
 
 ## Future Extensions
