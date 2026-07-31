@@ -10,6 +10,8 @@ from dataclasses import dataclass
 
 _INTEGER_PATTERN = re.compile(r"^-?(0|[1-9][0-9]*)$")
 _FLOAT_PATTERN = re.compile(r"^-?(0|[1-9][0-9]*)\.[0-9]+$")
+
+
 @dataclass(frozen=True, slots=True)
 class _YamlLine:
     indent: int
