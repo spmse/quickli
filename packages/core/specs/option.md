@@ -18,6 +18,7 @@ An option is an optional named input that changes command behavior.
 
 - Support long-form options such as `--output value`.
 - Support `--option=value` and `-o value` forms.
+- Support combined short flags such as `-abc` when each combined short option is a flag.
 - Treat flags as boolean options that do not require a value.
 - Support conversion through callables such as `int` or `pathlib.Path`.
 - Support repeatable options through `multiple=True`.
@@ -27,7 +28,6 @@ An option is an optional named input that changes command behavior.
 
 ## Future Extensions
 
-- Combined short flags such as `-abc`.
 - Option groups and mutually exclusive sets.
 
 ## Repeatable Option Behavior

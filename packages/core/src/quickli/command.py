@@ -147,6 +147,18 @@ class Command:
                 break
 
             if token.startswith("-") and token != "-":
+                combined_options = self._resolve_combined_short_flags(token, option_map)
+                if combined_options is not None:
+                    for combined_option in combined_options:
+                        seen_options.add(combined_option.destination)
+                        if combined_option.multiple:
+                            current_value = keyword_arguments.get(combined_option.destination, 0)
+                            keyword_arguments[combined_option.destination] = int(current_value) + 1
+                        else:
+                            keyword_arguments[combined_option.destination] = True
+                    index += 1
+                    continue
+
                 option, inline_value = self._resolve_option(token, option_map)
                 seen_options.add(option.destination)
 
@@ -217,6 +229,18 @@ class Command:
             if not token.startswith("-") or token == "-":
                 break
 
+            combined_options = self._resolve_combined_short_flags(token, option_map)
+            if combined_options is not None:
+                for combined_option in combined_options:
+                    seen_options.add(combined_option.destination)
+                    if combined_option.multiple:
+                        current_value = keyword_arguments.get(combined_option.destination, 0)
+                        keyword_arguments[combined_option.destination] = int(current_value) + 1
+                    else:
+                        keyword_arguments[combined_option.destination] = True
+                index += 1
+                continue
+
             option, inline_value = self._resolve_option(token, option_map)
             seen_options.add(option.destination)
 
@@ -270,6 +294,26 @@ class Command:
             raise CommandExecutionError(f"Unknown option: {token}")
 
         return option, inline_value
+
+    def _resolve_combined_short_flags(
+        self,
+        token: str,
+        option_map: dict[str, Option],
+    ) -> list[Option] | None:
+        if token.startswith("--") or len(token) <= 2:
+            return None
+
+        combined_options: list[Option] = []
+        for short_name in token[1:]:
+            option = option_map.get(f"-{short_name}")
+            if option is None:
+                return None
+            if option.takes_value:
+                raise CommandExecutionError(
+                    f"Option '-{short_name}' requires a value and cannot be combined in '{token}'."
+                )
+            combined_options.append(option)
+        return combined_options
 
     def _ensure_required_options(self, seen_options: set[str]) -> None:
         for option in self.options:

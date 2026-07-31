@@ -46,7 +46,6 @@ implemented:
 not_implemented:
   - standard_executable_runtime
   - plugin_discovery_via_entry_points
-  - combined_short_flags
 release_process: tag-driven
 release_please: implemented
 release_version_source: core_release_tag
@@ -74,6 +73,7 @@ example still keeps its own table and wide renderers.
 | Global option around command               | Parses as global option                  | application, command specs |
 | Local option                               | Parses after command selection           | command spec               |
 | `--long value`, `--long=value`, `-s value` | Supports these forms                     | option spec                |
+| Combined short flags like `-abc`           | Supported for flag options only          | command, option specs      |
 | `--`                                       | Remaining tokens are positional          | command                    |
 | Repeated non-flag option                   | Accumulates converted values in a list   | option spec                |
 | Repeated flag                              | Accumulates occurrences as an integer    | option spec                |
@@ -115,7 +115,6 @@ define that contract separately.
 - Do not assume advanced YAML syntax is supported by the minimal core YAML parser.
 - Do not assume plugin discovery via entry points is supported; only explicit loading through
   `Application.load_plugin()` is implemented.
-- Do not assume combined short flags are supported.
 - Do not change `src/quickli` or `tests/` for documentation-only work.
 - Do not use release notes or the changelog to infer an API contract.
 
