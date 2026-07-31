@@ -7,7 +7,7 @@ description: >
 slug: building-quickli-01-motivation
 authors:
   - spmse
-date: 2026-08-06
+date: 2026-07-31
 tags: [building-quickli, meta, motivation, design, quickli, open-source]
 series:
   name: "Building quiCkLI"

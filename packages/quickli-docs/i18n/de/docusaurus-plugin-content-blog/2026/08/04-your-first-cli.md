@@ -7,7 +7,7 @@ description: >
 slug: quickli-tutorial-01-hello-world
 authors:
   - spmse
-date: 2026-08-04
+date: 2026-07-31
 tags: [tutorial, getting-started, quickli, python, cli]
 series:
   name: "Erste Schritte mit quiCkLI"

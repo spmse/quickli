@@ -3,7 +3,6 @@ title: "Introducing quiCkLI"
 description: "What quiCkLI is, who it is for, and what to expect from this blog."
 authors: [spmse]
 date: 2026-07-31
-draft: true
 tags: [general, quickli, introduction]
 keywords: [quickli, python, cli, command-line, introduction]
 ---

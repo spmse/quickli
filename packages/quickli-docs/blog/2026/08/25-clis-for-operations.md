@@ -2,8 +2,7 @@
 title: "Why CLIs Still Matter for Operations"
 description: "Why system administration, automation, DevOps, and SRE continue to rely on command-line tools."
 authors: [spmse]
-date: 2026-08-25
-draft: true
+date: 2026-07-31
 tags: [general, quickli, cli, devops, sre, automation]
 keywords: [cli, system administration, automation, devops, sre]
 ---

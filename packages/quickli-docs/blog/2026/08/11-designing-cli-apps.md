@@ -2,8 +2,7 @@
 title: "Getting Started with quiCkLI: Designing CLI Applications"
 description: "The challenges, opportunities, and caveats involved in designing a CLI application."
 authors: [spmse]
-date: 2026-08-11
-draft: true
+date: 2026-07-31
 tags: [getting-started, quickli, cli, design]
 keywords: [cli design, python cli, quickli, command-line applications]
 ---

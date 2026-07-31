@@ -2,8 +2,7 @@
 title: "Why CLIs Still Matter for AI Agents"
 description: "How explicit command-line interfaces can give AI agents useful, inspectable tools."
 authors: [spmse]
-date: 2026-08-27
-draft: true
+date: 2026-07-31
 tags: [general, quickli, cli, ai, agents]
 keywords: [cli, ai agents, tool use, automation, quickli]
 ---
