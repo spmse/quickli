@@ -1,0 +1,126 @@
+{
+  "homepage.hero.eyebrow": {
+    "message": "Ein kleiner Ort, um CLI-Design zu lernen",
+    "description": "Eyebrow label above the hero title on the homepage"
+  },
+  "homepage.hero.title": {
+    "message": "Erstelle Kommandozeilen-Tools, die du verstehst.",
+    "description": "Main hero title on the homepage"
+  },
+  "homepage.hero.subtitle": {
+    "message": "{title} ist ein minimales Lern-Framework für Python-Kommandozeilenanwendungen.",
+    "description": "Hero subtitle on the homepage"
+  },
+  "homepage.hero.button.docs": {
+    "message": "Zur Dokumentation",
+    "description": "Primary CTA button on the homepage hero"
+  },
+  "homepage.hero.button.pypi": {
+    "message": "Von PyPI installieren",
+    "description": "Secondary CTA button linking to PyPI"
+  },
+  "homepage.hero.button.source": {
+    "message": "Quellcode ansehen",
+    "description": "Secondary CTA button linking to GitHub"
+  },
+  "homepage.overview.eyebrow": {
+    "message": "Lernen durch Bauen",
+    "description": "Eyebrow above the overview section heading"
+  },
+  "homepage.overview.heading": {
+    "message": "Das Wesentliche, ohne den Lärm.",
+    "description": "Overview section heading"
+  },
+  "homepage.overview.description": {
+    "message": "quickli hält die Kernideen sichtbar: registriere einen Handler, beschreibe seine Eingaben und dispatche explizite Kommandozeilen-Token.",
+    "description": "Overview section description"
+  },
+  "homepage.overview.card1.heading": {
+    "message": "Kleine Bausteine",
+    "description": "Heading for the first feature card"
+  },
+  "homepage.overview.card1.description": {
+    "message": "Lerne Application, Command, Argument und Option – ein Konzept nach dem anderen.",
+    "description": "Description for the first feature card"
+  },
+  "homepage.overview.card2.heading": {
+    "message": "Lesbares Python",
+    "description": "Heading for the second feature card"
+  },
+  "homepage.overview.card2.description": {
+    "message": "Verwende Dekoratoren und normale Funktionen, um Tools zu erstellen, die leicht zu verstehen sind.",
+    "description": "Description for the second feature card"
+  },
+  "homepage.overview.card3.heading": {
+    "message": "Raum zum Erkunden",
+    "description": "Heading for the third feature card"
+  },
+  "homepage.overview.card3.description": {
+    "message": "Beginne mit einem kleinen Beispiel und füge dann Konvertierung, Validierung und Unterbefehle hinzu.",
+    "description": "Description for the third feature card"
+  },
+  "homepage.nextStep.eyebrow": {
+    "message": "Neu bei quickli?",
+    "description": "Eyebrow above the next-step call to action"
+  },
+  "homepage.nextStep.heading": {
+    "message": "Beginne mit der Dokumentation.",
+    "description": "Heading for the next-step section"
+  },
+  "homepage.nextStep.description": {
+    "message": "Folge dem Kurzleitfaden, führe das Beispiel aus und nutze den Quellcode als Referenz.",
+    "description": "Description for the next-step section"
+  },
+  "homepage.nextStep.button": {
+    "message": "Einleitung lesen",
+    "description": "Button that links to the introduction page"
+  },
+  "homepage.meta.description": {
+    "message": "Ein minimales Python-Framework für Kommandozeilenanwendungen. Lerne CLI-Design mit kleinen, lesbaren Beispielen.",
+    "description": "Homepage meta description for SEO"
+  },
+  "component.AddToProject.eyebrow": {
+    "message": "Zum Projekt hinzufügen",
+    "description": "Eyebrow label for the AddToProject section"
+  },
+  "component.AddToProject.heading": {
+    "message": "Starte dort, wo du bist.",
+    "description": "Heading for the AddToProject section"
+  },
+  "component.AddToProject.description": {
+    "message": "Füge quickli einem bestehenden Git-Projekt hinzu oder erstelle ein neues Projekt zum Ausprobieren.",
+    "description": "Description for the AddToProject section"
+  },
+  "component.AddToProject.existingProject.label": {
+    "message": "Bestehendes Projekt",
+    "description": "Label for the existing project path"
+  },
+  "component.AddToProject.existingProject.heading": {
+    "message": "quickli zu Git hinzufügen",
+    "description": "Heading for the existing project path"
+  },
+  "component.AddToProject.existingProject.description": {
+    "message": "Behalte dein aktuelles Projekt und installiere quickli in seiner virtuellen Umgebung.",
+    "description": "Description for the existing project path"
+  },
+  "component.AddToProject.newProject.label": {
+    "message": "Neues Projekt",
+    "description": "Label for the new project path"
+  },
+  "component.AddToProject.newProject.heading": {
+    "message": "Workspace initialisieren",
+    "description": "Heading for the new project path"
+  },
+  "component.AddToProject.newProject.description": {
+    "message": "Erstelle ein kleines Git-Projekt und füge quickli als erste Abhängigkeit hinzu.",
+    "description": "Description for the new project path"
+  },
+  "component.AddToProject.note": {
+    "message": "Lieber eine geführte Einführung? Weiter zu",
+    "description": "Note before the getting-started link"
+  },
+  "component.AddToProject.note.link": {
+    "message": "dem Einstiegsleitfaden",
+    "description": "Link label for the getting-started guide"
+  }
+}

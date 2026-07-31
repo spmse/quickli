@@ -1,0 +1,14 @@
+{
+  "navbar.item.label.Docs": {
+    "message": "Dokumentation",
+    "description": "Navbar label for the Docs link"
+  },
+  "navbar.item.label.Blog": {
+    "message": "Blog",
+    "description": "Navbar label for the Blog link"
+  },
+  "navbar.item.label.GitHub": {
+    "message": "GitHub",
+    "description": "Navbar label for the GitHub link"
+  }
+}

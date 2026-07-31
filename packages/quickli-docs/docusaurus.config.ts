@@ -38,15 +38,20 @@ const config: Config = {
   },
   themes: ['@docusaurus/theme-mermaid'],
 
-  // i18n — English is the default; additional locales can be added here later.
+  // i18n — English is the default; German is the first additional locale.
   i18n: {
     defaultLocale: 'en',
-    locales: ['en'],
+    locales: ['en', 'de'],
     localeConfigs: {
       en: {
         label: 'English',
         direction: 'ltr',
         htmlLang: 'en-US',
+      },
+      de: {
+        label: 'Deutsch',
+        direction: 'ltr',
+        htmlLang: 'de-DE',
       },
     },
   },
@@ -66,6 +71,14 @@ const config: Config = {
           blogDescription: 'News, guides, and deep dives from the quiCkLI project.',
           postsPerPage: 10,
           routeBasePath: 'blog',
+          blogSidebarTitle: 'All posts',
+          blogSidebarCount: 'ALL',
+          feedOptions: {
+            type: ['rss', 'atom'],
+            title: 'quiCkLI Blog',
+            description: 'News, tutorials, and deep dives from the quiCkLI project.',
+            copyright: `Copyright © ${new Date().getFullYear()} quiCkLI contributors.`,
+          },
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -76,6 +89,14 @@ const config: Config = {
 
   themeConfig: {
     image: 'img/docusaurus-social-card.jpg',
+
+    metadata: [
+      { name: 'keywords', content: 'quickli, python, cli, command-line, framework, tutorial, learning' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:description', content: 'A minimal Python framework for building command-line interfaces.' },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:site_name', content: 'quiCkLI' },
+    ],
 
     colorMode: {
       respectPrefersColorScheme: true,

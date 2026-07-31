@@ -1,0 +1,14 @@
+{
+  "link.item.label.GitHub": {
+    "message": "GitHub",
+    "description": "Footer link label for GitHub"
+  },
+  "link.item.label.Issues": {
+    "message": "Issues",
+    "description": "Footer link label for Issues"
+  },
+  "link.item.label.Changelog": {
+    "message": "Changelog",
+    "description": "Footer link label for Changelog"
+  }
+}
