@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/spmse/quickli/compare/docs-v0.1.1...docs-v0.2.0) (2026-07-31)
+
+
+### Features
+
+* **docs:** update docs ([#37](https://github.com/spmse/quickli/issues/37)) ([8f1dfd5](https://github.com/spmse/quickli/commit/8f1dfd58a8fe9c4a8620b0eea3dfdd3d963c74a7))
+
 ## [0.1.1](https://github.com/spmse/quickli/compare/docs-v0.1.0...docs-v0.1.1) (2026-07-31)
 
 
