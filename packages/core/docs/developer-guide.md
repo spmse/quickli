@@ -49,8 +49,6 @@ PYTHONPATH=src python examples/complex/pyk5l/app.py get pods --verbose
 
 ## Planned Work
 
-- Plugin support is planned but not implemented. Design it from a written proposal before
-	implementation.
 - A standard executable runtime is planned separately. `Application.run()` currently accepts
 	explicit tokens and returns handler results; callers own `sys.argv`, output, and exit codes.
 - Release Please maintains independent releases for the core library and documentation site.

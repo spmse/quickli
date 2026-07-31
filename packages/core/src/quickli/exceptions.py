@@ -17,6 +17,10 @@ class CommandExecutionError(CLIError):
     """Raised when a command cannot be executed with the provided input."""
 
 
+class PluginLoadError(CLIError):
+    """Raised when a plugin cannot be loaded or registered successfully."""
+
+
 class ConfigError(CLIError):
     """Base exception for configuration file errors."""
 

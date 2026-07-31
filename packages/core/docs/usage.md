@@ -288,8 +288,9 @@ generator functions and the `SUPPORTED_SHELLS` constant.
 
 The current scaffold focuses on package structure, registration, argument and option
 resources, nested subcommands, conversion, validation, execution, help output, shell
-completion, and configuration files.
-Plugins and a standard executable runtime remain planned or out of scope.
+completion, configuration files, and a rudimentary plugin loading system.
+Plugin discovery via package metadata and a standard executable runtime remain planned
+or out of scope.
 JSON and YAML rendering/loading helpers are provided through `quickli.parsers`.
 
 ## JSON and YAML Helpers
@@ -306,6 +307,45 @@ output = core_json_or_yaml_rendering(data, format_name="json")
 
 When `format_name` is omitted during loading, the helper detects JSON when payloads start
 with `{` or `[`. Otherwise, it parses the input as YAML.
+
+## Plugin System
+
+Plugins extend an application without modifying the core package.  A plugin subclasses
+`quickli.Plugin`, which defines a three-method contract: `name`, `description`, and
+`register`.  Load a plugin by calling `Application.load_plugin(plugin)`.
+
+```python
+import quickli
+
+
+class VersionPlugin(quickli.Plugin):
+    @property
+    def name(self) -> str:
+        return "version-plugin"
+
+    @property
+    def description(self) -> str:
+        return "Adds a version command."
+
+    def register(self, application: quickli.Application) -> None:
+        @application.command(help_text="Prints the application version.")
+        def version() -> str:
+            return "1.0.0"
+
+
+app = quickli.Application(name="demo")
+app.load_plugin(VersionPlugin())
+print(app.run(["version"]))  # 1.0.0
+```
+
+`Application.plugins` returns a copy of the loaded plugins list.
+
+`PluginLoadError` is raised when:
+- the plugin name is empty,
+- a plugin with the same name is already loaded,
+- or the plugin's `register` method fails.
+
+See `specs/plugin.md` for the full plugin contract.
 
 ## Naming
 
