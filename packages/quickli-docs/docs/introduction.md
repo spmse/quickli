@@ -36,3 +36,10 @@ The following commandless application accepts JSON or YAML text and normalizes i
 <MinimalExample />
 
 The next page shows how to install quickli and run a complete example.
+
+## Where to go next
+
+Read [quiCkLI Concepts](./concepts/quickli-concepts.md) to understand how
+`Application`, `Command`, `Argument`, `Option`, and `Plugin` relate to each other.
+
+See the [development roadmap](./roadmap.md) for the project's planned next steps.

@@ -3,25 +3,31 @@ title: "Authoring Your First quiCkLI Plugin"
 description: "A step-by-step guide to building, testing, and distributing a quiCkLI plugin."
 slug: authoring-a-quickli-plugin
 authors:
-  - name: quiCkLI contributors
-    url: https://github.com/spmse/quickli
-date: 2025-07-15
+  - spmse
+date: 2026-09-22
 draft: true
-tags: [plugins, tutorial, quickli]
+tags: [general, plugins, tutorial, quickli]
 ---
 
 This post walks you through building a small but complete `quickli` plugin from scratch,
 including the Python package structure, writing tests, and the steps needed to distribute
 it so others can install it with `pip`.
 
-<!-- truncate -->
+:::caution
+
+Core supports explicit in-process plugin loading. It does not automatically discover
+installed plugins through Python package entry points.
+
+:::
+
+{/* truncate */}
 
 ## Before you start
 
 Make sure you have `quickli` installed:
 
 ```bash
-pip install quickli
+$ pip install quickli
 ```
 
 You should also be familiar with the `quickli` [plugin API](/blog/quickli-plugin-system)
@@ -163,7 +169,7 @@ if __name__ == "__main__":
 Run the tests:
 
 ```bash
-PYTHONPATH=src python -m unittest discover -s tests -v
+$ PYTHONPATH=src python -m unittest discover -s tests -v
 ```
 
 ## Step 4: Use the plugin in an application
@@ -186,15 +192,15 @@ Running `python app.py hello Ada --uppercase` produces `HELLO ADA`.
 Once the plugin is ready, build and upload it:
 
 ```bash
-pip install build twine
-python -m build
-twine upload dist/*
+$ pip install build twine
+$ python -m build
+$ twine upload dist/*
 ```
 
 Users can then install and use it:
 
 ```bash
-pip install quickli-hello
+$ pip install quickli-hello
 ```
 
 ## Naming conventions

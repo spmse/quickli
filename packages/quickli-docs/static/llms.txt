@@ -20,7 +20,7 @@ It is designed to stay small, educational, and easy to learn.
 - Command: a named handler with its own arguments and options.
 - Argument: positional command input.
 - Option: named command input; boolean flags are represented as boolean options.
-- Plugin: a planned concept only; plugin loading and registration are not implemented.
+- Plugin: an extension API for registering commands with an application.
 
 ## Current capabilities
 
@@ -34,14 +34,13 @@ It is designed to stay small, educational, and easy to learn.
 - generated help output
 - docstring-based help text fallback
 - core JSON or YAML rendering and loading
-- nested subcommands
+- plugin loading and registration
 - shell completion (bash, zsh, PowerShell)
 
 ## Not implemented
 
 - standard executable runtime
 - configuration files
-- plugin loading
 - combined short flags
 
 ## Source-of-truth order

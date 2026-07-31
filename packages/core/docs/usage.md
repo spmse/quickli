@@ -291,22 +291,24 @@ resources, nested subcommands, conversion, validation, execution, help output, s
 completion, configuration files, and a rudimentary plugin loading system.
 Plugin discovery via package metadata and a standard executable runtime remain planned
 or out of scope.
-JSON and YAML rendering/loading helpers are provided through `quickli.parsers`.
+Format-specific JSON, YAML, and TOML rendering/loading helpers are provided through
+`quickli.parsers`.
 
-## JSON and YAML Helpers
+## Format-specific Parser Helpers
 
-Use `core_json_or_yaml_rendering(...)` and `core_json_or_yaml_loading(...)` when a command
+Use `render_json(...)`, `render_yaml(...)`, `render_toml(...)` and their matching `load_*`
+functions when a command
 needs structured text output or input.
 
 ```python
-from quickli import core_json_or_yaml_loading, core_json_or_yaml_rendering
+from quickli import load_yaml, render_json
 
-data = core_json_or_yaml_loading("name: Ada\nroles:\n  - admin\n", format_name="yaml")
-output = core_json_or_yaml_rendering(data, format_name="json")
+data = load_yaml("name: Ada\nroles:\n  - admin\n")
+output = render_json(data)
 ```
 
-When `format_name` is omitted during loading, the helper detects JSON when payloads start
-with `{` or `[`. Otherwise, it parses the input as YAML.
+Each parser function accepts one explicit format. Use the JSON, YAML, or TOML function that
+matches the data you are reading or writing; there is no format-detecting parser entrypoint.
 
 ## Plugin System
 

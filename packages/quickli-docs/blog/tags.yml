@@ -1,0 +1,179 @@
+general:
+  label: General
+  permalink: /general
+  description: quiCkLI concepts, architecture, and plugin-system posts.
+
+getting-started:
+  label: Getting Started
+  permalink: /getting-started
+  description: Beginner tutorials for building applications with quiCkLI.
+
+building-quickli:
+  label: Building quiCkLI
+  permalink: /building-quickli
+  description: Design decisions, development process, and future plans for quiCkLI.
+
+quickli:
+  label: quickli
+  permalink: /quickli
+  description: Posts about the quiCkLI project and its purpose.
+
+introduction:
+  label: introduction
+  permalink: /introduction
+  description: Introductions to quiCkLI and the blog.
+
+tutorial:
+  label: tutorial
+  permalink: /tutorial
+  description: Practical, step-by-step quiCkLI tutorials.
+
+python:
+  label: python
+  permalink: /python
+  description: Python techniques and implementation choices.
+
+cli:
+  label: cli
+  permalink: /cli
+  description: Command-line interface design and usage.
+
+design:
+  label: design
+  permalink: /design
+  description: Design considerations for CLI applications and frameworks.
+
+validators:
+  label: validators
+  permalink: /validators
+  description: Input validation and reliable command-line boundaries.
+
+file-path:
+  label: file-path
+  permalink: /file-path
+  description: Reading files and handling filesystem paths.
+
+multi-command:
+  label: multi-command
+  permalink: /multi-command
+  description: Applications that expose multiple related commands.
+
+commands:
+  label: commands
+  permalink: /commands
+  description: Command modeling and command-line structure.
+
+plugins:
+  label: plugins
+  permalink: /plugins
+  description: The quiCkLI plugin system and plugin development.
+
+api:
+  label: api
+  permalink: /api
+  description: Public API design and extension points.
+
+meta:
+  label: meta
+  permalink: /meta
+  description: Reflections on building and maintaining quiCkLI.
+
+motivation:
+  label: motivation
+  permalink: /motivation
+  description: Reasons for creating quiCkLI and exploring CLI design.
+
+target-audience:
+  label: target-audience
+  permalink: /target-audience
+  description: People and use cases quiCkLI is designed to serve.
+
+open-source:
+  label: open-source
+  permalink: /open-source
+  description: Open-source development and project collaboration.
+
+education:
+  label: education
+  permalink: /education
+  description: Educational goals and learning-oriented project decisions.
+
+ai:
+  label: ai
+  permalink: /ai
+  description: Artificial intelligence in CLI use and software development.
+
+development:
+  label: development
+  permalink: /development
+  description: Software development practices and workflow.
+
+roadmap:
+  label: roadmap
+  permalink: /roadmap
+  description: Future plans and possible directions for quiCkLI.
+
+lessons-learned:
+  label: lessons-learned
+  permalink: /lessons-learned
+  description: Lessons learned while building the project.
+
+agents:
+  label: agents
+  permalink: /agents
+  description: AI agents and their interaction with command-line tools.
+
+devops:
+  label: devops
+  permalink: /devops
+  description: CLI use in DevOps practices and automation.
+
+sre:
+  label: sre
+  permalink: /sre
+  description: CLI use in site reliability engineering.
+
+automation:
+  label: automation
+  permalink: /automation
+  description: Automation workflows built around command-line tools.
+
+architecture:
+  label: architecture
+  permalink: /architecture
+  description: Architectural comparisons and structural design.
+
+comparison:
+  label: comparison
+  permalink: /comparison
+  description: Comparisons between CLI technologies and approaches.
+
+tooling:
+  label: tooling
+  permalink: /tooling
+  description: Tools and frameworks that support CLI development.
+
+developer-experience:
+  label: developer-experience
+  permalink: /developer-experience
+  description: Developer experience when creating and maintaining CLIs.
+
+argparse:
+  label: argparse
+  permalink: /argparse
+  description: Python's argparse library and its trade-offs.
+
+click:
+  label: click
+  permalink: /click
+  description: The Click Python CLI framework and its trade-offs.
+
+go:
+  label: go
+  permalink: /go
+  description: Go as an option for CLI application development.
+
+rust:
+  label: rust
+  permalink: /rust
+  description: Rust as an option for CLI application development.

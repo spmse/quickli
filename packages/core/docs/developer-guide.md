@@ -25,7 +25,7 @@
 - `Argument` and `Option` support conversion and validation.
 - Global options may be parsed before or after the command name.
 - Help text may come from explicit `help_text` values or handler docstrings.
-- `quickli.parsers` provides JSON/YAML rendering and loading helpers.
+- `quickli.parsers` provides explicit JSON, YAML, and TOML rendering and loading helpers.
 - `Config`, `ConfigField`, `ConfigSchema`, `add_auto_init_config`, `validate_config`,
   and `generate_schema_json` provide multi-format configuration file handling.
   YAML is the recommended default format; JSON and TOML are also supported.
