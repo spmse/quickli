@@ -8,7 +8,6 @@ slug: quickli-tutorial-02-file-tools
 authors:
   - spmse
 date: 2026-08-13
-draft: true
 tags: [tutorial, quickli, python, cli, validators, file-path]
 series:
   name: "Erste Schritte mit quiCkLI"
@@ -19,7 +18,7 @@ keywords: [quickli, python cli, validatoren, file_path, globale optionen, tutori
 import BlogSeriesNavigation from '@site/src/components/BlogSeriesNavigation';
 import { blogSeries } from '@site/src/data/blogSeries';
 
-In [Teil 1](/de/blog/quickli-tutorial-01-hello-world) hast du ein Begrüßungstool mit
+In [Teil 1](/blog/quickli-tutorial-01-hello-world) hast du ein Begrüßungstool mit
 einem einzigen Argument und einem Schalter gebaut. In diesem Artikel kommen zwei neue
 Konzepte dazu: **Validatoren**, die ungültige Eingaben abfangen, bevor dein Handler
 ausgeführt wird, und **globale Optionen**, die für jede Anweisung in einer Anwendung
@@ -166,4 +165,4 @@ if __name__ == "__main__":
 Der abschließende Artikel baut eine kubectl-ähnliche Multi-Command-Anwendung mit
 `@app.command`, eigenen Validator-Factories und `CommandExecutionError`.
 
-📖 [Teil 3: Multi-Command-Anwendungen →](/de/blog/quickli-tutorial-03-multi-command-cli)
+📖 [Teil 3: Multi-Command-Anwendungen →](/blog/quickli-tutorial-03-multi-command-cli)

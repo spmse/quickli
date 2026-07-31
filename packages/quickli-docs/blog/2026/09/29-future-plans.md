@@ -8,7 +8,6 @@ slug: building-quickli-04-future-plans
 authors:
   - spmse
 date: 2026-09-29
-draft: true
 tags: [building-quickli, meta, roadmap, lessons-learned, quickli, open-source]
 series:
   name: "Building quiCkLI"

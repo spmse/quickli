@@ -8,7 +8,6 @@ slug: building-quickli-01-motivation
 authors:
   - spmse
 date: 2026-08-06
-draft: true
 tags: [building-quickli, meta, motivation, design, quickli, open-source]
 series:
   name: "quiCkLI entwickeln"
@@ -72,4 +71,4 @@ Diese Frage hat `quickli` klein gehalten.
 Der nächste Beitrag in dieser Reihe befasst sich damit, für wen `quiCkLI` gedacht ist  -
 die Zielgruppe und was ich hoffe, dass sie aus der Verwendung mitnehmen.
 
-📖 [Teil 2: Für wen ist quiCkLI? →](/de/blog/building-quickli-02-target-audience)
+📖 [Teil 2: Für wen ist quiCkLI? →](/blog/building-quickli-02-target-audience)

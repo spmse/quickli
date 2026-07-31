@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/spmse/quickli/compare/docs-v0.1.0...docs-v0.1.1) (2026-07-31)
+
+
+### Bug Fixes
+
+* fix ci release automation ([#33](https://github.com/spmse/quickli/issues/33)) ([3ff003d](https://github.com/spmse/quickli/commit/3ff003d2cc6ec7165bac8287533b7b17f484b7c0))
+
 ## [0.1.0](https://github.com/spmse/quickli/compare/docs-v0.0.1...docs-v0.1.0) (2026-07-31)
 
 

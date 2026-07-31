@@ -8,7 +8,6 @@ slug: building-quickli-04-future-plans
 authors:
   - spmse
 date: 2026-09-29
-draft: true
 tags: [building-quickli, meta, roadmap, lessons-learned, quickli, open-source]
 series:
   name: "quiCkLI entwickeln"
@@ -28,7 +27,7 @@ Bevorstehende für das Projekt blicken und darauf, was ich aus dem Bau gelernt h
 
 ## Was geplant ist
 
-Die [Entwicklungs-Roadmap](/de/docs/roadmap) beschreibt die kurz- und mittelfristigen
+Die [Entwicklungs-Roadmap](/docs/roadmap) beschreibt die kurz- und mittelfristigen
 Prioritäten im Detail. Das Gesamtbild:
 
 **Kurzfristig:**

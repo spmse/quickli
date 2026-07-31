@@ -7,7 +7,6 @@ slug: building-quickli-03-ai-in-development
 authors:
   - spmse
 date: 2026-09-24
-draft: true
 tags: [building-quickli, meta, ai, development, quickli, open-source]
 series:
   name: "Building quiCkLI"

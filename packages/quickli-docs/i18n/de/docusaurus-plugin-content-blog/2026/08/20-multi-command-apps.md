@@ -8,7 +8,6 @@ slug: quickli-tutorial-03-multi-command-cli
 authors:
   - spmse
 date: 2026-08-20
-draft: true
 tags: [tutorial, quickli, python, cli, multi-command, commands]
 series:
   name: "Erste Schritte mit quiCkLI"
@@ -132,6 +131,6 @@ app = Application(
 | `Option` | Benannter Input; Schalter, wiederholbare Werte, Konverter, Validatoren |
 | `Plugin` | Wiederverwendbares Befehls-Bundle, das in eine Anwendung geladen wird |
 
-Lies die [Konzept-Referenz](/de/docs/concepts/quickli-concepts) für die vollständige
-API-Dokumentation oder erkunde die [Implementierungsleitfäden](/de/docs/guides) für
+Lies die [Konzept-Referenz](/docs/concepts/quickli-concepts) für die vollständige
+API-Dokumentation oder erkunde die [Implementierungsleitfäden](/docs/guides) für
 schrittweise Anleitungen.

@@ -8,7 +8,6 @@ slug: building-quickli-02-target-audience
 authors:
   - spmse
 date: 2026-08-18
-draft: true
 tags: [building-quickli, meta, target-audience, design, quickli]
 series:
   name: "Building quiCkLI"
