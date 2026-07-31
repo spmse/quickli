@@ -32,7 +32,7 @@ jobs:
     needs: release-please
     if: needs.release-please.outputs.releases_created == 'true'
     runs-on: ubuntu-latest
-    environment: release
+    environment: pypi
 
     permissions:
       contents: write
@@ -91,16 +91,16 @@ jobs:
           print-hash: true
           skip-existing: true
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.17.0
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: pnpm
-
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11.17.0
 
       - name: Install documentation dependencies
         run: pnpm install --frozen-lockfile
