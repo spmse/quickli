@@ -577,6 +577,54 @@ class ApplicationTests(unittest.TestCase):
 
         self.assertEqual(result, 3)
 
+    def test_combined_short_flags_are_parsed_for_local_options(self) -> None:
+        app = Application(name="demo")
+
+        @app.command(
+            arguments=[Argument("path")],
+            options=[
+                Option("verbose", short_name="v", is_flag=True),
+                Option("number", short_name="n", is_flag=True),
+            ],
+        )
+        def show(path: str, verbose: bool = False, number: bool = False) -> tuple[str, bool, bool]:
+            return path, verbose, number
+
+        result = app.run(["show", "-vn", "README.md"])
+
+        self.assertEqual(result, ("README.md", True, True))
+
+    def test_combined_short_repeatable_flags_count_occurrences(self) -> None:
+        app = Application(name="demo")
+
+        @app.command(options=[Option("verbose", short_name="v", is_flag=True, multiple=True)])
+        def show(verbose: int = 0) -> int:
+            return verbose
+
+        result = app.run(["show", "-vvv"])
+
+        self.assertEqual(result, 3)
+
+    def test_combined_short_flags_reject_value_options(self) -> None:
+        app = Application(name="demo")
+
+        @app.command(
+            options=[
+                Option("verbose", short_name="v", is_flag=True),
+                Option("encoding", short_name="e"),
+            ]
+        )
+        def show(verbose: bool = False, encoding: str | None = None) -> tuple[bool, str | None]:
+            return verbose, encoding
+
+        with self.assertRaises(CommandExecutionError) as context:
+            app.run(["show", "-ve"])
+
+        self.assertEqual(
+            str(context.exception),
+            "Option '-e' requires a value and cannot be combined in '-ve'.",
+        )
+
     def test_global_option_is_parsed_before_command(self) -> None:
         app = Application(
             name="demo",
@@ -590,6 +638,20 @@ class ApplicationTests(unittest.TestCase):
         result = app.run(["--verbose", "show", "README.md"])
 
         self.assertEqual(result, ("README.md", True))
+
+    def test_combined_short_flags_are_parsed_for_global_options(self) -> None:
+        app = Application(
+            name="demo",
+            global_options=[Option("verbose", short_name="v", is_flag=True, multiple=True)],
+        )
+
+        @app.command()
+        def show(verbose: int = 0) -> int:
+            return verbose
+
+        result = app.run(["-vv", "show"])
+
+        self.assertEqual(result, 2)
 
     def test_repeatable_global_option_collects_values(self) -> None:
         app = Application(

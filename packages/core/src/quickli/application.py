@@ -469,6 +469,16 @@ class Application:
         token: str,
         option_map: dict[str, Option],
     ) -> tuple[Option | None, str | None]:
+        if token.startswith("-") and not token.startswith("--") and len(token) > 2:
+            first_option: Option | None = None
+            for short_name in token[1:]:
+                option = option_map.get(f"-{short_name}")
+                if option is None or option.takes_value:
+                    return None, None
+                if first_option is None:
+                    first_option = option
+            return first_option, None
+
         option_token = token
         inline_value: str | None = None
         if token.startswith("--") and "=" in token:

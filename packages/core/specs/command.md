@@ -27,6 +27,7 @@ the application.
 - Local options are parsed after the command name.
 - Repeatable options can accumulate multiple values.
 - Global options may be filtered out from the command token stream before local parsing.
+- Combined short flags are parsed when all short options in the token are flags.
 - Commands can declare nested `Subcommand` resources.
 - Subcommands inherit the same command parsing and help behavior as commands.
 - When a matching subcommand name is the next positional token, execution dispatches to that
@@ -37,4 +38,3 @@ the application.
 - Async command execution.
 - Structured command result objects.
 - Repeated arguments.
-- Combined short flags.
