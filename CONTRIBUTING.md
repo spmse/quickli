@@ -65,5 +65,9 @@ site. Merging a release pull request creates the version tag and GitHub release.
 workflow validates both packages, attaches core-library and documentation release evidence, and
 deploys the documentation site to GitHub Pages.
 
+Use `feat(docs):` for new documentation content and `fix(docs):` for documentation corrections.
+Release Please does not treat the bare `docs:` conventional-commit type as a release-triggering
+change, so using it alone will not create a documentation release.
+
 Maintain package-specific release notes in [packages/core/CHANGELOG.md](packages/core/CHANGELOG.md)
 and [packages/quickli-docs/CHANGELOG.md](packages/quickli-docs/CHANGELOG.md).
