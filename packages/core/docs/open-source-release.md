@@ -27,7 +27,7 @@ PyPI trusted publishing must contain this exact publisher configuration:
 
 - owner: `spmse`
 - repository: `quickli`
-- workflow: `release-please.yml`
+- workflow: `release.yml`
 - environment: `pypi`
 
 The workflow grants `id-token: write` only to the release job and publishes with the official
@@ -60,4 +60,4 @@ Governance files now included:
 
 Release Please is configured in `release-please-config.json` and
 `.release-please-manifest.json`. Release evidence is produced by
-`.github/workflows/release-please.yml`.
+`.github/workflows/release.yml`.
