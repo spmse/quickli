@@ -7,7 +7,7 @@ description: >
 slug: building-quickli-02-target-audience
 authors:
   - spmse
-date: 2026-08-18
+date: 2026-07-31
 tags: [building-quickli, meta, target-audience, design, quickli]
 series:
   name: "quiCkLI entwickeln"

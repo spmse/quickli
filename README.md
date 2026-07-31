@@ -4,221 +4,111 @@
 [![Coverage](https://github.com/spmse/quickli/actions/workflows/coverage.yml/badge.svg)](https://github.com/spmse/quickli/actions/workflows/coverage.yml)
 [![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13%20%7C%203.14-blue)](https://www.python.org/)
 
-quiCkLI is a simple Python CLI development framework.
-Like Click, it is designed to be easy to use and keep the core small.
+quiCkLI is a minimal, educational Python framework for building command-line interfaces.
+It keeps application structure, parsing, validation, configuration, plugins, and shell
+completion explicit and readable.
 
-The framework prioritizes simplicity for developers who are new to CLI development or who
-want a small tool without the overhead of a larger framework.
+The Python package and distribution name is `quickli`. The stylized project name is
+`quiCkLI`.
 
-It also serves as a learning resource for developers who want to understand CLI design,
-software structure, and how to build their own tools from scratch.
+## Current capabilities
 
-The Python package name is `quickli`. The stylized project name is `quiCkLI`.
+- commandless applications with `@app.entrypoint(...)`
+- named commands and subcommands for multi-command applications
+- positional arguments, options, flags, repeatable values, and global options
+- type conversion and validators for files, directories, positive numbers, and ranges
+- generated help text with docstring fallback
+- JSON, YAML, and TOML loading and rendering helpers
+- configuration schemas, validation, and JSON Schema generation
+- explicit plugin registration and loading
+- Bash, PowerShell, and ZSH completion generation
 
-## Highlights
+The core API accepts explicit argument tokens through `Application.run()`. It does not
+read `sys.argv`, print handler results, or choose process exit codes; an executable wrapper
+owns those responsibilities.
 
-- commandless applications through `@app.entrypoint(...)`
-- multi-command applications through `@app.command(...)`
-- local and global options
-- repeatable options and repeatable flags
-- built-in validation for file paths, directory paths, positive numbers, and numeric ranges
-- docstring-based help text fallback when `help_text` is omitted
-- explicit JSON, YAML, and TOML rendering and loading helpers in `quickli.parsers`
+## Quick example
 
-## Philosophies
+```python
+from quickli import Application, Argument, Option
 
-The very basic philosophy behind the library uses the following key concepts to create
-simple and intuitive CLIs:
+app = Application(name="hello", description="Greet a person.")
 
-- application: the program instance that manages commands and their execution
-- command: a function that performs a specific task when selected by the user
-- argument: an input value passed to a command, typically for required information
-- option: optional named input that provides additional command functionality
-    - flags: options without values, interpreted as booleans by their presence or absence
-- plugin: an extension that can register commands with an application
 
-## Concept Relationships
+@app.entrypoint(
+    help_text="Print a greeting.",
+    arguments=[Argument("name")],
+    options=[Option("uppercase", short_name="u", is_flag=True)],
+)
+def greet(name: str, uppercase: bool = False) -> str:
+    message = f"Hello, {name}!"
+    return message.upper() if uppercase else message
 
-The following diagram shows how the core CLI concepts relate to each other.
 
-```mermaid
-classDiagram
-    class Application {
-        +register commands
-        +expose global options
-        +optional entrypoint handler
-    }
-
-    class Command {
-        +wrap handler
-        +parse local input
-        +generate command help
-    }
-
-    class Argument {
-        +required positional input
-        +optional conversion
-        +optional validators
-    }
-
-    class Option {
-        +named optional input
-        +default value
-        +repeatable support
-    }
-
-    class Flag {
-        +boolean option
-        +no value required
-    }
-
-    Application "1" o-- "0..*" Command : registers
-    Application "1" o-- "0..*" Option : exposes as global options
-    Command "1" *-- "0..*" Argument : defines
-    Command "1" *-- "0..*" Option : defines
-    Option <|-- Flag : conceptual specialization
+print(app.run(["Ada", "--uppercase"]))
 ```
 
-In the current implementation, flags are represented as boolean options. They are shown
-separately here to make the conceptual relationship easier to understand.
+## Repository layout
 
-## Developer Workflows
+- [`packages/core`](packages/core): the Python package, tests, examples, specifications,
+  and developer documentation
+- [`packages/quickli-docs`](packages/quickli-docs): the Docusaurus documentation site
+- [`.github`](.github): CI, coverage, release automation, and repository guidance
 
-The following workflow shows a typical path for building a small `quickli` application
-with a single entrypoint or a very small command surface.
+## Installation and development
 
-```mermaid
-flowchart TD
-    A[Define the CLI goal] --> B[Create an Application instance]
-    B --> C[Register a root entrypoint or one small command]
-    C --> D[Add required arguments]
-    D --> E[Add options and flags]
-    E --> F[Implement the handler function]
-    F --> G[Run the CLI manually]
-    G --> H[Adjust help text and validation]
-    H --> I[Add unit tests]
-    I --> J[Document usage with an example]
+For local development:
+
+```bash
+cd packages/core
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+python -m pip install -e ".[dev]"
 ```
 
-The next workflow shows a more structured approach for building a larger `quickli`
-application with multiple commands and shared behavior.
+Run the core checks from `packages/core`:
 
-```mermaid
-flowchart TD
-    A[Define application scope and command map] --> B[Create an Application instance]
-    B --> C[Define global options]
-    C --> D[Split features into commands]
-    D --> E[Design arguments and local options per command]
-    E --> F[Add conversion and validators]
-    F --> G[Implement command handlers]
-    G --> H[Share reusable helpers across commands]
-    H --> I[Verify command help and error messages]
-    I --> J[Write unit tests for parsing and execution]
-    J --> K[Document commands and examples]
-    K --> L[Package and iterate on feedback]
+```bash
+python -m unittest discover -s tests -v
+python -m ruff check .
+python -m ruff format --check .
 ```
 
-## Project Structure
-
-The repository follows a `src` layout for the Python package and keeps non-code assets in
-separate directories.
-
-- `packages/core/src/quickli`: library source code
-- `packages/core/tests`: dedicated unit tests
-- `packages/core/examples`: focused and complex example applications
-- `packages/core/specs`: technical specifications for the core resources
-- `packages/core/docs`: project documentation for users and developers
-- `.github`: GitHub automation and AI guidance
+The repository requires Python 3.12, 3.13, or 3.14. The project uses the standard-library
+`unittest` runner; Ruff, coverage, and build are development dependencies.
 
 ## Documentation
 
-- [Installation](packages/core/docs/installation.md)
-- [Usage](packages/core/docs/usage.md)
-- [Validation](packages/core/docs/validation.md)
-- [Developer Guide](packages/core/docs/developer-guide.md)
-- [Current State and Agent Guide](packages/core/docs/current-state.md)
-- [Open Source Release Notes](packages/core/docs/open-source-release.md)
+- [Documentation site](https://spmse.github.io/quickli/)
+- [Documentation package](packages/quickli-docs/README.md)
+- [Getting started guide](packages/quickli-docs/docs/getting-started.md)
+- [Core concepts](packages/quickli-docs/docs/concepts/quickli-concepts.md)
+- [Examples](packages/core/examples/README.md)
+- [Specifications](packages/core/specs)
+- [Architectural decisions](packages/core/docs/adr)
 
-## ADRs
-
-- [ADR 0001: Support Commandless Applications Through a Root Entrypoint](
-    packages/core/docs/adr/0001-commandless-entrypoint.md)
-
-## Examples
-
-- [Examples index](packages/core/examples/README.md)
-- [Simple: build a cat CLI with quickli](packages/core/examples/simple/cat-cli/README.md)
-- [Simple: build an ls CLI with quickli](packages/core/examples/simple/ls-cli/README.md)
-- [Simple: build a mkdir CLI with quickli](packages/core/examples/simple/mkdir-cli/README.md)
-- [Simple: build a head CLI with quickli](packages/core/examples/simple/quickhead/README.md)
-- [Complex: build `pyk5l`, a minimal kubectl-like CLI](packages/core/examples/complex/pyk5l/README.md)
-
-The complex `pyk5l` example demonstrates how `quickli` can model a kubectl-like
-verb-resource interface without nested subcommand support in the framework itself.
+Start the documentation site from the repository root with:
 
 ```bash
-PYTHONPATH=packages/core/src python packages/core/examples/complex/pyk5l/app.py get pods
-PYTHONPATH=packages/core/src python packages/core/examples/complex/pyk5l/app.py get services --service-type NodePort
-PYTHONPATH=packages/core/src python packages/core/examples/complex/pyk5l/app.py describe pod api-7d4f5f6b89-l2xq9
+pnpm install
+pnpm --filter quickli-docs start
 ```
 
-## Specifications
+Build it with:
 
-- [Application](packages/core/specs/application.md)
-- [Command](packages/core/specs/command.md)
-- [Argument](packages/core/specs/argument.md)
-- [Option](packages/core/specs/option.md)
-- [Plugin](packages/core/specs/plugin.md)
-- [Parser](packages/core/specs/parser.md)
+```bash
+pnpm --filter quickli-docs build
+```
 
-## Current Capabilities and Limitations
+The site currently supports English and German locales.
 
-The current implementation provides a minimal but functional CLI framework with:
+## Project status
 
-- application-level entrypoints for commandless tools
-- optional named commands for multi-command CLIs
-- argument, option, conversion, and validation resources
-- generated help output with metadata and docstring fallback
-- complex examples that illustrate kubectl-like command shapes through validated resource arguments
-- unit tests, specifications, and runnable examples
-- `Application.run()` accepts explicit argument tokens and returns the selected handler's
-    result (or generated help text)
-
-The current library does not read `sys.argv`, print handler results, render process-level
-errors, or choose exit codes. A small executable wrapper must own those responsibilities.
-Configuration files are implemented, while nested subcommands are not supported by the core
-framework. Plugins and shell completion are available through their respective APIs.
-The `pyk5l` example still has example-specific table and wide renderers.
-
-## Sources of Truth
-
-See [Current State and Agent Guide](docs/current-state.md) for the source-of-truth hierarchy,
-feature summary, parsing and exception matrices, and validation guidance.
-
-- `README.md` is the concise public overview and first-start path.
-- `docs/` contains user and developer guidance.
-- `specs/` describes resource contracts and explicitly labels planned work.
-- `tests/` and the implementation establish the behavior currently verified by the project.
-- `docs/adr/` records accepted architectural decisions.
-
-## Release Model
-
-- CI runs on pushes and pull requests.
-- Release Please opens independent release pull requests for `core` and `docs` on the default
-    branch.
-- Merging a release pull request creates the corresponding GitHub release and version tag.
-- The release workflow derives the core package version from its release tag, tests and
-    packages the library, publishes the tested distributions to PyPI, builds the documentation
-    site with that version in its footer, uploads release evidence, and deploys the site to
-    GitHub Pages.
-- Core and documentation changelogs are maintained independently in their package directories.
-- Python package publication is configured for PyPI rather than a GitHub Packages Python registry.
-
-## Decisions
-
-- The package and distribution name is `quickli`.
-- The project is released under the MIT License.
+quiCkLI is in alpha. The implementation, tests, specifications, and examples are being
+developed together as an educational reference project. Release automation uses Release
+Please; the core package is published to PyPI and the documentation site is deployed to
+GitHub Pages.
 
 ## License
 
-The project is licensed under the MIT License. See [LICENSE](LICENSE).
+quiCkLI is licensed under the [MIT License](LICENSE).
