@@ -1,0 +1,126 @@
+{
+  "homepage.hero.eyebrow": {
+    "message": "A small place to learn CLI design",
+    "description": "Eyebrow label above the hero title on the homepage"
+  },
+  "homepage.hero.title": {
+    "message": "Build command-line tools you can understand.",
+    "description": "Main hero title on the homepage"
+  },
+  "homepage.hero.subtitle": {
+    "message": "{title} is an educational minimal framework for learning how Python command-line applications are put together.",
+    "description": "Hero subtitle on the homepage"
+  },
+  "homepage.hero.button.docs": {
+    "message": "Read the docs",
+    "description": "Primary CTA button on the homepage hero"
+  },
+  "homepage.hero.button.pypi": {
+    "message": "Install from PyPI",
+    "description": "Secondary CTA button linking to PyPI"
+  },
+  "homepage.hero.button.source": {
+    "message": "View source",
+    "description": "Secondary CTA button linking to GitHub"
+  },
+  "homepage.overview.eyebrow": {
+    "message": "Learn by building",
+    "description": "Eyebrow above the overview section heading"
+  },
+  "homepage.overview.heading": {
+    "message": "The essentials, without the noise.",
+    "description": "Overview section heading"
+  },
+  "homepage.overview.description": {
+    "message": "quickli keeps the core ideas visible: register a handler, describe its inputs, and dispatch explicit command-line tokens.",
+    "description": "Overview section description"
+  },
+  "homepage.overview.card1.heading": {
+    "message": "Small primitives",
+    "description": "Heading for the first feature card"
+  },
+  "homepage.overview.card1.description": {
+    "message": "Learn Application, Command, Argument, and Option one concept at a time.",
+    "description": "Description for the first feature card"
+  },
+  "homepage.overview.card2.heading": {
+    "message": "Readable Python",
+    "description": "Heading for the second feature card"
+  },
+  "homepage.overview.card2.description": {
+    "message": "Use decorators and ordinary functions to create tools that are easy to inspect.",
+    "description": "Description for the second feature card"
+  },
+  "homepage.overview.card3.heading": {
+    "message": "Room to explore",
+    "description": "Heading for the third feature card"
+  },
+  "homepage.overview.card3.description": {
+    "message": "Start with a tiny example, then add conversion, validation, and subcommands.",
+    "description": "Description for the third feature card"
+  },
+  "homepage.nextStep.eyebrow": {
+    "message": "New to quickli?",
+    "description": "Eyebrow above the next-step call to action"
+  },
+  "homepage.nextStep.heading": {
+    "message": "Begin with the documentation.",
+    "description": "Heading for the next-step section"
+  },
+  "homepage.nextStep.description": {
+    "message": "Follow the short guide, run the example, and use the source as your reference.",
+    "description": "Description for the next-step section"
+  },
+  "homepage.nextStep.button": {
+    "message": "Read the introduction",
+    "description": "Button that links to the introduction page"
+  },
+  "homepage.meta.description": {
+    "message": "A minimal Python framework for building command-line interfaces. Learn CLI design with small, readable examples.",
+    "description": "Homepage meta description for SEO"
+  },
+  "component.AddToProject.eyebrow": {
+    "message": "Add to your project",
+    "description": "Eyebrow label for the AddToProject section"
+  },
+  "component.AddToProject.heading": {
+    "message": "Start where you are.",
+    "description": "Heading for the AddToProject section"
+  },
+  "component.AddToProject.description": {
+    "message": "Add quickli to an existing Git project, or create a clean project to experiment with the framework.",
+    "description": "Description for the AddToProject section"
+  },
+  "component.AddToProject.existingProject.label": {
+    "message": "Existing project",
+    "description": "Label for the existing project path"
+  },
+  "component.AddToProject.existingProject.heading": {
+    "message": "Add quickli to Git",
+    "description": "Heading for the existing project path"
+  },
+  "component.AddToProject.existingProject.description": {
+    "message": "Keep your current project and install quickli into its virtual environment.",
+    "description": "Description for the existing project path"
+  },
+  "component.AddToProject.newProject.label": {
+    "message": "New project",
+    "description": "Label for the new project path"
+  },
+  "component.AddToProject.newProject.heading": {
+    "message": "Initialize a workspace",
+    "description": "Heading for the new project path"
+  },
+  "component.AddToProject.newProject.description": {
+    "message": "Create a small Git project, then add quickli as its first dependency.",
+    "description": "Description for the new project path"
+  },
+  "component.AddToProject.note": {
+    "message": "Prefer a guided walkthrough? Continue to",
+    "description": "Note before the getting-started link"
+  },
+  "component.AddToProject.note.link": {
+    "message": "the Getting Started guide",
+    "description": "Link label for the getting-started guide"
+  }
+}

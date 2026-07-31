@@ -1,17 +1,15 @@
-"""Core helpers for JSON or YAML rendering and loading."""
+"""Explicit JSON, YAML, and TOML parsing and rendering helpers."""
 
 from __future__ import annotations
 
 import json
 import re
+import tomllib
 from dataclasses import dataclass
 
 
 _INTEGER_PATTERN = re.compile(r"^-?(0|[1-9][0-9]*)$")
 _FLOAT_PATTERN = re.compile(r"^-?(0|[1-9][0-9]*)\.[0-9]+$")
-_SUPPORTED_FORMATS = {"json", "yaml"}
-
-
 @dataclass(frozen=True, slots=True)
 class _YamlLine:
     indent: int
@@ -19,43 +17,77 @@ class _YamlLine:
     line_number: int
 
 
-def core_json_or_yaml_rendering(value: object, format_name: str = "json") -> str:
-    """Render Python data into JSON or YAML text."""
-    normalized_format = _normalize_format_name(format_name)
-    if normalized_format == "json":
-        return json.dumps(value, indent=2, sort_keys=True)
+def render_json(value: object) -> str:
+    """Render Python data as deterministic, indented JSON."""
+    return json.dumps(value, indent=2, sort_keys=True)
+
+
+def load_json(value: str) -> object:
+    """Load JSON text into Python data."""
+    if not isinstance(value, str):
+        raise ValueError("Expected a string payload for JSON loading.")
+    try:
+        return json.loads(value)
+    except json.JSONDecodeError as error:
+        raise ValueError(f"Invalid JSON input: {error.msg}.") from error
+
+
+def render_yaml(value: object) -> str:
+    """Render Python data as minimal YAML."""
     return _render_yaml(value)
 
 
-def core_json_or_yaml_loading(value: str, format_name: str | None = None) -> object:
-    """Load JSON or YAML text into Python data."""
+def load_yaml(value: str) -> object:
+    """Load minimal YAML text into Python data."""
     if not isinstance(value, str):
-        raise ValueError("Expected a string payload for JSON or YAML loading.")
-
-    normalized_format = _detect_or_normalize_format(value, format_name)
-    if normalized_format == "json":
-        try:
-            return json.loads(value)
-        except json.JSONDecodeError as error:
-            raise ValueError(f"Invalid JSON input: {error.msg}.") from error
+        raise ValueError("Expected a string payload for YAML loading.")
     return _load_yaml(value)
 
 
-def _detect_or_normalize_format(value: str, format_name: str | None) -> str:
-    if format_name is not None:
-        return _normalize_format_name(format_name)
-    stripped = value.lstrip()
-    if stripped.startswith("{") or stripped.startswith("["):
-        return "json"
-    return "yaml"
+def load_toml(value: str) -> dict[str, object]:
+    """Load TOML text into a dictionary."""
+    if not isinstance(value, str):
+        raise ValueError("Expected a string payload for TOML loading.")
+    try:
+        return dict(tomllib.loads(value))
+    except tomllib.TOMLDecodeError as error:
+        raise ValueError(f"Invalid TOML input: {error.msg}.") from error
 
 
-def _normalize_format_name(format_name: str) -> str:
-    normalized = format_name.strip().lower()
-    if normalized not in _SUPPORTED_FORMATS:
-        allowed = ", ".join(sorted(_SUPPORTED_FORMATS))
-        raise ValueError(f"Unsupported format '{format_name}'. Expected one of: {allowed}.")
-    return normalized
+def render_toml(value: dict[str, object]) -> str:
+    """Render a dictionary as minimal TOML with one level of tables."""
+    if not isinstance(value, dict):
+        raise TypeError("TOML rendering expects a dictionary.")
+
+    lines: list[str] = []
+    sections: list[tuple[str, dict[str, object]]] = []
+    for key, item in value.items():
+        if isinstance(item, dict):
+            sections.append((str(key), item))
+        else:
+            lines.append(f"{key} = {_render_toml_scalar(item)}")
+    for key, section in sections:
+        lines.append("") if lines else None
+        lines.append(f"[{key}]")
+        for field, item in section.items():
+            if isinstance(item, dict):
+                raise TypeError("TOML rendering supports only one level of tables.")
+            lines.append(f"{field} = {_render_toml_scalar(item)}")
+    return "\n".join(lines)
+
+
+def _render_toml_scalar(value: object) -> str:
+    if value is None:
+        raise TypeError("TOML does not support None values.")
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, (int, float)):
+        return str(value)
+    if isinstance(value, str):
+        return json.dumps(value)
+    if isinstance(value, list):
+        return "[" + ", ".join(_render_toml_scalar(item) for item in value) + "]"
+    raise TypeError(f"Unsupported TOML value type: {type(value).__name__}.")
 
 
 def _render_yaml(value: object, indent: int = 0) -> str:

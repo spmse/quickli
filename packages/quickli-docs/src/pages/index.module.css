@@ -133,3 +133,32 @@
     flex-direction: column;
   }
 }
+.brandMark {
+  background: transparent;
+  display: block;
+  margin: 0 auto 2rem;
+  max-width: 34rem;
+}
+
+.brandMark img {
+  background: transparent;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.brandMark .brandMarkDark {
+  display: none;
+}
+
+:global([data-theme='dark']) .brandMarkLight {
+  display: none;
+}
+
+:global([data-theme='dark']) .brandMarkDark {
+  display: block;
+}
+
+:global([data-theme='dark']) .brandMark .brandMarkDark {
+  display: block;
+}

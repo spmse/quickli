@@ -23,7 +23,7 @@ The Python package name is `quickli`. The stylized project name is `quiCkLI`.
 - repeatable options and repeatable flags
 - built-in validation for file paths, directory paths, positive numbers, and numeric ranges
 - docstring-based help text fallback when `help_text` is omitted
-- core JSON/YAML rendering and loading helpers in `quickli.parsers`
+- explicit JSON, YAML, and TOML rendering and loading helpers in `quickli.parsers`
 
 ## Philosophies
 
@@ -35,7 +35,7 @@ simple and intuitive CLIs:
 - argument: an input value passed to a command, typically for required information
 - option: optional named input that provides additional command functionality
     - flags: options without values, interpreted as booleans by their presence or absence
-- plugin: planned extension support; no plugin loading or registration API is implemented
+- plugin: an extension that can register commands with an application
 
 ## Concept Relationships
 
@@ -123,54 +123,53 @@ flowchart TD
 The repository follows a `src` layout for the Python package and keeps non-code assets in
 separate directories.
 
-- `src/quickli`: library source code
-- `tests`: dedicated unit tests
-- `examples/simple`: focused entry-level example applications
-- `examples/complex`: larger example applications with multiple commands
-- `specs`: technical specifications for the core resources
-- `docs`: project documentation for users and developers
+- `packages/core/src/quickli`: library source code
+- `packages/core/tests`: dedicated unit tests
+- `packages/core/examples`: focused and complex example applications
+- `packages/core/specs`: technical specifications for the core resources
+- `packages/core/docs`: project documentation for users and developers
 - `.github`: GitHub automation and AI guidance
 
 ## Documentation
 
-- [Installation](docs/installation.md)
-- [Usage](docs/usage.md)
-- [Validation](docs/validation.md)
-- [Developer Guide](docs/developer-guide.md)
-- [Current State and Agent Guide](docs/current-state.md)
-- [Open Source Release Notes](docs/open-source-release.md)
+- [Installation](packages/core/docs/installation.md)
+- [Usage](packages/core/docs/usage.md)
+- [Validation](packages/core/docs/validation.md)
+- [Developer Guide](packages/core/docs/developer-guide.md)
+- [Current State and Agent Guide](packages/core/docs/current-state.md)
+- [Open Source Release Notes](packages/core/docs/open-source-release.md)
 
 ## ADRs
 
 - [ADR 0001: Support Commandless Applications Through a Root Entrypoint](
-    docs/adr/0001-commandless-entrypoint.md)
+    packages/core/docs/adr/0001-commandless-entrypoint.md)
 
 ## Examples
 
-- [Examples index](examples/README.md)
-- [Simple: build a cat CLI with quickli](examples/simple/cat-cli/README.md)
-- [Simple: build an ls CLI with quickli](examples/simple/ls-cli/README.md)
-- [Simple: build a mkdir CLI with quickli](examples/simple/mkdir-cli/README.md)
-- [Simple: build a head CLI with quickli](examples/simple/quickhead/README.md)
-- [Complex: build `pyk5l`, a minimal kubectl-like CLI](examples/complex/pyk5l/README.md)
+- [Examples index](packages/core/examples/README.md)
+- [Simple: build a cat CLI with quickli](packages/core/examples/simple/cat-cli/README.md)
+- [Simple: build an ls CLI with quickli](packages/core/examples/simple/ls-cli/README.md)
+- [Simple: build a mkdir CLI with quickli](packages/core/examples/simple/mkdir-cli/README.md)
+- [Simple: build a head CLI with quickli](packages/core/examples/simple/quickhead/README.md)
+- [Complex: build `pyk5l`, a minimal kubectl-like CLI](packages/core/examples/complex/pyk5l/README.md)
 
 The complex `pyk5l` example demonstrates how `quickli` can model a kubectl-like
 verb-resource interface without nested subcommand support in the framework itself.
 
 ```bash
-PYTHONPATH=src python examples/complex/pyk5l/app.py get pods
-PYTHONPATH=src python examples/complex/pyk5l/app.py get services --service-type NodePort
-PYTHONPATH=src python examples/complex/pyk5l/app.py describe pod api-7d4f5f6b89-l2xq9
+PYTHONPATH=packages/core/src python packages/core/examples/complex/pyk5l/app.py get pods
+PYTHONPATH=packages/core/src python packages/core/examples/complex/pyk5l/app.py get services --service-type NodePort
+PYTHONPATH=packages/core/src python packages/core/examples/complex/pyk5l/app.py describe pod api-7d4f5f6b89-l2xq9
 ```
 
 ## Specifications
 
-- [Application](specs/application.md)
-- [Command](specs/command.md)
-- [Argument](specs/argument.md)
-- [Option](specs/option.md)
-- [Plugin](specs/plugin.md)
-- [Parser](specs/parser.md)
+- [Application](packages/core/specs/application.md)
+- [Command](packages/core/specs/command.md)
+- [Argument](packages/core/specs/argument.md)
+- [Option](packages/core/specs/option.md)
+- [Plugin](packages/core/specs/plugin.md)
+- [Parser](packages/core/specs/parser.md)
 
 ## Current Capabilities and Limitations
 
@@ -187,7 +186,8 @@ The current implementation provides a minimal but functional CLI framework with:
 
 The current library does not read `sys.argv`, print handler results, render process-level
 errors, or choose exit codes. A small executable wrapper must own those responsibilities.
-Nested subcommands, shell completion, configuration files, and plugins are not implemented.
+Configuration files are implemented, while nested subcommands are not supported by the core
+framework. Plugins and shell completion are available through their respective APIs.
 The `pyk5l` example still has example-specific table and wide renderers.
 
 ## Sources of Truth
@@ -222,5 +222,3 @@ feature summary, parsing and exception matrices, and validation guidance.
 ## License
 
 The project is licensed under the MIT License. See [LICENSE](LICENSE).
-
- 

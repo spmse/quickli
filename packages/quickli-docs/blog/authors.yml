@@ -1,0 +1,10 @@
+spmse:
+  name: Sven Patrick Meier
+  title: Creator and maintainer of quiCkLI, an educational Python CLI framework
+  description: Sven Patrick Meier builds quiCkLI as a small, transparent framework for learning CLI design and Python software architecture.
+  url: https://github.com/spmse/quickli
+  image_url: https://github.com/spmse.png?size=200
+  page: true
+  socials:
+    github: spmse
+    gitlab: SvenPatrick

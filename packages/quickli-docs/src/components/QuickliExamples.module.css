@@ -66,6 +66,9 @@
 }
 
 .projectPath {
+    align-self: start;
+    display: flex;
+    flex-direction: column;
     border: 1px solid var(--ifm-color-emphasis-200);
     border-radius: 10px;
     overflow: hidden;
@@ -87,7 +90,19 @@
 
 .projectPath .codePanel {
     border-radius: 10px 10px 0 0;
+    display: flex;
+    flex-direction: column;
     margin: 1.5rem -1.5rem 0;
+}
+
+.projectPath :global(.tabs-container),
+.projectPath :global(.tabs__item) {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.projectPath .highlightedCode {
+    flex: none;
 }
 
 .projectNote {

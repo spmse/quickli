@@ -38,7 +38,9 @@ implemented:
   - boolean_flags
   - generated_help
   - docstring_help_fallback
-  - core_json_or_yaml_rendering
+  - render_json
+  - render_yaml
+  - render_toml
   - nested_subcommands
   - shell_completion
   - configuration_files

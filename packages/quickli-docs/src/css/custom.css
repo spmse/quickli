@@ -38,3 +38,48 @@
   --ifm-color-primary-lightest: #ffeac0;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+.footer-shell {
+  background: var(--ifm-footer-background-color);
+  position: relative;
+}
+
+.footer-brand {
+  /* background: var(--ifm-footer-background-color); */
+  max-width: 15rem;
+  padding: 0;
+  position: absolute;
+  right: max(1rem, calc((100% - 1140px) / 2));
+  top: 2rem;
+}
+
+.footer-brand img {
+  background: transparent;
+  max-width: 14rem;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 996px) {
+  .footer-brand {
+    margin: 0 auto;
+    max-width: 15rem;
+    padding: 1.5rem 1rem;
+    position: static;
+  }
+}
+/* Keep series navigation visible without requiring a theme swizzle. */
+.blog-series-navigation {
+  border-left: 4px solid var(--ifm-color-primary);
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+}
+
+.blog-series-navigation ol {
+  margin-bottom: 0.75rem;
+}
+
+.blog-series-navigation [aria-current='page'] {
+  font-weight: 700;
+}
