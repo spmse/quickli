@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quickli"
-version = "0.2.1"
+version = "0.2.2"
 description = "quickli is a minimal Python framework for building simple command-line interfaces."
 readme = "README.md"
 requires-python = ">=3.12"
