@@ -9,14 +9,14 @@ import Translate, { translate } from '@docusaurus/Translate';
 import styles from './QuickliExamples.module.css';
 
 const minimalExample = `from quickli import Application, Argument
-from quickli import core_json_or_yaml_loading, core_json_or_yaml_rendering
+from quickli import load_json, load_yaml, render_json
 
 app = Application(name="profile")
 
 @app.entrypoint(arguments=[Argument("payload")])
 def normalize(payload: str) -> str:
-    data = core_json_or_yaml_loading(payload)
-    return core_json_or_yaml_rendering(data, format_name="json")`;
+    data = load_json(payload) if payload.lstrip().startswith(("{", "[")) else load_yaml(payload)
+    return render_json(data)`;
 
 const existingProjectCommands = {
     pip: `pip install quickli`,
@@ -204,7 +204,7 @@ export function AddToProject({
             </div>
             <p className={styles.projectNote}>
                 {noteLabel ?? defaultNote}{' '}
-                <Link to="/docs/getting-started">{noteLinkLabel ?? defaultNoteLink}</Link>.
+                <Link to="docs/getting-started">{noteLinkLabel ?? defaultNoteLink}</Link>.
             </p>
         </section>
     );

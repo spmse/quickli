@@ -9,11 +9,12 @@ import { resolve } from 'node:path';
 const coreProject = readFileSync(resolve(__dirname, '../core/pyproject.toml'), 'utf8');
 const coreVersion = coreProject.match(/^version = "([^"]+)"$/m)?.[1] ?? 'unreleased';
 const quickliVersion = process.env.QUICKLI_VERSION ?? coreVersion;
+const socialImage = 'https://spmse.github.io/quickli/img/quickli-light.png';
 
 const config: Config = {
   title: 'quiCkLI',
   tagline: 'A minimal Python framework for building command-line interfaces.',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/quickli-icon-light.svg',
 
   // Future flags — improve compatibility with the upcoming Docusaurus v4
   future: {
@@ -88,14 +89,16 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: 'img/docusaurus-social-card.jpg',
+    image: socialImage,
 
     metadata: [
       { name: 'keywords', content: 'quickli, python, cli, command-line, framework, tutorial, learning' },
       { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:image', content: socialImage },
       { name: 'twitter:description', content: 'A minimal Python framework for building command-line interfaces.' },
       { property: 'og:type', content: 'website' },
       { property: 'og:site_name', content: 'quiCkLI' },
+      { property: 'og:image', content: socialImage },
     ],
 
     colorMode: {
@@ -111,7 +114,8 @@ const config: Config = {
       title: 'quiCkLI',
       logo: {
         alt: 'quiCkLI logo',
-        src: 'img/logo.svg',
+        src: 'img/quickli-icon-light-transparent.png',
+        srcDark: 'img/quickli-icon-dark-transparent.png',
       },
       items: [
         {
@@ -123,6 +127,11 @@ const config: Config = {
         {
           to: '/blog',
           label: 'Blog',
+          position: 'left',
+        },
+        {
+          to: '/blog/series',
+          label: 'Blog series',
           position: 'left',
         },
         {

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 import Translate, { translate } from '@docusaurus/Translate';
@@ -10,10 +11,16 @@ import styles from './index.module.css';
 
 function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext();
+    const lightLogo = useBaseUrl('img/quickli-light-transparent.png');
+    const darkLogo = useBaseUrl('img/quickli-dark-transparent.png');
 
     return (
         <header className={styles.heroBanner}>
             <div className="container">
+                <div className={styles.brandMark} aria-label="quiCkLI">
+                    <img className={styles.brandMarkLight} src={lightLogo} alt="quiCkLI" />
+                    <img className={styles.brandMarkDark} src={darkLogo} alt="" />
+                </div>
                 <div className={styles.heroGrid}>
                     <div>
                         <p className={styles.eyebrow}>
@@ -35,7 +42,7 @@ function HomepageHeader() {
                             </Translate>
                         </p>
                         <div className={styles.buttons}>
-                            <Link className="button button--primary button--lg" to="/docs/getting-started">
+                            <Link className="button button--primary button--lg" to="docs/getting-started">
                                 <Translate id="homepage.hero.button.docs">
                                     Read the docs
                                 </Translate>
@@ -132,7 +139,7 @@ function Overview() {
                             </Translate>
                         </p>
                     </div>
-                    <Link className="button button--primary" to="/docs/introduction">
+                    <Link className="button button--primary" to="docs/introduction">
                         <Translate id="homepage.nextStep.button">
                             Read the introduction
                         </Translate>

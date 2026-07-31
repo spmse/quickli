@@ -1,4 +1,8 @@
 {
+  "title.Project": {
+    "message": "Projekt",
+    "description": "Footer section title for project links"
+  },
   "link.item.label.GitHub": {
     "message": "GitHub",
     "description": "Footer link label for GitHub"

@@ -1,0 +1,10 @@
+{
+  "label": "Leitfäden",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "title": "Implementierungsleitfäden",
+    "description": "Schritt-für-Schritt-Leitfäden zu den Referenzbeispielen von quickli.",
+    "keywords": ["leitfäden", "tutorials", "beispiele", "quickli"]
+  }
+}

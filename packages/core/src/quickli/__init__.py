@@ -9,7 +9,7 @@ from quickli.exceptions import CLIError, CommandExecutionError, CommandNotFoundE
 from quickli.exceptions import CommandRegistrationError, ConfigError, ConfigValidationError
 from quickli.exceptions import PluginLoadError
 from quickli.option import Option
-from quickli.parsers import core_json_or_yaml_loading, core_json_or_yaml_rendering
+from quickli.parsers import load_json, load_toml, load_yaml, render_json, render_toml, render_yaml
 from quickli.plugin import Plugin
 from quickli.shell_completion import (
     SUPPORTED_SHELLS,
@@ -38,8 +38,12 @@ __all__ = [
     "Plugin",
     "PluginLoadError",
     "add_auto_init_config",
-    "core_json_or_yaml_loading",
-    "core_json_or_yaml_rendering",
+    "load_json",
+    "load_toml",
+    "load_yaml",
+    "render_json",
+    "render_toml",
+    "render_yaml",
     "generate_schema_json",
     "validate_config",
     "SUPPORTED_SHELLS",

@@ -3,18 +3,17 @@ title: "Introducing the quiCkLI Plugin System"
 description: "A walkthrough of the quiCkLI plugin API and the contract every plugin author must implement."
 slug: quickli-plugin-system
 authors:
-  - name: quiCkLI contributors
-    url: https://github.com/spmse/quickli
-date: 2025-07-01
+  - spmse
+date: 2026-09-17
 draft: true
-tags: [plugins, api, quickli]
+tags: [general, plugins, api, quickli]
 ---
 
 `quickli` now ships with a rudimentary plugin system that lets you extend any application
 without touching the core package. This post walks through the plugin API, the contract
 you must implement, and how the loading mechanism works.
 
-<!-- truncate -->
+{/* truncate */}
 
 ## Why a plugin system?
 

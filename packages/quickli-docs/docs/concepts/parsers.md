@@ -4,21 +4,19 @@ sidebar_position: 7
 
 # Parsers
 
-`quickli.parsers` provides dependency-light helpers for structured JSON/YAML input and output.
+`quickli.parsers` provides explicit helpers for structured JSON, YAML, and TOML input and output.
 
 ## Public APIs
 
-- `core_json_or_yaml_loading(text, format_name=None)`
-- `core_json_or_yaml_rendering(value, format_name="json")`
+- `load_json(text)` and `render_json(value)`
+- `load_yaml(text)` and `render_yaml(value)`
+- `load_toml(text)` and `render_toml(value)`
 
 ## Example
 
 ```python
-from quickli import core_json_or_yaml_loading, core_json_or_yaml_rendering
+from quickli import load_yaml, render_json
 
-data = core_json_or_yaml_loading("kind: Pod\nmetadata:\n  name: web-preview\n")
-print(core_json_or_yaml_rendering(data, format_name="json"))
+data = load_yaml("kind: Pod\nmetadata:\n  name: web-preview\n")
+print(render_json(data))
 ```
-
-When `format_name` is omitted during loading, quickli detects JSON payloads that begin with
-`{` or `[` and otherwise parses as YAML.

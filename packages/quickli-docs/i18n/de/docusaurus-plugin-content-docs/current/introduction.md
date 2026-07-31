@@ -41,3 +41,10 @@ zu JSON:
 
 Die nächste Seite zeigt, wie quickli installiert und ein vollständiges Beispiel
 ausgeführt wird.
+
+## Nächste Schritte
+
+Lies die [quiCkLI-Konzepte](./concepts/quickli-concepts.md), um zu verstehen,
+wie `Application`, `Command`, `Argument`, `Option` und `Plugin` zusammenwirken.
+
+Die [Entwicklungs-Roadmap](./roadmap.md) beschreibt die nächsten geplanten Schritte.

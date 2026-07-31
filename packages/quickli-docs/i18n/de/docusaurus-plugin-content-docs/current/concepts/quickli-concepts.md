@@ -1,5 +1,7 @@
 ---
 sidebar_position: 1
+description: Die wichtigsten Konzepte des quiCkLI-Frameworks im Überblick.
+keywords: [quickli, konzepte, application, command, argument, option, plugin]
 ---
 
 # quiCkLI-Konzepte

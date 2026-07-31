@@ -122,5 +122,33 @@
   "component.AddToProject.note.link": {
     "message": "dem Einstiegsleitfaden",
     "description": "Link label for the getting-started guide"
+  },
+  "blog.series.title": {
+    "message": "Blog-Serien",
+    "description": "Title of the blog series overview"
+  },
+  "blog.series.description": {
+    "message": "Folge einem quiCkLI-Thema vom ersten bis zum letzten Beitrag.",
+    "description": "Description of the blog series overview"
+  },
+  "blog.series.category": {
+    "message": "Kategorie:",
+    "description": "Category label on the blog series overview"
+  },
+  "blog.series.part": {
+    "message": "Teil {current} von {total}",
+    "description": "Progress label in blog series navigation"
+  },
+  "blog.series.previous": {
+    "message": "Zurück",
+    "description": "Previous article link in blog series navigation"
+  },
+  "blog.series.next": {
+    "message": "Weiter",
+    "description": "Next article link in blog series navigation"
+  },
+  "blog.series.overviewLink": {
+    "message": "Alle Blog-Serien anzeigen",
+    "description": "Link to the blog series overview"
   }
 }
