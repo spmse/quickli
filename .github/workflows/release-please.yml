@@ -91,6 +91,48 @@ jobs:
           print-hash: true
           skip-existing: true
 
+      - name: Create core release evidence summary
+        env:
+          CORE_TAG: ${{ needs.release-please.outputs.core_tag }}
+        run: |
+          {
+            echo "# Release Evidence"
+            echo
+            echo "- Core release tag: ${CORE_TAG:-not released}"
+            echo "- Core package tests: passed"
+            echo "- Core package coverage: see \\`coverage-summary.txt\\`"
+          } > release-evidence.md
+
+      - name: Upload core release evidence
+        if: needs.release-please.outputs.core_tag != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CORE_TAG: ${{ needs.release-please.outputs.core_tag }}
+        run: |
+          gh release upload "${CORE_TAG}" \
+            packages/core/dist/* \
+            packages/core/coverage.xml \
+            packages/core/coverage-summary.txt \
+            packages/core/htmlcov.zip \
+            packages/core/CHANGELOG.md \
+            release-evidence.md \
+            --clobber
+
+  build-documentation:
+    needs: release-please
+    if: needs.release-please.outputs.releases_created == 'true'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pages: write
+
+    steps:
+      - name: Check out released revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release-please.outputs.core_tag || github.sha }}
+
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -112,10 +154,10 @@ jobs:
       - name: Build documentation site
         working-directory: packages/quickli-docs
         env:
-          QUICKLI_VERSION: ${{ env.QUICKLI_VERSION }}
+          QUICKLI_VERSION: ${{ needs.release-please.outputs.core_tag || 'development' }}
         run: pnpm run build
 
-      - name: Create release evidence summary
+      - name: Create documentation release evidence summary
         env:
           CORE_TAG: ${{ needs.release-please.outputs.core_tag }}
           DOCS_TAG: ${{ needs.release-please.outputs.docs_tag }}
@@ -125,8 +167,6 @@ jobs:
             echo
             echo "- Core release tag: ${CORE_TAG:-not released}"
             echo "- Documentation release tag: ${DOCS_TAG:-not released}"
-            echo "- Core package tests: passed"
-            echo "- Core package coverage: see \\`coverage-summary.txt\\`"
             echo "- Documentation typecheck: passed"
             echo "- Documentation build: passed"
           } > release-evidence.md
@@ -135,21 +175,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: packages/quickli-docs/build
-
-      - name: Upload core release evidence
-        if: needs.release-please.outputs.core_tag != ''
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CORE_TAG: ${{ needs.release-please.outputs.core_tag }}
-        run: |
-          gh release upload "${CORE_TAG}" \
-            packages/core/dist/* \
-            packages/core/coverage.xml \
-            packages/core/coverage-summary.txt \
-            packages/core/htmlcov.zip \
-            packages/core/CHANGELOG.md \
-            release-evidence.md \
-            --clobber
 
       - name: Upload documentation release evidence
         if: needs.release-please.outputs.docs_tag != ''
@@ -163,7 +188,7 @@ jobs:
             --clobber
 
   deploy-documentation:
-    needs: build-release-evidence
+    needs: build-documentation
     runs-on: ubuntu-latest
 
     permissions:

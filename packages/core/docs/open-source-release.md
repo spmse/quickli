@@ -23,6 +23,17 @@ core library and documentation site. Merging a Release Please pull request creat
 tag and GitHub release. The release workflow may publish the core package to PyPI when the
 protected `pypi` environment is configured.
 
+PyPI trusted publishing must contain this exact publisher configuration:
+
+- owner: `spmse`
+- repository: `quickli`
+- workflow: `release-please.yml`
+- environment: `pypi`
+
+The workflow grants `id-token: write` only to the release job and publishes with the official
+PyPA action. A mismatch in any trusted-publisher field causes the upload step to fail before
+PyPI accepts the package.
+
 Governance files now included:
 
 - `CODE_OF_CONDUCT.md`
