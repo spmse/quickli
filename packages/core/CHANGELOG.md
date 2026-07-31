@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/spmse/quickli/compare/core-v0.2.0...core-v0.2.1) (2026-07-31)
+
+
+### Documentation
+
+* i18n (EN/DE), reference guides, tutorial and dev blog series, SEO improvements ([#30](https://github.com/spmse/quickli/issues/30)) ([69a35ed](https://github.com/spmse/quickli/commit/69a35ed5f8f5bdb80c26a44839884a4a64b26b24))
+
 ## [0.2.0](https://github.com/spmse/quickli/compare/core-v0.1.1...core-v0.2.0) (2026-07-31)
 
 
