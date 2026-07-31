@@ -204,7 +204,7 @@ export function AddToProject({
             </div>
             <p className={styles.projectNote}>
                 {noteLabel ?? defaultNote}{' '}
-                <Link to="docs/getting-started">{noteLinkLabel ?? defaultNoteLink}</Link>.
+                  <Link to="/docs/getting-started">{noteLinkLabel ?? defaultNoteLink}</Link>.
             </p>
         </section>
     );

@@ -68,12 +68,12 @@ const config: Config = {
         },
         blog: {
           showReadingTime: true,
-          blogTitle: 'quiCkLI Blog',
+          blogTitle: 'Le quiCkLI Blog',
           blogDescription: 'News, guides, and deep dives from the quiCkLI project.',
-          postsPerPage: 10,
           routeBasePath: 'blog',
-          blogSidebarTitle: 'All posts',
+          blogSidebarTitle: 'All Posts',
           blogSidebarCount: 'ALL',
+          postsPerPage: 10,
           feedOptions: {
             type: ['rss', 'atom'],
             title: 'quiCkLI Blog',

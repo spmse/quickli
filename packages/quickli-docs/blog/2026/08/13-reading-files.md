@@ -8,7 +8,6 @@ slug: quickli-tutorial-02-file-tools
 authors:
   - spmse
 date: 2026-08-13
-draft: true
 tags: [tutorial, quickli, python, cli, validators, file-path]
 series:
   name: "Getting Started with quiCkLI"

@@ -8,7 +8,6 @@ slug: building-quickli-02-target-audience
 authors:
   - spmse
 date: 2026-08-18
-draft: true
 tags: [building-quickli, meta, target-audience, design, quickli]
 series:
   name: "quiCkLI entwickeln"
@@ -84,4 +83,4 @@ einfach zu verstehen*.
 Der nächste Beitrag untersucht, wie KI-Tools während der Entwicklung eingesetzt wurden
 und was diese Erfahrung gelehrt hat.
 
-📖 [Teil 3: KI in der Entwicklung von quiCkLI →](/de/blog/building-quickli-03-ai-in-development)
+📖 [Teil 3: KI in der Entwicklung von quiCkLI →](/blog/building-quickli-03-ai-in-development)
