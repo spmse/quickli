@@ -38,6 +38,46 @@ cli:
   permalink: /cli
   description: Entwurf und Verwendung von Kommandozeilenschnittstellen.
 
+einstieg:
+  label: Einstieg
+  permalink: /einstieg
+  description: Einsteiger-Tutorials für quiCkLI.
+
+validatoren:
+  label: Validatoren
+  permalink: /validatoren
+  description: Eingabevalidierung in quiCkLI-Anwendungen.
+
+datei-pfad:
+  label: Datei-Pfad
+  permalink: /datei-pfad
+  description: Arbeiten mit Dateien und Pfaden.
+
+ki:
+  label: KI
+  permalink: /ki
+  description: Künstliche Intelligenz in Entwicklung und Softwareprojekten.
+
+entwicklung:
+  label: Entwicklung
+  permalink: /entwicklung
+  description: Entwicklungspraktiken und Arbeitsabläufe.
+
+zielgruppe:
+  label: Zielgruppe
+  permalink: /zielgruppe
+  description: Zielgruppen und Anwendungsfälle für quiCkLI.
+
+befehle:
+  label: Befehle
+  permalink: /befehle
+  description: Befehle und Multi-Command-Anwendungen.
+
+lerneffekte:
+  label: Lerneffekte
+  permalink: /lerneffekte
+  description: Erkenntnisse aus der Entwicklung von quiCkLI.
+
 design:
   label: design
   permalink: /design

@@ -71,5 +71,5 @@ ausgelöst wird.
 
 ## Referenz
 
-- [Plugin-Konzeptdokumentation](/de/docs/concepts/plugin)
+- [Plugin-Konzeptdokumentation](/docs/concepts/plugin)
 - [Plugin-Spezifikation auf GitHub](https://github.com/spmse/quickli/blob/main/packages/core/specs/plugin.md)

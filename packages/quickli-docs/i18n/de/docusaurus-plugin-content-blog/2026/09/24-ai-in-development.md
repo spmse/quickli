@@ -8,7 +8,6 @@ slug: building-quickli-03-ai-in-development
 authors:
   - spmse
 date: 2026-09-24
-draft: true
 tags: [building-quickli, meta, ai, development, quickli, open-source]
 series:
   name: "quiCkLI entwickeln"
@@ -86,4 +85,4 @@ bedeutet, ist Teil der intellektuellen Redlichkeit des Projekts.
 Der letzte Beitrag dieser Reihe befasst sich mit der Zukunft von `quiCkLI`  -  was geplant
 ist, was möglicherweise nicht passiert, und was ich aus dem Prozess gelernt habe.
 
-📖 [Teil 4: Zukunftspläne und Lerneffekte →](/de/blog/building-quickli-04-future-plans)
+📖 [Teil 4: Zukunftspläne und Lerneffekte →](/blog/building-quickli-04-future-plans)

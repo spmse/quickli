@@ -8,7 +8,6 @@ slug: quickli-tutorial-01-hello-world
 authors:
   - spmse
 date: 2026-08-04
-draft: true
 tags: [tutorial, getting-started, quickli, python, cli]
 series:
   name: "Erste Schritte mit quiCkLI"
@@ -166,4 +165,4 @@ $ python hello.py               # (Hilfsausgabe)
 Der nächste Artikel fügt **Datei-Input**, **Validierung** und **globale Optionen** hinzu,
 indem er einen kleinen Datei-Viewer nach dem Vorbild des Unix-`cat`-Befehls baut.
 
-📖 [Teil 2: Dateien lesen  -  das quickcat-Tool →](/de/blog/quickli-tutorial-02-file-tools)
+📖 [Teil 2: Dateien lesen  -  das quickcat-Tool →](/blog/quickli-tutorial-02-file-tools)

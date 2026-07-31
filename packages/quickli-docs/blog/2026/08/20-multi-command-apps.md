@@ -8,7 +8,6 @@ slug: quickli-tutorial-03-multi-command-cli
 authors:
   - spmse
 date: 2026-08-20
-draft: true
 tags: [tutorial, quickli, python, cli, multi-command, commands]
 series:
   name: "Getting Started with quiCkLI"

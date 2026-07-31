@@ -120,5 +120,5 @@ print(app.run(sys.argv[1:]))
 
 ## Referenz
 
-- [Plugin-API-Übersicht](/de/blog/quickli-plugin-system)
-- [Plugin-Konzeptdokumentation](/de/docs/concepts/plugin)
+- [Plugin-API-Übersicht](/blog/quickli-plugin-system)
+- [Plugin-Konzeptdokumentation](/docs/concepts/plugin)
