@@ -101,6 +101,14 @@ const config: Config = {
       { property: 'og:image', content: socialImage },
     ],
 
+    metadata: [
+      { name: 'keywords', content: 'quickli, python, cli, command-line, framework, tutorial, learning' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:description', content: 'A minimal Python framework for building command-line interfaces.' },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:site_name', content: 'quiCkLI' },
+    ],
+
     colorMode: {
       respectPrefersColorScheme: true,
     },
