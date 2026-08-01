@@ -67,18 +67,6 @@ export const blogSeries: BlogSeries[] = [
         titleDe: 'Für wen ist dieses Framework gedacht?',
         position: 2,
       },
-      {
-        slug: 'building-quickli-03-ai-in-development',
-        title: 'Using AI as a Development Partner',
-        titleDe: 'KI als Entwicklungspartner',
-        position: 3,
-      },
-      {
-        slug: 'building-quickli-04-future-plans',
-        title: 'Future Plans and Lessons Learned',
-        titleDe: 'Zukunftspläne und Lerneffekte',
-        position: 4,
-      },
     ],
   },
 ];
