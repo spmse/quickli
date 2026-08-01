@@ -79,9 +79,3 @@ The project's quality bar is not just *does it work*  -  it is *is it still easy
 understand*. That is a harder standard to maintain, and it is the one that matters most
 for this audience.
 
-## Next
-
-The next post explores how AI tools were used during development, and what that
-experience taught me.
-
-📖 [Part 3: Using AI in the Development of quiCkLI →](/blog/building-quickli-03-ai-in-development)

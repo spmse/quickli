@@ -123,14 +123,48 @@
   }
 
   .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .overview,
+  .addToProject {
+    padding: 4rem 0;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .cards {
     grid-template-columns: 1fr;
   }
 }
 
 @media screen and (max-width: 576px) {
+  .heroBanner {
+    padding: 2.5rem 0 2rem;
+  }
+
+  .heroTitle {
+    font-size: clamp(2rem, 9vw, 2.7rem);
+  }
+
+  .heroSubtitle {
+    font-size: 1.05rem;
+    margin: 1.25rem 0 1.5rem;
+  }
+
+  .brandMark {
+    margin-bottom: 1.25rem;
+  }
+
+  .overview,
+  .addToProject {
+    padding: 3rem 0;
+  }
+
   .nextStep {
     align-items: flex-start;
     flex-direction: column;
+    padding: 1.5rem;
   }
 }
 .brandMark {

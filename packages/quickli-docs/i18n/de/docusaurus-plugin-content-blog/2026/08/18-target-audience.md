@@ -78,9 +78,3 @@ Abstraktion verbirgt etwas.
 Der Qualitätsmaßstab des Projekts ist nicht nur *funktioniert es*  -  sondern *ist es noch
 einfach zu verstehen*.
 
-## Als Nächstes
-
-Der nächste Beitrag untersucht, wie KI-Tools während der Entwicklung eingesetzt wurden
-und was diese Erfahrung gelehrt hat.
-
-📖 [Teil 3: KI in der Entwicklung von quiCkLI →](/blog/building-quickli-03-ai-in-development)
