@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/spmse/quickli/compare/docs-v0.2.0...docs-v0.2.1) (2026-08-01)
+
+
+### Bug Fixes
+
+* **docs:** remove broken blog links and improve landing page responsiveness ([#40](https://github.com/spmse/quickli/issues/40)) ([ba51e78](https://github.com/spmse/quickli/commit/ba51e78b115086624fd3ae224a196e8a20df1617))
+
 ## [0.2.0](https://github.com/spmse/quickli/compare/docs-v0.1.1...docs-v0.2.0) (2026-07-31)
 
 
