@@ -19,9 +19,11 @@ with release artifacts attached to GitHub Releases.
 ## Current Release Status
 
 The package is in Alpha. Release Please maintains independent versions and changelogs for the
-core library and documentation site. Merging a Release Please pull request creates the release
-tag and GitHub release. The release workflow may publish the core package to PyPI when the
-protected `pypi` environment is configured.
+core library and documentation site. Both packages are grouped into a single Release Please pull
+request (`separate-pull-requests: false`) so that a PR touching both packages never produces two
+competing release PRs. Merging the Release Please pull request creates the release tag and GitHub
+release for each package that has pending changes. The release workflow may publish the core
+package to PyPI when the protected `pypi` environment is configured.
 
 PyPI trusted publishing must contain this exact publisher configuration:
 
