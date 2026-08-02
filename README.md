@@ -2,8 +2,8 @@
 
 [![CI](https://github.com/spmse/quickli/actions/workflows/ci.yml/badge.svg)](https://github.com/spmse/quickli/actions/workflows/ci.yml)
 [![Coverage](https://github.com/spmse/quickli/actions/workflows/coverage.yml/badge.svg)](https://github.com/spmse/quickli/actions/workflows/coverage.yml)
-[![Core Package](https://img.shields.io/badge/core-0.2.2-blue)](https://pypi.org/project/quickli/)
-[![Docs Package](https://img.shields.io/badge/docs-0.2.1-blueviolet)](https://github.com/spmse/quickli/tree/main/packages/quickli-docs)
+[![Core Package](https://img.shields.io/github/package-json/v/spmse/quickli?filename=packages%2Fcore%2Fpackage.json&label=core)](https://pypi.org/project/quickli/)
+[![Docs Package](https://img.shields.io/github/package-json/v/spmse/quickli?filename=packages%2Fquickli-docs%2Fpackage.json&label=docs)](https://github.com/spmse/quickli/tree/main/packages/quickli-docs)
 [![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13%20%7C%203.14-blue)](https://www.python.org/)
 
 quiCkLI is a minimal, educational Python framework for building command-line interfaces.
