@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/spmse/quickli/compare/docs-v0.2.1...docs-v0.3.0) (2026-08-02)
+
+
+### Features
+
+* auto-read sys.argv ([#46](https://github.com/spmse/quickli/issues/46)) ([b066e8c](https://github.com/spmse/quickli/commit/b066e8c2121a129e7f3bc0f21d36540d392baf56))
+
 ## [0.2.1](https://github.com/spmse/quickli/compare/docs-v0.2.0...docs-v0.2.1) (2026-08-01)
 
 
