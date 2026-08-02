@@ -103,7 +103,7 @@ jobs:
             echo "- Core package coverage: see \\`coverage-summary.txt\\`"
           } > release-evidence.md
 
-      - name: Upload core release evidence
+      - name: Upload core release evidence and publish
         if: needs.release-please.outputs.core_tag != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -117,6 +117,7 @@ jobs:
             packages/core/CHANGELOG.md \
             release-evidence.md \
             --clobber
+          gh release edit "${CORE_TAG}" --draft=false
 
   build-documentation:
     needs: release-please
@@ -176,7 +177,7 @@ jobs:
         with:
           path: packages/quickli-docs/build
 
-      - name: Upload documentation release evidence
+      - name: Upload documentation release evidence and publish
         if: needs.release-please.outputs.docs_tag != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -186,6 +187,7 @@ jobs:
             packages/quickli-docs/CHANGELOG.md \
             release-evidence.md \
             --clobber
+          gh release edit "${DOCS_TAG}" --draft=false
 
   deploy-documentation:
     needs: build-documentation
