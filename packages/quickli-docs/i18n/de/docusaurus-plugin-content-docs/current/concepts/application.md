@@ -100,21 +100,18 @@ Befehle hinzufügen — der Einstiegspunkt wirkt als Fallback, wenn kein Befehls
 :::
 
 :::tip `run()` in einem Wrapper aufrufen
-`Application.run()` gibt einen String zurück. Ausgabe und Exit-Code-Behandlung gehören in
-deinen `main()`-Wrapper, damit die Anwendung unabhängig testbar bleibt.
+`Application.run()` liest `sys.argv[1:]` standardmäßig und gibt einen String zurück.
+Ausgabe und Exit-Code-Behandlung gehören in deinen `main()`-Wrapper, damit die Anwendung
+unabhängig testbar bleibt.
 
 ```python
-import sys
-
-
-def main() -> None:
-    result = app.run(sys.argv[1:])
-    print(result)
-
-
 if __name__ == "__main__":
-    main()
+    print(app.run())
 ```
+
+Übergib eine explizite Liste, um den Standard zu überschreiben: `app.run(["greet", "Ada"])`.
+Setze `auto_sys_argv=False` bei der Konstruktion, um das automatische Lesen vollständig zu
+deaktivieren.
 :::
 
 ## Wie geht es weiter?

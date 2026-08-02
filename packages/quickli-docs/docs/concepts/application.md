@@ -99,21 +99,17 @@ entrypoint acts as a fallback when no command name matches.
 :::
 
 :::tip Wrapping `run()` in an executable
-`Application.run()` returns a string result. Printing and exit-code handling belong to your
-`main()` wrapper so that the application stays independently testable.
+`Application.run()` reads `sys.argv[1:]` by default and returns a string result.
+Printing and exit-code handling belong to your `main()` wrapper so that the application
+stays independently testable.
 
 ```python
-import sys
-
-
-def main() -> None:
-    result = app.run(sys.argv[1:])
-    print(result)
-
-
 if __name__ == "__main__":
-    main()
+    print(app.run())
 ```
+
+Pass an explicit list to override the default: `app.run(["greet", "Ada"])`. Set
+`auto_sys_argv=False` at construction to disable automatic reading entirely.
 :::
 
 ## Where to go next
