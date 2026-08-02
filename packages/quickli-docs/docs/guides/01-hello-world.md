@@ -27,8 +27,6 @@ Save the following file as `hello.py`:
 ```python
 from __future__ import annotations
 
-import sys
-
 from quickli import Application, Argument, Option
 
 
@@ -175,6 +173,8 @@ prints normal results, reports quickli runtime errors, and returns an exit code.
 
 `Application.run(argv)` still accepts explicit tokens when you want that lower-level,
 test-friendly boundary.
+`Application.run()` also reads `sys.argv[1:]` by default when called without arguments.
+Pass an explicit list to override or set `auto_sys_argv=False` to disable automatic reading.
 
 ## Explore help output
 

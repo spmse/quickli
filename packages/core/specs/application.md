@@ -36,9 +36,13 @@ It owns the command registry and dispatches explicit input tokens to a handler.
 - Global options may appear before or after the command name.
 - When both commands and an application entrypoint exist, command names take precedence and
 	the entrypoint acts as a fallback.
-- `Application.run(argv)` receives explicit tokens and returns the selected handler result or
-	generated help text.
-- `Application.run()` does not read `sys.argv`, print results, or choose process exit codes.
+- `Application.run()` reads `sys.argv[1:]` by default when no explicit `argv` argument is
+	passed and `auto_sys_argv=True` (the default). Pass an explicit list to override this for
+	a single call, or set `auto_sys_argv=False` at construction time to use an empty list
+	unconditionally.
+- `Application.run(argv)` returns the selected handler result or generated help text.
+- `Application.run()` does not print results, render process-level errors, or choose process
+	exit codes; those responsibilities belong to the caller unless `main()` is used.
 - `Application.main(argv=None, output_format="text")` provides an executable shell that:
 	- reads `sys.argv[1:]` when `argv` is omitted,
 	- prints successful results to stdout,

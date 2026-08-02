@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from sys import argv
 
 from quickli import Application, Argument, CommandExecutionError, Option, file_path
 from quickli import positive_number
@@ -465,4 +464,4 @@ def _manifest_summary(manifest: Path) -> dict[str, str | None]:
 
 
 if __name__ == "__main__":
-    print(app.run(argv[1:]))
+    print(app.run())

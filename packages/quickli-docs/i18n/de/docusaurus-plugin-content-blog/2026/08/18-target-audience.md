@@ -51,7 +51,7 @@ entwickelt wurden.
 `quiCkLI` trifft bewusste Kompromisse, die in einem produktiven Framework inakzeptabel
 wären:
 
-- Es liest `sys.argv` nicht automatisch.
+- Es liest `sys.argv[1:]` standardmäßig, aber lässt sich mit `auto_sys_argv=False` deaktivieren.
 - Es druckt keine Ausgabe und wählt keine Exit-Codes.
 - Es bietet keine Shell-Vervollständigung.
 - Die Plugin-Erkennung ist manuell.
@@ -65,7 +65,8 @@ Ein Lernender braucht:
 1. **Eine kleine Oberfläche.** Wenn das Framework zwanzig Klassen hat, erfordert das
    Verständnis, alle zwanzig zu kennen. `quickli` hat fünf Kernkonzepte.
 2. **Explizite Grenzen.** Wo endet das Framework und wo beginnt die Anwendung? In
-   `quickli` ist diese Grenze `Application.run(argv)`.
+   `quickli` ist diese Grenze `Application.run()`. Die Verantwortung für Exit-Codes und
+   Ausgabe bleibt bei der Anwendung.
 3. **Ausführbare Beispiele.** Theorie reicht nicht. Die Referenzbeispiele im Repository
    sind echte, ausführbare Tools.
 

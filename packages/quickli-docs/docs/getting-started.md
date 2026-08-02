@@ -38,8 +38,6 @@ Save this example as `hello.py`:
 ```python
 from __future__ import annotations
 
-import sys
-
 from quickli import Application, Argument, Option
 
 
@@ -93,8 +91,10 @@ python hello.py
 `Application.main()` is the beginner-friendly executable entrypoint. It reads `sys.argv[1:]`
 for you, prints the returned value, reports quickli runtime errors, and returns an exit code.
 
-`Application.run()` still receives explicit tokens and returns the handler result, which is
-useful for tests, libraries, and other code that wants direct control of the token list.
+`Application.run()` still returns the handler result for tests, libraries, and other code
+that wants direct control. It also reads `sys.argv[1:]` by default when you call it
+without arguments. Pass an explicit list to override or set `auto_sys_argv=False` to
+disable automatic reading.
 
 ## Where to go next
 

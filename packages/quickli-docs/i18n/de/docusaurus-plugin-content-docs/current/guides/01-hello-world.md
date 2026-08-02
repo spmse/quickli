@@ -28,8 +28,6 @@ Speichere die folgende Datei als `hello.py`:
 ```python
 from __future__ import annotations
 
-import sys
-
 from quickli import Application, Argument, Option
 
 
@@ -177,6 +175,9 @@ einen Exit-Code zurück.
 
 `Application.run(argv)` akzeptiert weiterhin explizite Tokens, wenn du diese niedrigere,
 testfreundliche Grenze direkt verwenden willst.
+`Application.run()` liest ebenfalls standardmäßig `sys.argv[1:]`, wenn du es ohne
+Argumente aufrufst. Übergib eine explizite Liste zum Überschreiben oder setze
+`auto_sys_argv=False`, um das automatische Lesen zu deaktivieren.
 
 ## Die Hilfeausgabe erkunden
 

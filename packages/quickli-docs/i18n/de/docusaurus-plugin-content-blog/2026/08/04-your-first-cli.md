@@ -98,21 +98,17 @@ def greet(name: str, uppercase: bool = False) -> str:
 ## Schritt 3: Die Anwendung ausführen
 
 ```python
-import sys
-
 if __name__ == "__main__":
-    print(app.run(sys.argv[1:]))
+    print(app.run())
 ```
 
-`Application.run(argv)` nimmt eine Liste von Token entgegen und gibt das Handler-Ergebnis
+`Application.run()` liest standardmäßig `sys.argv[1:]` und gibt das Handler-Ergebnis
 zurück. Du entscheidest, was damit zu tun ist.
 
 ## Die vollständige Datei
 
 ```python
 from __future__ import annotations
-
-import sys
 
 from quickli import Application, Argument, Option
 
@@ -141,7 +137,7 @@ def greet(name: str, uppercase: bool = False) -> str:
 
 
 if __name__ == "__main__":
-    print(app.run(sys.argv[1:]))
+    print(app.run())
 ```
 
 ## Probiere es aus

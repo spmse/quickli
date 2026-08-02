@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
-from inspect import getdoc
 import json
 import sys
+from collections.abc import Iterable
+from inspect import getdoc
 from typing import Callable, TextIO
 
 from quickli.argument import Argument
@@ -24,6 +24,9 @@ from quickli.plugin import Plugin
 from quickli.shell_completion import SUPPORTED_SHELLS
 
 ErrorHandler = Callable[[CLIError], CLIError | object | None]
+# Sentinel used to distinguish "caller passed nothing" from "caller passed an explicit empty
+# list []". A plain object() is used so that neither None nor [] can equal it by accident.
+_UNSET: object = object()
 
 
 class Application:
@@ -35,6 +38,7 @@ class Application:
         description: str = "",
         global_options: Iterable[Option] | None = None,
         shell_completion: bool = False,
+        auto_sys_argv: bool = True,
         error_handler: ErrorHandler | None = None,
     ) -> None:
         self.name = name
@@ -47,6 +51,7 @@ class Application:
             handler=lambda **_: None,
             options=self._global_options,
         )
+        self._auto_sys_argv = auto_sys_argv
         self._plugins: list[Plugin] = []
         self._error_handler = error_handler
         if shell_completion:
@@ -189,9 +194,20 @@ class Application:
 
         return decorator
 
-    def run(self, argv: Iterable[str] | None = None) -> object:
-        """Executes the selected command or returns help when no command is given."""
-        arguments = list(argv or [])
+    def run(self, argv: Iterable[str] | None = _UNSET) -> object:  # type: ignore[assignment]
+        """Executes the selected command or returns help when no command is given.
+
+        When *argv* is not supplied and *auto_sys_argv* was set to ``True`` on
+        construction (the default), the argument list is read from
+        :data:`sys.argv` (excluding the program name at index 0).  Pass an
+        explicit list to override this behaviour for a single call, or set
+        ``auto_sys_argv=False`` when creating the :class:`Application` to
+        disable it permanently.
+        """
+        if argv is _UNSET:
+            arguments: list[str] = list(sys.argv[1:]) if self._auto_sys_argv else []
+        else:
+            arguments = list(argv or [])
         if not arguments:
             if self._entrypoint is not None:
                 return self._invoke_entrypoint([], [])

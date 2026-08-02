@@ -34,8 +34,8 @@ Prioritäten im Detail. Das Gesamtbild:
 **Kurzfristig:**
 - Release-Bereitschaft: konsistente Versionierung, verifizierte Distributionen,
   PyPI-Veröffentlichung.
-- Expliziter `sys.argv`/Exit-Code-Wrapper  -  `Application.run(tokens)` bleibt die
-  Bibliotheks-API, aber ein kleiner, optionaler ausführbarer Wrapper wird bereitgestellt.
+- Exit-Code-Wrapper  -  `Application.run()` bleibt die Bibliotheks-API, aber ein kleiner,
+  optionaler ausführbarer Wrapper für Ausgabe, Fehler und Exit-Codes wird bereitgestellt.
 - Bessere Fehler bei unbekannten Befehlen und sauberere Unterbefehl-Komposition.
 
 **Mittelfristig:**

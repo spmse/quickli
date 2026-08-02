@@ -42,8 +42,6 @@ Speichere dieses Beispiel als `hello.py`:
 ```python
 from __future__ import annotations
 
-import sys
-
 from quickli import Application, Argument, Option
 
 
@@ -98,9 +96,10 @@ python hello.py
 Programme. Er liest `sys.argv[1:]` für dich, gibt den Rückgabewert aus, meldet quickli-
 Laufzeitfehler und liefert einen Exit-Code zurück.
 
-`Application.run()` empfängt weiterhin explizite Token und gibt das Handler-Ergebnis
-zurück. Das ist nützlich für Tests, Bibliotheken und anderen Code, der die Tokenliste
-direkt steuern will.
+`Application.run()` gibt das Handler-Ergebnis weiterhin für Tests, Bibliotheken und
+anderen Code zurück, der direkte Kontrolle möchte. Ohne Argumente liest es ebenfalls
+standardmäßig `sys.argv[1:]`. Übergib eine explizite Liste zum Überschreiben oder setze
+`auto_sys_argv=False`, um das automatische Lesen zu deaktivieren.
 
 ## Wie es weitergeht
 
