@@ -13,10 +13,10 @@ python -m pip install -e .[dev]
 
 ## Verify the Install
 
-Run the standard-library test suite from the repository root.
+Run the test suite from the repository root.
 
 ```bash
-PYTHONPATH=src python -m unittest discover -s tests -v
+python -m pytest
 ```
 
 You can also run one of the example applications directly.
@@ -27,13 +27,12 @@ PYTHONPATH=src python examples/simple/quickhead/app.py AGENTS.md -n 5
 
 ## Running the Test Suite
 
-The project uses the Python standard library `unittest` module for the initial test
-suite.
+The project uses `pytest` for the test suite.
 
 ```bash
 python -m ruff check .
 python -m ruff format --check .
-PYTHONPATH=src python -m unittest discover -s tests -v
+python -m pytest
 python -m build --sdist --wheel
 ```
 

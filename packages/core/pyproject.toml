@@ -31,6 +31,8 @@ classifiers = [
 dev = [
     "build>=1.2",
     "coverage[toml]>=7.6",
+    "pytest>=8.3",
+    "pytest-cov>=5.0",
     "ruff>=0.11",
 ]
 
@@ -54,11 +56,16 @@ source = ["quickli"]
 show_missing = true
 skip_empty = true
 
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+pythonpath = ["src"]
+
 [tool.scripts]
-test = "PYTHONPATH=src python -m unittest discover -s tests -v"
+test = "python -m pytest"
 lint = "python -m ruff check ."
 format-check = "python -m ruff format --check ."
-coverage = "python -m coverage run -m unittest discover -s tests -v"
+coverage = "python -m pytest --cov=quickli --cov-report=term-missing --cov-report=xml --cov-fail-under=80"
 build = "python -m build --sdist --wheel"
 
 [tool.ruff]
@@ -67,4 +74,3 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F"]
-

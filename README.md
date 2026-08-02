@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/spmse/quickli/actions/workflows/ci.yml/badge.svg)](https://github.com/spmse/quickli/actions/workflows/ci.yml)
 [![Coverage](https://github.com/spmse/quickli/actions/workflows/coverage.yml/badge.svg)](https://github.com/spmse/quickli/actions/workflows/coverage.yml)
+[![Core Package](https://img.shields.io/github/package-json/v/spmse/quickli?filename=packages%2Fcore%2Fpackage.json&label=core)](https://pypi.org/project/quickli/)
+[![Docs Package](https://img.shields.io/github/package-json/v/spmse/quickli?filename=packages%2Fquickli-docs%2Fpackage.json&label=docs)](https://github.com/spmse/quickli/tree/main/packages/quickli-docs)
 [![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13%20%7C%203.14-blue)](https://www.python.org/)
 
 quiCkLI is a minimal, educational Python framework for building command-line interfaces.
@@ -80,13 +82,13 @@ python -m pip install -e ".[dev]"
 Run the core checks from `packages/core`:
 
 ```bash
-python -m unittest discover -s tests -v
+python -m pytest
 python -m ruff check .
 python -m ruff format --check .
 ```
 
-The repository requires Python 3.12, 3.13, or 3.14. The project uses the standard-library
-`unittest` runner; Ruff, coverage, and build are development dependencies.
+The repository requires Python 3.12, 3.13, or 3.14. The project uses `pytest` for tests;
+Ruff, coverage, and build are development dependencies.
 
 ## Documentation
 

@@ -8,6 +8,7 @@
     "pnpm": ">=11"
   },
   "scripts": {
+    "test": "pnpm run test:core",
     "test:core": "pnpm --filter core run test",
     "lint:core": "pnpm --filter core run lint",
     "format:check:core": "pnpm --filter core run format:check",

@@ -28,7 +28,7 @@ Run these checks before opening a pull request.
 ```bash
 python -m ruff check .
 python -m ruff format --check .
-PYTHONPATH=src python -m unittest discover -s tests -v
+python -m pytest
 python -m build --sdist --wheel
 ```
 
