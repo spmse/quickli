@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.4.0](https://github.com/spmse/quickli/compare/docs-v0.3.1...docs-v0.4.0) (2026-08-02)
+
+
+### Features
+
+* add native TOML configuration file handling ([#19](https://github.com/spmse/quickli/issues/19)) ([b653c59](https://github.com/spmse/quickli/commit/b653c599db0cde48c8d79da8f2edd679dc199c79)), closes [#18](https://github.com/spmse/quickli/issues/18)
+* auto-read sys.argv ([#46](https://github.com/spmse/quickli/issues/46)) ([b066e8c](https://github.com/spmse/quickli/commit/b066e8c2121a129e7f3bc0f21d36540d392baf56))
+* **docs:** update docs ([#37](https://github.com/spmse/quickli/issues/37)) ([8f1dfd5](https://github.com/spmse/quickli/commit/8f1dfd58a8fe9c4a8620b0eea3dfdd3d963c74a7))
+* implement nested `Subcommand` resource and command-level subcommand dispatch ([#15](https://github.com/spmse/quickli/issues/15)) ([b3a0d1a](https://github.com/spmse/quickli/commit/b3a0d1ac0febde27940e94eba321d4466d3b212b))
+* implement quickli plugin system ([#23](https://github.com/spmse/quickli/issues/23)) ([6ea0a3b](https://github.com/spmse/quickli/commit/6ea0a3b4b9b3aefdf60740a88b951decf87cbb7f))
+
+
+### Bug Fixes
+
+* **docs:** mobile overflow in docs homepage hero layout ([#59](https://github.com/spmse/quickli/issues/59)) ([f17e044](https://github.com/spmse/quickli/commit/f17e04471d355767d9de238d8bac5a2332727568))
+* **docs:** remove broken blog links and improve landing page responsiveness ([#40](https://github.com/spmse/quickli/issues/40)) ([ba51e78](https://github.com/spmse/quickli/commit/ba51e78b115086624fd3ae224a196e8a20df1617))
+* fix ci release automation ([#33](https://github.com/spmse/quickli/issues/33)) ([3ff003d](https://github.com/spmse/quickli/commit/3ff003d2cc6ec7165bac8287533b7b17f484b7c0))
+
 ## [0.3.1](https://github.com/spmse/quickli/compare/docs-v0.3.0...docs-v0.3.1) (2026-08-02)
 
 
