@@ -26,6 +26,18 @@ pnpm start
 pnpm build
 ```
 
+## Mobile responsiveness screenshots (Issue #58)
+
+The following screenshots show the same homepage hero area on mobile.
+
+### Before
+
+![Homepage hero on mobile before responsiveness fix](https://github.com/user-attachments/assets/67b4d02b-7d31-4c8e-8eea-e95c8adb4ac9)
+
+### After
+
+![Homepage hero on mobile after responsiveness fix](./static/img/issues/58/hero-mobile-after.png)
+
 ## Deploy
 
 Deployment to GitHub Pages is handled by CI. To deploy manually:
