@@ -4,14 +4,26 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from inspect import getdoc
-from typing import Callable
+import json
+import sys
+from typing import Callable, TextIO
 
 from quickli.argument import Argument
 from quickli.command import Command, Subcommand
-from quickli.exceptions import CommandNotFoundError, CommandRegistrationError, PluginLoadError
+from quickli.exceptions import (
+    CLIError,
+    CommandExecutionError,
+    CommandNotFoundError,
+    CommandRegistrationError,
+    InternalCLIError,
+    PluginLoadError,
+    UserCodeError,
+)
 from quickli.option import Option
 from quickli.plugin import Plugin
 from quickli.shell_completion import SUPPORTED_SHELLS
+
+ErrorHandler = Callable[[CLIError], CLIError | object | None]
 
 
 class Application:
@@ -23,6 +35,7 @@ class Application:
         description: str = "",
         global_options: Iterable[Option] | None = None,
         shell_completion: bool = False,
+        error_handler: ErrorHandler | None = None,
     ) -> None:
         self.name = name
         self.description = description.strip()
@@ -35,6 +48,7 @@ class Application:
             options=self._global_options,
         )
         self._plugins: list[Plugin] = []
+        self._error_handler = error_handler
         if shell_completion:
             self._register_shell_completion_command()
 
@@ -207,6 +221,37 @@ class Application:
             global_keyword_arguments,
         )
 
+    def main(
+        self,
+        argv: Iterable[str] | None = None,
+        *,
+        output_format: str = "text",
+        stdout: TextIO | None = None,
+        stderr: TextIO | None = None,
+        error_handler: ErrorHandler | None = None,
+    ) -> int:
+        """Runs the application as an executable shell with output and error handling."""
+        if output_format not in {"text", "json"}:
+            raise ValueError("output_format must be either 'text' or 'json'.")
+
+        runtime_arguments = list(sys.argv[1:] if argv is None else argv)
+        output_stream = sys.stdout if stdout is None else stdout
+        error_stream = sys.stderr if stderr is None else stderr
+
+        try:
+            result = self.run(runtime_arguments)
+        except Exception as error:
+            resolved_error = self._normalize_runtime_error(error)
+            handled_error = self._apply_error_handler(resolved_error, error_handler)
+            rendered_error = self._render_error(handled_error, output_format=output_format)
+            self._write_output(error_stream, rendered_error)
+            return handled_error.exit_code
+
+        rendered_output = self._render_result(result, output_format=output_format)
+        if rendered_output:
+            self._write_output(output_stream, rendered_output)
+        return 0
+
     def render_help(self) -> str:
         """Builds a plain-text help output for the current application."""
         if self._entrypoint is not None and not self._commands:
@@ -291,7 +336,10 @@ class Application:
         supported = ", ".join(SUPPORTED_SHELLS)
 
         def _handler(shell: str) -> str:
-            return self.generate_completion(shell)
+            try:
+                return self.generate_completion(shell)
+            except ValueError as error:
+                raise CommandExecutionError(str(error)) from error
 
         self.register(
             _handler,
@@ -355,7 +403,7 @@ class Application:
             if option.takes_value and inline_value is None:
                 index += 1
                 if index >= len(arguments):
-                    raise CommandNotFoundError("Missing command name after global options.")
+                    raise CommandExecutionError(f"Option '{token}' requires a value.")
                 global_tokens.append(arguments[index])
             index += 1
 
@@ -387,7 +435,7 @@ class Application:
                     if global_option.takes_value and global_inline_value is None:
                         index += 1
                         if index >= len(arguments):
-                            raise CommandRegistrationError(f"Option '{token}' requires a value.")
+                            raise CommandExecutionError(f"Option '{token}' requires a value.")
                         global_tokens.append(arguments[index])
                     index += 1
                     continue
@@ -486,3 +534,77 @@ class Application:
 
         option = option_map.get(option_token)
         return option, inline_value
+
+    def _normalize_runtime_error(self, error: Exception) -> CLIError:
+        if isinstance(error, CLIError):
+            return error
+        return InternalCLIError(
+            "quickli encountered an unexpected internal error.",
+            original_error=error,
+        )
+
+    def _apply_error_handler(
+        self,
+        error: CLIError,
+        error_handler: ErrorHandler | None,
+    ) -> CLIError:
+        active_handler = self._error_handler if error_handler is None else error_handler
+        if active_handler is None:
+            return error
+
+        try:
+            handled_error = active_handler(error)
+        except CLIError as handler_error:
+            return handler_error
+        except Exception as handler_error:
+            return UserCodeError(
+                "User code raised an exception during error handling.",
+                original_error=handler_error,
+            )
+
+        if handled_error is None:
+            return error
+        if isinstance(handled_error, CLIError):
+            return handled_error
+        return CLIError(
+            str(handled_error),
+            code=error.code,
+            category=error.category,
+            exit_code=error.exit_code,
+            details={"handled_value": handled_error},
+            original_error=error.original_error,
+        )
+
+    def _render_result(self, result: object, *, output_format: str) -> str:
+        if output_format == "json":
+            return json.dumps(
+                {
+                    "ok": True,
+                    "result": result,
+                },
+                default=self._json_default,
+            )
+        if result is None:
+            return ""
+        return str(result)
+
+    def _render_error(self, error: CLIError, *, output_format: str) -> str:
+        if output_format == "json":
+            return json.dumps(
+                {
+                    "ok": False,
+                    "error": error.to_dict(),
+                },
+                default=self._json_default,
+            )
+        return str(error)
+
+    def _json_default(self, value: object) -> object:
+        if isinstance(value, CLIError):
+            return value.to_dict()
+        return str(value)
+
+    def _write_output(self, stream: TextIO, content: str) -> None:
+        stream.write(content)
+        if content and not content.endswith("\n"):
+            stream.write("\n")

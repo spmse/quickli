@@ -7,7 +7,7 @@ from quickli.config import Config, ConfigField, ConfigIssue, ConfigSchema
 from quickli.config import add_auto_init_config, generate_schema_json, validate_config
 from quickli.exceptions import CLIError, CommandExecutionError, CommandNotFoundError
 from quickli.exceptions import CommandRegistrationError, ConfigError, ConfigValidationError
-from quickli.exceptions import PluginLoadError
+from quickli.exceptions import InternalCLIError, PluginLoadError, UserCodeError
 from quickli.option import Option
 from quickli.parsers import load_json, load_toml, load_yaml, render_json, render_toml, render_yaml
 from quickli.plugin import Plugin
@@ -34,9 +34,11 @@ __all__ = [
     "ConfigIssue",
     "ConfigSchema",
     "ConfigValidationError",
+    "InternalCLIError",
     "Option",
     "Plugin",
     "PluginLoadError",
+    "UserCodeError",
     "add_auto_init_config",
     "load_json",
     "load_toml",
