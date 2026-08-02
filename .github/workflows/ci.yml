@@ -12,6 +12,9 @@ on:
       - "packages/core/**"
       - ".github/workflows/ci.yml"
 
+permissions:
+  contents: read
+
 jobs:
   changes:
     runs-on: ubuntu-latest
