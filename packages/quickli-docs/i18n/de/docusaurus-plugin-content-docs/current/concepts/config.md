@@ -1,10 +1,22 @@
 ---
 sidebar_position: 7
+description: Konfigurationsdatei-Unterstützung für quiCkLI-Anwendungen mit TOML.
+keywords: [quickli, config, toml, konfiguration, schema, validieren]
 ---
 
 # Konfigurationsdateien
 
 quickli bietet native Unterstützung für TOML-Konfigurationsdateien über das Modul `config`.
+Konfigurationsdateien liegen außerhalb der Befehlshierarchie und werden von der Anwendung
+geladen, bevor Befehle ausgeführt werden.
+
+```
+Application
+├── Command
+│   ├── Argument
+│   └── Option
+└── Config   ← du bist hier (beim Start geladen, nicht Teil des Befehlsbaums)
+```
 
 ## Ressourcen
 
@@ -69,3 +81,25 @@ Beide sind Unterklassen von `CLIError`.
 - **Lesen**: verwendet `tomllib` aus der Python-Standardbibliothek (Python 3.11+).
 - **Schreiben**: verwendet einen integrierten Serialisierer für Skalare und verschachtelte Tabellen auf einer Ebene.
 - `None`-Werte werden beim Schreiben stillschweigend übersprungen.
+
+## Tipps
+
+:::tip Config vs. Option für persistente Einstellungen
+Verwende eine **Konfigurationsdatei** für Einstellungen, die Nutzer einmal setzen und
+zwischen Ausführungen beibehalten möchten — zum Beispiel einen Standard-Serverhost oder
+eine API-Basis-URL. Verwende eine **Befehlsoption** für Einstellungen, die sich pro
+Ausführung ändern, etwa das Ausgabeformat oder einen einmaligen Zielpfad.
+:::
+
+:::tip Auto-Init beim ersten Start
+`add_auto_init_config` ist der empfohlene Weg, eine Konfigurationsdatei zu initialisieren.
+Beim ersten Start schreibt es eine Datei mit allen Standardwerten, damit der Nutzer einen
+konkreten Ausgangspunkt zum Bearbeiten hat. Bei jedem weiteren Start lädt und validiert es
+die vorhandene Datei.
+:::
+
+## Wie geht es weiter?
+
+- Siehe **[Application](./application.md)**, um zu erfahren, wie Config beim Start integriert wird.
+- Siehe **[Parsers](./parsers.md)**, wenn du strukturierte Daten aus Befehlsargumenten statt aus
+  einer persistenten Datei lesen möchtest.

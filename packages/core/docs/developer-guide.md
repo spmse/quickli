@@ -47,10 +47,16 @@ PYTHONPATH=src python examples/simple/ls-cli/quickls.py . --suffix .md
 PYTHONPATH=src python examples/complex/pyk5l/app.py get pods --verbose
 ```
 
+## Runtime Boundary
+
+- `Application.run()` remains the low-level dispatcher for explicit token lists.
+- `Application.main()` is the standard executable runtime. It reads `sys.argv[1:]` by
+  default, prints results, returns exit codes, and can emit JSON payloads for automation.
+- Use the application-level `error_handler` callback when an integrating application needs a
+  custom global error layer on top of quickli errors.
+
 ## Planned Work
 
-- A standard executable runtime is planned separately. `Application.run()` currently accepts
-	explicit tokens and returns handler results; callers own `sys.argv`, output, and exit codes.
 - Release Please maintains independent releases for the core library and documentation site.
 	Merging its release pull requests creates GitHub releases and triggers evidence generation.
 

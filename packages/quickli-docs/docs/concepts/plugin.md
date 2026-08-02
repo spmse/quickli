@@ -1,5 +1,7 @@
 ---
 sidebar_position: 6
+description: Plugins extend a quiCkLI application with reusable command sets.
+keywords: [quickli, plugin, extension, register, load_plugin]
 ---
 
 # Plugin
@@ -7,6 +9,16 @@ sidebar_position: 6
 Plugins extend a `quickli` application without modifying the core package.
 Each plugin registers its commands and resources against an `Application` instance through a
 well-defined contract.
+
+Plugins exist at the same level as regular commands in the hierarchy: they attach new
+commands to an existing `Application` from the outside.
+
+```
+Application
+├── Command (registered directly)
+└── Plugin              ← you are here
+    └── Command (registered by the plugin)
+```
 
 ## Plugin contract
 
@@ -73,6 +85,21 @@ try:
 except quickli.PluginLoadError as error:
     print(f"Failed to load plugin: {error}")
 ```
+
+## Tips
+
+:::tip When to use a plugin
+Use a plugin when you want to package a reusable set of commands as a separate Python
+module or package. For example, a shared `audit` plugin can be loaded into any team's
+CLI without copying code. For small, app-specific commands, just use `@app.command`
+directly.
+:::
+
+:::tip Plugins cannot override existing commands
+A plugin cannot replace a command that has already been registered — either by the
+application itself or by an earlier plugin. Design your plugins to add new commands
+rather than replace existing ones.
+:::
 
 ## Current status
 

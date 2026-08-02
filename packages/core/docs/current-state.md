@@ -26,7 +26,7 @@ The following YAML is an index for agents. Detailed behavior is defined by the s
 ```yaml
 project: quickli
 status: alpha
-runtime: library-level
+runtime: library-and-shell
 implemented:
   - application_entrypoint
   - named_commands
@@ -45,8 +45,9 @@ implemented:
   - shell_completion
   - configuration_files
   - plugin_loading
-not_implemented:
   - standard_executable_runtime
+  - structured_cli_errors
+not_implemented:
   - plugin_discovery_via_entry_points
 release_process: tag-driven
 release_please: implemented
@@ -54,8 +55,8 @@ release_version_source: core_release_tag
 ```
 
 `Application.run(tokens)` accepts explicit tokens and returns a handler result or help text.
-It does not read `sys.argv`, print results, render process-level errors, or choose exit codes.
-The caller owns those executable-program responsibilities.
+`Application.main(argv=None)` provides the executable shell. It reads `sys.argv[1:]` by
+default, prints results, maps failures to quickli errors, and returns exit codes.
 
 Core JSON/YAML rendering and loading helpers are available in `quickli.parsers`. The `pyk5l`
 example still keeps its own table and wide renderers.
@@ -81,7 +82,7 @@ example still keeps its own table and wide renderers.
 | Repeated flag                              | Accumulates occurrences as an integer    | option spec                |
 | Converter                                  | Runs before validators and handler       | validation guide           |
 | Validator                                  | Runs after conversion and before handler | validation guide           |
-| Handler exception                          | Propagates; no process policy            | command, runtime boundary  |
+| Handler exception                          | Raises `UserCodeError` with original cause | command, tests          |
 | `load_plugin` with valid plugin            | Calls register, appends to plugin list   | plugin spec, tests         |
 | `load_plugin` with empty name              | Raises `PluginLoadError`                 | plugin spec, tests         |
 | `load_plugin` with duplicate name          | Raises `PluginLoadError`                 | plugin spec, tests         |
@@ -102,17 +103,19 @@ tests.
 | `CommandRegistrationError` | Invalid or duplicate registration                    | registration         |
 | `CommandNotFoundError`     | Unknown command without entrypoint                   | application dispatch |
 | `CommandExecutionError`    | Parsing, conversion, validation, or binding failures | command              |
+| `UserCodeError`            | User-provided handler or error override failure      | runtime boundary     |
+| `InternalCLIError`         | Unexpected quickli internal runtime failure          | runtime boundary     |
 | `PluginLoadError`          | Invalid plugin name, duplicate plugin, or register failure | plugin loading |
-| Any handler exception      | Failure in application handler code                  | caller; not wrapped  |
 
-Framework exceptions are library errors. The current library does not decide whether to print
-them, convert them to a process status, or show a traceback. A future executable runtime must
-define that contract separately.
+Framework exceptions remain usable as library errors. `Application.main()` now provides the
+default executable policy for printing them, serializing them as JSON, and returning exit
+codes.
 
 ## Do Not Assume
 
 - Do not assume `Application.run()` reads `sys.argv` or behaves like a complete executable.
-- Do not assume a returned string is printed; the caller must print or otherwise use it.
+- Do not assume `Application.run()` prints a returned string; call `Application.main()` when
+  you want quickli to own process I/O.
 - Do not assume unknown commands already follow the approved future failure behavior.
 - Do not assume advanced YAML syntax is supported by the minimal core YAML parser.
 - Do not assume plugin discovery via entry points is supported; only explicit loading through

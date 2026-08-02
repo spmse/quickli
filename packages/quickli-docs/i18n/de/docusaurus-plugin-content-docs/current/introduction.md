@@ -27,10 +27,10 @@ wird:
 - `Option` beschreibt benannten Input und Schalter.
 - Konverter und Validatoren wandeln Text in geprüfte Werte um.
 
-Das Framework ist bewusst abhängigkeitsarm und gibt Handler-Ergebnisse an den Aufrufer
-zurück. Es entscheidet nicht, wie die Ausgabe gedruckt, Prozessfehler behandelt oder
-Exit-Codes gewählt werden. Diese Verantwortlichkeiten bleiben in der Anwendung sichtbar,
-die quickli verwendet.
+Das Framework ist bewusst abhängigkeitsarm und hält die Bibliotheksgrenze sichtbar.
+`Application.run()` gibt weiterhin Handler-Ergebnisse an den Aufrufer zurück, während
+`Application.main()` eine Standardhülle für `sys.argv`, Ausgabe, strukturierte
+Laufzeitfehler und Exit-Codes bereitstellt.
 
 ## Ein kleines Beispiel
 

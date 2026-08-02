@@ -24,10 +24,11 @@ The Python package and distribution name is `quickli`. The stylized project name
 - configuration schemas, validation, and JSON Schema generation
 - explicit plugin registration and loading
 - Bash, PowerShell, and ZSH completion generation
+- executable-shell output with structured quickli errors and JSON mode
 
-The core API accepts explicit argument tokens through `Application.run()`. It does not
-read `sys.argv`, print handler results, or choose process exit codes; an executable wrapper
-owns those responsibilities.
+The core API accepts explicit argument tokens through `Application.run()`. For executable
+programs, `Application.main()` reads `sys.argv` by default, prints results, maps failures to
+quickli errors, and returns process-friendly exit codes.
 
 ## Quick example
 
@@ -48,6 +49,16 @@ def greet(name: str, uppercase: bool = False) -> str:
 
 
 print(app.run(["Ada", "--uppercase"]))
+```
+
+For an executable shell:
+
+```python
+import sys
+
+
+if __name__ == "__main__":
+    sys.exit(app.main())
 ```
 
 ## Repository layout

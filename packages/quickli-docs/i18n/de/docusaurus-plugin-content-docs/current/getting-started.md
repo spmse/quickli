@@ -69,7 +69,7 @@ def greet(name: str, uppercase: bool = False) -> str:
 
 
 if __name__ == "__main__":
-    print(app.run())
+    sys.exit(app.main())
 ```
 
 ## Ausführen
@@ -92,9 +92,14 @@ Hilfs-Strings. Führe sie ohne Argumente aus, um den Hilfstext zu sehen:
 python hello.py
 ```
 
-`Application.run()` liest standardmäßig `sys.argv[1:]` und gibt das Handler-Ergebnis zurück.
-Übergib eine explizite Liste zum Überschreiben: `app.run(["Ada", "--uppercase"])`.
-Setze `auto_sys_argv=False` bei der Konstruktion, um das automatische Lesen zu deaktivieren.
+`Application.main()` ist der einsteigerfreundliche Einstiegspunkt für ausführbare
+Programme. Er liest `sys.argv[1:]` für dich, gibt den Rückgabewert aus, meldet quickli-
+Laufzeitfehler und liefert einen Exit-Code zurück.
+
+`Application.run()` gibt das Handler-Ergebnis weiterhin für Tests, Bibliotheken und
+anderen Code zurück, der direkte Kontrolle möchte. Ohne Argumente liest es ebenfalls
+standardmäßig `sys.argv[1:]`. Übergib eine explizite Liste zum Überschreiben oder setze
+`auto_sys_argv=False`, um das automatische Lesen zu deaktivieren.
 
 ## Wie es weitergeht
 

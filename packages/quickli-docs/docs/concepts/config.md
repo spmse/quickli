@@ -1,10 +1,22 @@
 ---
 sidebar_position: 7
+description: Configuration file support for quiCkLI applications using TOML.
+keywords: [quickli, config, toml, configuration, schema, validate]
 ---
 
 # Configuration Files
 
-quickli provides native TOML configuration file support through the `config` module.
+`quickli` provides native TOML configuration file support through the `config` module.
+Configuration files sit outside the command hierarchy and are loaded by the application
+before commands run.
+
+```
+Application
+├── Command
+│   ├── Argument
+│   └── Option
+└── Config   ← you are here (loaded at startup, not part of the command tree)
+```
 
 ## Resources
 
@@ -69,3 +81,24 @@ Both are subclasses of `CLIError`.
 - **Reading**: uses `tomllib` from the Python standard library (Python 3.11+).
 - **Writing**: uses a built-in serialiser for scalars and one level of nested tables.
 - `None` values are silently skipped when writing.
+
+## Tips
+
+:::tip Config vs. Option for persistent settings
+Use a **config file** for settings that users set once and expect to persist between
+runs — for example, a default server host or an API base URL. Use a **command option**
+for settings that change on a per-invocation basis, such as the output format or a
+one-off target path.
+:::
+
+:::tip Auto-init on first run
+`add_auto_init_config` is the recommended way to initialise a config file. It writes a
+file with all default values on the first run so the user has a concrete starting point
+to edit. On every subsequent run it loads and validates the existing file.
+:::
+
+## Where to go next
+
+- See **[Application](./application.md)** for how to integrate config loading at startup.
+- See **[Parsers](./parsers.md)** if you need to parse structured data from command arguments
+  rather than from a persistent file.

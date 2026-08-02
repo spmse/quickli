@@ -55,7 +55,7 @@ def greet(name: str, uppercase: bool = False) -> str:
 
 
 if __name__ == "__main__":
-    print(app.run())
+    sys.exit(app.main())
 ```
 
 ## Ausführen
@@ -159,20 +159,25 @@ Der Handler erhält die geparsten Werte direkt. `quickli` ordnet Argument- und
 Optionsnamen den Parameternamen zu. Der Standardwert für `uppercase` entspricht der
 Abwesenheit der Option.
 
-Der Handler gibt einen String zurück. `quickli` gibt nichts aus; diese Verantwortung
-bleibt beim ausführbaren Einstiegspunkt.
+Der Handler gibt einen String zurück. `Application.main()` gibt diesen Wert bei
+erfolgreichen Läufen aus.
 
 ### Der Einstiegspunkt
 
 ```python
 if __name__ == "__main__":
-    print(app.run())
+    sys.exit(app.main())
 ```
 
-`Application.run()` liest standardmäßig `sys.argv[1:]`, dispatcht den passenden Handler
-und gibt das Ergebnis zurück. Übergib eine explizite Liste zum Überschreiben:
-`app.run(["Ada", "--uppercase"])`. Setze `auto_sys_argv=False` bei der Konstruktion,
-um das automatische Lesen zu deaktivieren.
+`Application.main()` ist der einfachste Einstiegspunkt für ausführbare Programme. Er liest
+`sys.argv[1:]`, gibt normale Ergebnisse aus, meldet quickli-Laufzeitfehler und liefert
+einen Exit-Code zurück.
+
+`Application.run(argv)` akzeptiert weiterhin explizite Tokens, wenn du diese niedrigere,
+testfreundliche Grenze direkt verwenden willst.
+`Application.run()` liest ebenfalls standardmäßig `sys.argv[1:]`, wenn du es ohne
+Argumente aufrufst. Übergib eine explizite Liste zum Überschreiben oder setze
+`auto_sys_argv=False`, um das automatische Lesen zu deaktivieren.
 
 ## Die Hilfeausgabe erkunden
 

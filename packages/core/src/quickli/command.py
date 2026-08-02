@@ -7,7 +7,8 @@ from inspect import Signature, signature
 from typing import Callable
 
 from quickli.argument import Argument
-from quickli.exceptions import CommandExecutionError, CommandRegistrationError
+from quickli.exceptions import CLIError, CommandExecutionError, CommandRegistrationError
+from quickli.exceptions import UserCodeError
 from quickli.option import Option
 
 
@@ -127,7 +128,15 @@ class Command:
         except TypeError as error:
             raise CommandExecutionError(str(error)) from error
 
-        return self.handler(*positionals, **keyword_arguments)
+        try:
+            return self.handler(*positionals, **keyword_arguments)
+        except CLIError:
+            raise
+        except Exception as error:
+            raise UserCodeError(
+                "User code raised an exception during command execution.",
+                original_error=error,
+            ) from error
 
     def parse(
         self,
