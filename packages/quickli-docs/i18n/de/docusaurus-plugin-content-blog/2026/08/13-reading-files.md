@@ -93,7 +93,6 @@ $ ),
 ```python
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 from quickli import Application, Argument, Option, file_path
@@ -150,7 +149,7 @@ def show(
 
 
 if __name__ == "__main__":
-    print(app.run(sys.argv[1:]))
+    print(app.run())
 ```
 
 ## Was du gelernt hast

@@ -114,8 +114,7 @@ from quickli_hello import HelloPlugin
 app = quickli.Application(name="my-app", description="Meine CLI-Anwendung.")
 app.load_plugin(HelloPlugin())
 
-import sys
-print(app.run(sys.argv[1:]))
+print(app.run())
 ```
 
 ## Referenz

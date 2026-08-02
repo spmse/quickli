@@ -27,8 +27,6 @@ Save the following file as `hello.py`:
 ```python
 from __future__ import annotations
 
-import sys
-
 from quickli import Application, Argument, Option
 
 
@@ -56,7 +54,7 @@ def greet(name: str, uppercase: bool = False) -> str:
 
 
 if __name__ == "__main__":
-    print(app.run(sys.argv[1:]))
+    print(app.run())
 ```
 
 ## Run it
@@ -167,11 +165,12 @@ in your executable entry point.
 
 ```python
 if __name__ == "__main__":
-    print(app.run(sys.argv[1:]))
+    print(app.run())
 ```
 
-`Application.run(argv)` accepts explicit tokens (not `sys.argv` directly). This makes the
-boundary between your program and the operating system visible and testable.
+`Application.run()` reads `sys.argv[1:]` by default, dispatches to the matching handler,
+and returns the result. Pass an explicit list to override: `app.run(["Ada", "--uppercase"])`.
+Set `auto_sys_argv=False` at construction to disable automatic reading.
 
 ## Explore help output
 

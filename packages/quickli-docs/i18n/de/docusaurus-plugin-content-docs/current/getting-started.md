@@ -42,8 +42,6 @@ Speichere dieses Beispiel als `hello.py`:
 ```python
 from __future__ import annotations
 
-import sys
-
 from quickli import Application, Argument, Option
 
 
@@ -71,7 +69,7 @@ def greet(name: str, uppercase: bool = False) -> str:
 
 
 if __name__ == "__main__":
-    print(app.run(sys.argv[1:]))
+    print(app.run())
 ```
 
 ## Ausführen
@@ -94,9 +92,9 @@ Hilfs-Strings. Führe sie ohne Argumente aus, um den Hilfstext zu sehen:
 python hello.py
 ```
 
-`Application.run()` empfängt explizite Token und gibt das Handler-Ergebnis zurück.
-`sys.argv` wird nicht automatisch gelesen; das Beispiel macht diese Grenze mit
-`sys.argv[1:]` explizit.
+`Application.run()` liest standardmäßig `sys.argv[1:]` und gibt das Handler-Ergebnis zurück.
+Übergib eine explizite Liste zum Überschreiben: `app.run(["Ada", "--uppercase"])`.
+Setze `auto_sys_argv=False` bei der Konstruktion, um das automatische Lesen zu deaktivieren.
 
 ## Wie es weitergeht
 

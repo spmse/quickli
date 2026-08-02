@@ -49,7 +49,7 @@ are excellent tools built for exactly that purpose.
 
 `quiCkLI` makes explicit tradeoffs that would be unacceptable in a production framework:
 
-- It does not read `sys.argv` automatically.
+- It reads `sys.argv[1:]` by default, but lets you opt out with `auto_sys_argv=False`.
 - It does not print output or choose exit codes.
 - It does not provide shell completion.
 - Its plugin discovery is manual.
@@ -64,9 +64,9 @@ A learner needs:
    requires understanding all twenty. `quickli` has five core concepts. You can hold the
    whole model in your head.
 2. **Explicit boundaries.** Where does the framework end and the application begin? In
-   `quickli`, that boundary is `Application.run(argv)`. The application passes tokens in
-   and receives a result back. Everything that happens to process exit codes, output
-   formatting, and `sys.argv` is the application's responsibility.
+   `quickli`, that boundary is `Application.run()`. The application receives a result back.
+   Everything that happens to process exit codes and output formatting is the
+   application's responsibility.
 3. **Runnable examples.** Theory is not enough. The reference examples in the repository
    are real, runnable tools that demonstrate each concept in context.
 

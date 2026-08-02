@@ -181,8 +181,7 @@ from quickli_hello import HelloPlugin
 app = quickli.Application(name="my-app", description="My CLI application.")
 app.load_plugin(HelloPlugin())
 
-import sys
-print(app.run(sys.argv[1:]))
+print(app.run())
 ```
 
 Running `python app.py hello Ada --uppercase` produces `HELLO ADA`.
