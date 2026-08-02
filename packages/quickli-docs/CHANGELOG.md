@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/spmse/quickli/compare/docs-v0.3.0...docs-v0.3.1) (2026-08-02)
+
+
+### Bug Fixes
+
+* **docs:** mobile overflow in docs homepage hero layout ([#59](https://github.com/spmse/quickli/issues/59)) ([f17e044](https://github.com/spmse/quickli/commit/f17e04471d355767d9de238d8bac5a2332727568))
+
 ## [0.3.0](https://github.com/spmse/quickli/compare/docs-v0.2.1...docs-v0.3.0) (2026-08-02)
 
 
