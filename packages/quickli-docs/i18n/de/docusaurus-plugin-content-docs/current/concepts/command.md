@@ -1,11 +1,28 @@
 ---
 sidebar_position: 3
+description: Command repräsentiert eine ausführbare Aktion in einer quiCkLI-CLI.
+keywords: [quickli, command, subcommand, handler, registrierung]
 ---
 
 # Command
 
-`Command` repräsentiert eine ausführbare Operation in einer CLI.
-`Subcommand` erbt von `Command` und wird für verschachtelte Befehlsbäume verwendet.
+`Command` repräsentiert eine ausführbare Operation in einer CLI. Befehle leben direkt in
+einer `Application` und sind der wichtigste Weg, benannte Aktionen für den Nutzer
+bereitzustellen.
+
+```
+Application
+└── Command   ← du bist hier
+    ├── Argument
+    ├── Option
+    └── Subcommand
+        ├── Argument
+        └── Option
+```
+
+`Subcommand` erbt von `Command` und wird für verschachtelte Befehlsbäume verwendet. Er
+verhält sich identisch zu einem `Command`, ist aber unter einem übergeordneten Befehl und
+nicht direkt unter der `Application` eingehängt.
 
 ## Bestandteile eines Befehls
 
@@ -27,7 +44,32 @@ Befehle werden unter eindeutigen Namen registriert. Funktionsnamen werden durch 
 Ersetzen von Unterstrichen durch Bindestriche normalisiert, sofern kein Name ausdrücklich
 angegeben wurde.
 
+## Einfaches Befehlsbeispiel
+
+```python
+from quickli import Application, Argument, Option
+
+app = Application(name="demo")
+
+
+@app.command(
+    help_text="Jemanden begrüßen.",
+    arguments=[Argument("name")],
+    options=[Option("shout", is_flag=True)],
+)
+def greet(name: str, shout: bool = False) -> str:
+    msg = f"Hello, {name}!"
+    return msg.upper() if shout else msg
+
+
+print(app.run(["greet", "Alice"]))            # Hello, Alice!
+print(app.run(["greet", "Alice", "--shout"]))  # HELLO, ALICE!
+```
+
 ## Beispiel für verschachtelte Subcommands
+
+Verwende `Subcommand`, wenn ein Befehl natürlich weitere Aktionen gruppiert, etwa
+`env create` und `env delete`.
 
 ```python
 from quickli import Application, Argument, Subcommand
@@ -51,3 +93,29 @@ def env() -> str:
 
 print(app.run(["env", "create", "dev"]))
 ```
+
+## Tipps
+
+:::tip Command vs. Subcommand
+Verwende einen Top-Level-`@app.command` für voneinander unabhängige Aktionen wie `build`
+und `clean`. Verwende einen `Subcommand`, wenn Aktionen logisch einen gemeinsamen
+Namensraum teilen, z. B. `env create`, `env list` und `env delete`.
+:::
+
+:::tip Hilfetext aus Docstrings
+Wenn du kein `help_text` übergibst, verwendet `quickli` automatisch den Docstring der
+Funktion. Dadurch bleibt der Handler-Code selbst dokumentierend.
+
+```python
+@app.command()
+def build() -> str:
+    """Das Projekt bauen und ein Release-Artefakt erzeugen."""
+    return "building…"
+```
+:::
+
+## Wie geht es weiter?
+
+- Füge **[Arguments](./argument.md)** hinzu, um positionelle Eingaben anzunehmen.
+- Füge **[Options](./option.md)** hinzu, um benannte Flags und Werte anzunehmen.
+- Geh zurück zu **[Application](./application.md)**, um zu verstehen, wie Befehle weitergeleitet werden.
