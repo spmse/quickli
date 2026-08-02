@@ -16,14 +16,16 @@ sidebar_position: 2
 
 ## Ausführungsmodell
 
-`Application.run(argv)` akzeptiert explizite Kommandozeilen-Token und gibt das
-ausgewählte Handler-Ergebnis (oder generierten Hilfstext) zurück.
+`Application.run()` dispatcht den ausgewählten Befehl und gibt das Handler-Ergebnis
+(oder generierten Hilfstext) zurück.
 
-- Er liest `sys.argv` **nicht** selbst.
+- Er liest `sys.argv[1:]` **standardmäßig**, wenn er ohne Argumente aufgerufen wird.
+- Übergib eine explizite Liste zum Überschreiben: `app.run(["greet", "Ada"])`.
+- Setze `auto_sys_argv=False` bei der Konstruktion, um stattdessen immer eine leere Liste zu verwenden.
 - Er gibt **standardmäßig keine** Ausgabe aus.
 - Er wählt **keine** Prozess-Exit-Codes.
 
-Diese Grenze hält das Laufzeitverhalten in deinem ausführbaren Wrapper explizit.
+Die Ausgabe- und Exit-Code-Verantwortung bleibt bei deinem ausführbaren Wrapper.
 
 ## Registrierungs-API
 

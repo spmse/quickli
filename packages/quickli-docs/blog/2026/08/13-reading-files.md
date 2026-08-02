@@ -27,8 +27,8 @@ The example is `quickcat`, a minimal file viewer modeled after the Unix `cat` co
 
 :::note
 
-The examples pass argument tokens explicitly. `quickli` does not read `sys.argv` on its
-own, so the surrounding executable remains responsible for that integration.
+`Application.run()` reads `sys.argv[1:]` by default. Pass an explicit list to override,
+or set `auto_sys_argv=False` to disable automatic reading.
 
 :::
 
@@ -106,7 +106,6 @@ The handler receives `include` as `list[Path] | None`. When absent, it is `None`
 ```python
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 from quickli import Application, Argument, Option, file_path
@@ -163,7 +162,7 @@ def show(
 
 
 if __name__ == "__main__":
-    print(app.run(sys.argv[1:]))
+    print(app.run())
 ```
 
 ## What you learned

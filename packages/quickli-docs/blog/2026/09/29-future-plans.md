@@ -33,8 +33,8 @@ in detail. The high-level picture:
 
 **Near term:**
 - Release readiness: consistent versioning, verified distributions, PyPI publication.
-- Explicit `sys.argv` / exit code wrapper  -  keeping `Application.run(tokens)` as the
-  library API, but providing a small, optional executable wrapper.
+- Exit code wrapper  -  keeping `Application.run()` as the library API, but providing a
+  small, optional executable wrapper for output, errors, and exit codes.
 - Better unknown-command errors and cleaner subcommand composition.
 
 **Following:**

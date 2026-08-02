@@ -38,8 +38,6 @@ Save this example as `hello.py`:
 ```python
 from __future__ import annotations
 
-import sys
-
 from quickli import Application, Argument, Option
 
 
@@ -67,7 +65,7 @@ def greet(name: str, uppercase: bool = False) -> str:
 
 
 if __name__ == "__main__":
-    print(app.run(sys.argv[1:]))
+    print(app.run())
 ```
 
 ## Run it
@@ -90,8 +88,9 @@ arguments to see the usage text:
 python hello.py
 ```
 
-`Application.run()` receives explicit tokens and returns the handler result. It does not read
-`sys.argv` automatically; the example makes that boundary explicit with `sys.argv[1:]`.
+`Application.run()` reads `sys.argv[1:]` by default and returns the handler result. Pass
+an explicit list to override: `app.run(["Ada", "--uppercase"])`. Set
+`auto_sys_argv=False` at construction to disable automatic reading entirely.
 
 ## Where to go next
 
