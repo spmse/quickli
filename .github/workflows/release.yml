@@ -19,14 +19,13 @@ permissions:
 
 jobs:
   release-please:
-    if: >-
-      github.event_name == 'push' &&
-      !startsWith(github.event.head_commit.message, 'chore: release')
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
 
     outputs:
       releases_created: ${{ steps.release.outputs.releases_created }}
       core_tag: ${{ steps.release.outputs['packages/core--tag_name'] }}
+      core_sha: ${{ steps.release.outputs['packages/core--sha'] }}
       docs_tag: ${{ steps.release.outputs['packages/quickli-docs--tag_name'] }}
 
     steps:
@@ -37,6 +36,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           manifest-file: .release-please-manifest.json
           config-file: release-please-config.json
+          skip-github-pull-request: >-
+            ${{ startsWith(github.event.head_commit.message, 'chore: release') }}
 
   release-coverage:
     if: >-
@@ -111,7 +112,7 @@ jobs:
       - name: Check out released revision
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.release-please.outputs.core_tag || github.sha }}
+          ref: ${{ needs.release-please.outputs.core_sha || github.sha }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -200,7 +201,7 @@ jobs:
       - name: Check out released revision
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.release-please.outputs.core_tag || github.sha }}
+          ref: ${{ needs.release-please.outputs.core_sha || github.sha }}
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
