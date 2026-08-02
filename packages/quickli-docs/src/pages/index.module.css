@@ -13,6 +13,10 @@
   grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
 }
 
+.heroGrid > * {
+  min-width: 0;
+}
+
 .eyebrow {
   color: var(--ifm-color-primary-dark);
   font-size: 0.78rem;
