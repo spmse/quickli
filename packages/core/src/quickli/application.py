@@ -14,6 +14,9 @@ from quickli.option import Option
 from quickli.plugin import Plugin
 from quickli.shell_completion import SUPPORTED_SHELLS
 
+# Sentinel used to distinguish "caller passed nothing" from "caller passed an explicit empty
+# list []". A plain object() is used rather than None or [] so that neither value can ever
+# compare equal to it by accident.
 _UNSET: object = object()
 
 

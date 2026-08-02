@@ -35,10 +35,12 @@ It owns the command registry and dispatches explicit input tokens to a handler.
 - Global options may appear before or after the command name.
 - When both commands and an application entrypoint exist, command names take precedence and
 	the entrypoint acts as a fallback.
-- `Application.run(argv)` receives explicit tokens and returns the selected handler result or
-	generated help text.
-- `Application.run()` does not read `sys.argv`, print results, render process-level errors,
-	or choose process exit codes; those responsibilities belong to the caller.
+- `Application.run()` reads `sys.argv[1:]` by default when no explicit *argv* argument is
+	passed and `auto_sys_argv=True` (the default). Pass an explicit list to override this for
+	a single call, or set `auto_sys_argv=False` at construction time to use an empty list
+	unconditionally.
+- `Application.run()` does not print results, render process-level errors, or choose process
+	exit codes; those responsibilities belong to the caller.
 - The core package provides JSON/YAML rendering and loading helpers through
   `quickli.parsers`.
 - The resource must remain dependency-light and compatible with Python `3.12` to `3.14`.
@@ -56,5 +58,5 @@ It owns the command registry and dispatches explicit input tokens to a handler.
 - Nested command groups.
 - Shell completion within commands (arguments and options).
 - Config-driven application setup.
-- A standard executable runtime that owns `sys.argv`, output, errors, and exit codes.
+- A standard executable runtime that owns output, errors, and exit codes.
 - Plugin discovery and registration.
