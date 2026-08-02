@@ -37,7 +37,7 @@ dev = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/spmse/quickli/tree/main/docs"
+Documentation = "https://spmse.github.io/quickli/"
 Repository = "https://github.com/spmse/quickli"
 Issues = "https://github.com/spmse/quickli/issues"
 Changelog = "https://github.com/spmse/quickli/releases"
