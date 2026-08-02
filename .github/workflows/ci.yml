@@ -21,6 +21,9 @@ jobs:
     outputs:
       framework: ${{ steps.filter.outputs.framework }}
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
       - name: Detect framework changes
         uses: dorny/paths-filter@v3
         id: filter
