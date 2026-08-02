@@ -25,9 +25,10 @@ approach so that developers can learn how a CLI is assembled:
 - `Option` describes named input and flags.
 - Converters and validators turn text into checked values.
 
-The framework is intentionally dependency-light and returns handler results to the caller.
-It does not decide how to print output, handle process-level errors, or select exit codes.
-Those responsibilities remain visible in the application that uses quickli.
+The framework is intentionally dependency-light and keeps the library boundary visible.
+`Application.run()` still returns handler results to the caller, while `Application.main()`
+offers a standard executable shell for `sys.argv`, output, structured runtime errors, and
+exit codes.
 
 ## A small example
 

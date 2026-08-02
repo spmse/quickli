@@ -67,7 +67,7 @@ def greet(name: str, uppercase: bool = False) -> str:
 
 
 if __name__ == "__main__":
-    print(app.run(sys.argv[1:]))
+    sys.exit(app.main())
 ```
 
 ## Run it
@@ -90,8 +90,11 @@ arguments to see the usage text:
 python hello.py
 ```
 
-`Application.run()` receives explicit tokens and returns the handler result. It does not read
-`sys.argv` automatically; the example makes that boundary explicit with `sys.argv[1:]`.
+`Application.main()` is the beginner-friendly executable entrypoint. It reads `sys.argv[1:]`
+for you, prints the returned value, reports quickli runtime errors, and returns an exit code.
+
+`Application.run()` still receives explicit tokens and returns the handler result, which is
+useful for tests, libraries, and other code that wants direct control of the token list.
 
 ## Where to go next
 

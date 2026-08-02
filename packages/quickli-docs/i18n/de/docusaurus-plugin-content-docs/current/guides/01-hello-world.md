@@ -57,7 +57,7 @@ def greet(name: str, uppercase: bool = False) -> str:
 
 
 if __name__ == "__main__":
-    print(app.run(sys.argv[1:]))
+    sys.exit(app.main())
 ```
 
 ## Ausführen
@@ -161,18 +161,22 @@ Der Handler erhält die geparsten Werte direkt. `quickli` ordnet Argument- und
 Optionsnamen den Parameternamen zu. Der Standardwert für `uppercase` entspricht der
 Abwesenheit der Option.
 
-Der Handler gibt einen String zurück. `quickli` gibt nichts aus; diese Verantwortung
-bleibt beim ausführbaren Einstiegspunkt.
+Der Handler gibt einen String zurück. `Application.main()` gibt diesen Wert bei
+erfolgreichen Läufen aus.
 
 ### Der Einstiegspunkt
 
 ```python
 if __name__ == "__main__":
-    print(app.run(sys.argv[1:]))
+    sys.exit(app.main())
 ```
 
-`Application.run(argv)` akzeptiert explizite Tokens, nicht direkt `sys.argv`. Dadurch
-bleibt die Grenze zwischen deinem Programm und dem Betriebssystem sichtbar und testbar.
+`Application.main()` ist der einfachste Einstiegspunkt für ausführbare Programme. Er liest
+`sys.argv[1:]`, gibt normale Ergebnisse aus, meldet quickli-Laufzeitfehler und liefert
+einen Exit-Code zurück.
+
+`Application.run(argv)` akzeptiert weiterhin explizite Tokens, wenn du diese niedrigere,
+testfreundliche Grenze direkt verwenden willst.
 
 ## Die Hilfeausgabe erkunden
 

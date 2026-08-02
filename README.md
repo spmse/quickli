@@ -52,7 +52,11 @@ print(app.run(["Ada", "--uppercase"]))
 For an executable shell:
 
 ```python
-raise SystemExit(app.main())
+import sys
+
+
+if __name__ == "__main__":
+    sys.exit(app.main())
 ```
 
 ## Repository layout

@@ -17,9 +17,9 @@ reviewed before it is treated as complete.
    - Make versioning and release artifacts derive from the release tag.
    - Verify the package on Python 3.12, 3.13, and 3.14.
    - Publish the same tested distributions to PyPI and attach release evidence to GitHub.
-2. **Executable runtime boundary**
-   - Provide a small, explicit wrapper for `sys.argv`, output, errors, and exit codes.
-   - Keep `Application.run(tokens)` as the library-level API.
+2. **Executable runtime follow-up**
+   - Refine beginner-facing examples around `Application.main()`.
+   - Expand guidance for structured error output and automation use cases.
 3. **More complete command composition**
    - Evaluate nested subcommands and clearer unknown-command errors.
    - Preserve the current small command, argument, and option abstractions.

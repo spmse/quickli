@@ -56,7 +56,7 @@ def greet(name: str, uppercase: bool = False) -> str:
 
 
 if __name__ == "__main__":
-    print(app.run(sys.argv[1:]))
+    sys.exit(app.main())
 ```
 
 ## Run it
@@ -160,18 +160,21 @@ The handler receives parsed values directly. `quickli` matches argument and opti
 to parameter names. The default value for `uppercase` corresponds to the option being
 absent.
 
-The handler returns a string. `quickli` does not print output — that responsibility stays
-in your executable entry point.
+The handler returns a string. `Application.main()` prints that return value for normal
+successful runs.
 
 ### The entry point
 
 ```python
 if __name__ == "__main__":
-    print(app.run(sys.argv[1:]))
+    sys.exit(app.main())
 ```
 
-`Application.run(argv)` accepts explicit tokens (not `sys.argv` directly). This makes the
-boundary between your program and the operating system visible and testable.
+`Application.main()` is the simplest executable entry point. It reads `sys.argv[1:]`,
+prints normal results, reports quickli runtime errors, and returns an exit code.
+
+`Application.run(argv)` still accepts explicit tokens when you want that lower-level,
+test-friendly boundary.
 
 ## Explore help output
 

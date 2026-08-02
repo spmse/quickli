@@ -23,7 +23,15 @@ handler result (or generated help text).
 - It does **not** print output by default.
 - It does **not** choose process exit codes.
 
-That boundary keeps runtime behavior explicit in your executable wrapper.
+`Application.main(argv=None)` adds the standard executable shell on top of `run()`.
+
+- It reads `sys.argv[1:]` when `argv` is omitted.
+- It prints normal command results.
+- It converts runtime failures into structured quickli errors.
+- It returns process-friendly exit codes.
+
+That split keeps library use explicit while still giving executable applications a simple
+default runtime.
 
 ## Registration API
 

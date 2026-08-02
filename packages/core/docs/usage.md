@@ -83,7 +83,11 @@ It reads `sys.argv[1:]` by default, prints results, returns an exit code, and co
 runtime failures into structured quickli errors.
 
 ```python
-raise SystemExit(app.main())
+import sys
+
+
+if __name__ == "__main__":
+    sys.exit(app.main())
 ```
 
 ## Current Behavior
@@ -113,6 +117,8 @@ raise SystemExit(app.main())
 Use `main()` when the application should own stdout, stderr, and process exit codes.
 
 ```python
+import sys
+
 from quickli import Application, CLIError
 
 app = Application(
@@ -126,7 +132,8 @@ def explode() -> None:
     raise RuntimeError("boom")
 
 
-raise SystemExit(app.main(output_format="json"))
+if __name__ == "__main__":
+    sys.exit(app.main(output_format="json"))
 ```
 
 In text mode, quickli prints the error message to stderr.
