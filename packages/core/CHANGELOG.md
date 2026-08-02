@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.5.0](https://github.com/spmse/quickli/compare/core-v0.4.0...core-v0.5.0) (2026-08-02)
+
+
+### Features
+
+* add native TOML configuration file handling ([#19](https://github.com/spmse/quickli/issues/19)) ([b653c59](https://github.com/spmse/quickli/commit/b653c599db0cde48c8d79da8f2edd679dc199c79)), closes [#18](https://github.com/spmse/quickli/issues/18)
+* add shell completion generation for bash, zsh, and PowerShell ([#21](https://github.com/spmse/quickli/issues/21)) ([48bd448](https://github.com/spmse/quickli/commit/48bd448eaf9279602c17e99a2ef794d3f3a23223))
+* auto-read sys.argv ([#46](https://github.com/spmse/quickli/issues/46)) ([b066e8c](https://github.com/spmse/quickli/commit/b066e8c2121a129e7f3bc0f21d36540d392baf56))
+* implement nested `Subcommand` resource and command-level subcommand dispatch ([#15](https://github.com/spmse/quickli/issues/15)) ([b3a0d1a](https://github.com/spmse/quickli/commit/b3a0d1ac0febde27940e94eba321d4466d3b212b))
+* implement quickli plugin system ([#23](https://github.com/spmse/quickli/issues/23)) ([6ea0a3b](https://github.com/spmse/quickli/commit/6ea0a3b4b9b3aefdf60740a88b951decf87cbb7f))
+
+
+### Bug Fixes
+
+* fix ci release automation ([#33](https://github.com/spmse/quickli/issues/33)) ([3ff003d](https://github.com/spmse/quickli/commit/3ff003d2cc6ec7165bac8287533b7b17f484b7c0))
+* update documentation URL to GitHub Pages deployment ([#55](https://github.com/spmse/quickli/issues/55)) ([3be5b60](https://github.com/spmse/quickli/commit/3be5b60517ae0d248ac3367334588a2df11fd3cc))
+
+
+### Documentation
+
+* add documentation baseline ([#8](https://github.com/spmse/quickli/issues/8)) ([3c595f5](https://github.com/spmse/quickli/commit/3c595f53d221922cb3ab5f81f767bd9438d9d0b5))
+* i18n (EN/DE), reference guides, tutorial and dev blog series, SEO improvements ([#30](https://github.com/spmse/quickli/issues/30)) ([69a35ed](https://github.com/spmse/quickli/commit/69a35ed5f8f5bdb80c26a44839884a4a64b26b24))
+
 ## [0.4.0](https://github.com/spmse/quickli/compare/core-v0.3.0...core-v0.4.0) (2026-08-02)
 
 
