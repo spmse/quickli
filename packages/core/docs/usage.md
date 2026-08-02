@@ -79,6 +79,18 @@ at construction time to always use an empty list instead.
 It does not print the result, render process-level errors, or select an exit code.
 The caller decides how to adapt the returned value to an executable program.
 
+When you want quickli to provide the executable shell, call `Application.main()` instead.
+It reads `sys.argv[1:]` by default, prints results, returns an exit code, and converts
+runtime failures into structured quickli errors.
+
+```python
+import sys
+
+
+if __name__ == "__main__":
+    sys.exit(app.main())
+```
+
 ## Current Behavior
 
 - Applications can expose a root entrypoint without defining commands.
@@ -97,7 +109,42 @@ The caller decides how to adapt the returned value to an executable program.
 - Calling `run()` without arguments reads `sys.argv[1:]` and dispatches accordingly.
 - Calling `run([])` returns generated help text unless a root entrypoint is registered and
     can run directly.
+- Calling `main()` runs an executable shell around `run()` and returns an integer exit code.
+- User callback failures are wrapped in `UserCodeError` and keep the original exception as
+  `original_error`.
+- `main(output_format="json")` emits machine-readable success and error payloads.
 - Set `auto_sys_argv=False` at construction to disable automatic `sys.argv` reading.
+
+## Executable Shell and Error Handling
+
+Use `main()` when the application should own stdout, stderr, and process exit codes.
+
+```python
+import sys
+
+from quickli import Application, CLIError
+
+app = Application(
+    name="demo",
+    error_handler=lambda error: CLIError(f"custom: {error}"),
+)
+
+
+@app.command()
+def explode() -> None:
+    raise RuntimeError("boom")
+
+
+if __name__ == "__main__":
+    sys.exit(app.main(output_format="json"))
+```
+
+In text mode, quickli prints the error message to stderr.
+In JSON mode, quickli prints payloads such as:
+
+```json
+{"ok": false, "error": {"code": "user_code_error", "message": "..."}}
+```
 
 ## Resource Model
 

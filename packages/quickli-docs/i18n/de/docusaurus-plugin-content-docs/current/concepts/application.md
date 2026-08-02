@@ -25,7 +25,15 @@ sidebar_position: 2
 - Er gibt **standardmäßig keine** Ausgabe aus.
 - Er wählt **keine** Prozess-Exit-Codes.
 
-Die Ausgabe- und Exit-Code-Verantwortung bleibt bei deinem ausführbaren Wrapper.
+`Application.main(argv=None)` ergänzt darüber die Standardhülle für ausführbare Programme.
+
+- Er liest `sys.argv[1:]`, wenn `argv` weggelassen wird.
+- Er gibt normale Befehlsresultate aus.
+- Er wandelt Laufzeitfehler in strukturierte quickli-Fehler um.
+- Er liefert prozessfreundliche Exit-Codes zurück.
+
+Diese Aufteilung hält die Bibliotheksnutzung explizit und gibt ausführbaren Anwendungen
+trotzdem eine einfache Standardlaufzeit.
 
 ## Registrierungs-API
 

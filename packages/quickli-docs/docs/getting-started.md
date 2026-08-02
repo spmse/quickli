@@ -65,7 +65,7 @@ def greet(name: str, uppercase: bool = False) -> str:
 
 
 if __name__ == "__main__":
-    print(app.run())
+    sys.exit(app.main())
 ```
 
 ## Run it
@@ -88,9 +88,13 @@ arguments to see the usage text:
 python hello.py
 ```
 
-`Application.run()` reads `sys.argv[1:]` by default and returns the handler result. Pass
-an explicit list to override: `app.run(["Ada", "--uppercase"])`. Set
-`auto_sys_argv=False` at construction to disable automatic reading entirely.
+`Application.main()` is the beginner-friendly executable entrypoint. It reads `sys.argv[1:]`
+for you, prints the returned value, reports quickli runtime errors, and returns an exit code.
+
+`Application.run()` still returns the handler result for tests, libraries, and other code
+that wants direct control. It also reads `sys.argv[1:]` by default when you call it
+without arguments. Pass an explicit list to override or set `auto_sys_argv=False` to
+disable automatic reading.
 
 ## Where to go next
 

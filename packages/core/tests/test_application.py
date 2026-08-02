@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import io
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -9,7 +11,7 @@ from pathlib import Path
 from quickli import Application, Argument, Option, Subcommand, directory_path, file_path
 from quickli import number_range, positive_number
 from quickli.exceptions import CommandExecutionError, CommandNotFoundError
-from quickli.exceptions import CommandRegistrationError
+from quickli.exceptions import CommandRegistrationError, InternalCLIError, UserCodeError
 
 
 class ApplicationTests(unittest.TestCase):
@@ -512,6 +514,94 @@ class ApplicationTests(unittest.TestCase):
 
         with self.assertRaises(CommandExecutionError):
             app.run(["cat", "--missing"])
+
+    def test_missing_global_option_value_raises_execution_error(self) -> None:
+        app = Application(
+            name="demo",
+            global_options=[Option("config")],
+        )
+
+        @app.command()
+        def greet(config: str) -> str:
+            return config
+
+        with self.assertRaises(CommandExecutionError):
+            app.run(["--config"])
+
+    def test_run_wraps_user_handler_error(self) -> None:
+        app = Application(name="demo")
+
+        @app.command()
+        def explode() -> None:
+            raise RuntimeError("boom")
+
+        with self.assertRaises(UserCodeError) as context:
+            app.run(["explode"])
+
+        self.assertIsInstance(context.exception.original_error, RuntimeError)
+        self.assertEqual(str(context.exception.original_error), "boom")
+
+    def test_main_returns_exit_code_and_writes_text_error(self) -> None:
+        app = Application(name="demo")
+        stderr = io.StringIO()
+
+        exit_code = app.main(["missing"], stderr=stderr)
+
+        self.assertEqual(exit_code, 2)
+        self.assertEqual(stderr.getvalue(), "Unknown command: missing\n")
+
+    def test_main_writes_json_error_payload_for_user_code_error(self) -> None:
+        app = Application(name="demo")
+        stderr = io.StringIO()
+
+        @app.command()
+        def explode() -> None:
+            raise RuntimeError("boom")
+
+        exit_code = app.main(["explode"], output_format="json", stderr=stderr)
+
+        payload = json.loads(stderr.getvalue())
+        self.assertEqual(exit_code, 1)
+        self.assertFalse(payload["ok"])
+        self.assertEqual(payload["error"]["code"], "user_code_error")
+        self.assertEqual(payload["error"]["cause"]["type"], "RuntimeError")
+        self.assertEqual(payload["error"]["cause"]["message"], "boom")
+
+    def test_main_supports_global_error_override(self) -> None:
+        def override(error: UserCodeError) -> InternalCLIError:
+            return InternalCLIError(
+                "custom error layer",
+                original_error=error.original_error,
+            )
+
+        app = Application(name="demo", error_handler=override)
+        stderr = io.StringIO()
+
+        @app.command()
+        def explode() -> None:
+            raise RuntimeError("boom")
+
+        exit_code = app.main(["explode"], output_format="json", stderr=stderr)
+
+        payload = json.loads(stderr.getvalue())
+        self.assertEqual(exit_code, 1)
+        self.assertEqual(payload["error"]["message"], "custom error layer")
+        self.assertEqual(payload["error"]["code"], "internal_cli_error")
+
+    def test_main_writes_json_success_payload(self) -> None:
+        app = Application(name="demo")
+        stdout = io.StringIO()
+
+        @app.command()
+        def greet() -> str:
+            return "hello"
+
+        exit_code = app.main(["greet"], output_format="json", stdout=stdout)
+
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual(exit_code, 0)
+        self.assertTrue(payload["ok"])
+        self.assertEqual(payload["result"], "hello")
 
     def test_argument_converter_transforms_input(self) -> None:
         app = Application(name="demo")
