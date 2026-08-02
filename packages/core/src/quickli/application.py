@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 from collections.abc import Iterable
 from inspect import getdoc
 from typing import Callable
@@ -13,6 +14,8 @@ from quickli.option import Option
 from quickli.plugin import Plugin
 from quickli.shell_completion import SUPPORTED_SHELLS
 
+_UNSET: object = object()
+
 
 class Application:
     """Minimal application container for registering and executing commands."""
@@ -23,6 +26,7 @@ class Application:
         description: str = "",
         global_options: Iterable[Option] | None = None,
         shell_completion: bool = False,
+        auto_sys_argv: bool = True,
     ) -> None:
         self.name = name
         self.description = description.strip()
@@ -34,6 +38,7 @@ class Application:
             handler=lambda **_: None,
             options=self._global_options,
         )
+        self._auto_sys_argv = auto_sys_argv
         self._plugins: list[Plugin] = []
         if shell_completion:
             self._register_shell_completion_command()
@@ -175,9 +180,20 @@ class Application:
 
         return decorator
 
-    def run(self, argv: Iterable[str] | None = None) -> object:
-        """Executes the selected command or returns help when no command is given."""
-        arguments = list(argv or [])
+    def run(self, argv: Iterable[str] | None = _UNSET) -> object:  # type: ignore[assignment]
+        """Executes the selected command or returns help when no command is given.
+
+        When *argv* is not supplied and *auto_sys_argv* was set to ``True`` on
+        construction (the default), the argument list is read from
+        :data:`sys.argv` (excluding the program name at index 0).  Pass an
+        explicit list to override this behaviour for a single call, or set
+        ``auto_sys_argv=False`` when creating the :class:`Application` to
+        disable it permanently.
+        """
+        if argv is _UNSET:
+            arguments: list[str] = list(sys.argv[1:]) if self._auto_sys_argv else []
+        else:
+            arguments = list(argv or [])
         if not arguments:
             if self._entrypoint is not None:
                 return self._invoke_entrypoint([], [])

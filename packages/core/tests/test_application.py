@@ -757,5 +757,62 @@ class ApplicationTests(unittest.TestCase):
                 return verbose
 
 
+class ApplicationSysArgvTests(unittest.TestCase):
+    def test_run_without_argv_reads_sys_argv_by_default(self) -> None:
+        import sys
+        from unittest.mock import patch
+
+        app = Application(name="demo")
+
+        @app.command(help_text="Greets a user.")
+        def greet(name: str) -> str:
+            return f"hello {name}"
+
+        with patch.object(sys, "argv", ["demo", "greet", "World"]):
+            result = app.run()
+
+        self.assertEqual(result, "hello World")
+
+    def test_run_with_explicit_argv_overrides_sys_argv(self) -> None:
+        import sys
+        from unittest.mock import patch
+
+        app = Application(name="demo")
+
+        @app.command(help_text="Greets a user.")
+        def greet(name: str) -> str:
+            return f"hello {name}"
+
+        with patch.object(sys, "argv", ["demo", "greet", "FromSysArgv"]):
+            result = app.run(["greet", "Explicit"])
+
+        self.assertEqual(result, "hello Explicit")
+
+    def test_run_without_argv_uses_empty_list_when_auto_sys_argv_disabled(self) -> None:
+        import sys
+        from unittest.mock import patch
+
+        app = Application(name="demo", auto_sys_argv=False)
+
+        @app.command(help_text="Greets a user.")
+        def greet(name: str) -> str:
+            return f"hello {name}"
+
+        with patch.object(sys, "argv", ["demo", "greet", "World"]):
+            result = app.run()
+
+        self.assertIn("Usage:", result)
+
+    def test_auto_sys_argv_is_true_by_default(self) -> None:
+        app = Application(name="demo")
+
+        self.assertTrue(app._auto_sys_argv)
+
+    def test_auto_sys_argv_can_be_disabled_at_construction(self) -> None:
+        app = Application(name="demo", auto_sys_argv=False)
+
+        self.assertFalse(app._auto_sys_argv)
+
+
 if __name__ == "__main__":
     unittest.main()
