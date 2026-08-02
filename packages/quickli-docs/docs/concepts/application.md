@@ -27,14 +27,16 @@ Application   ← you are here
 
 ## Execution model
 
-`Application.run(argv)` accepts explicit command-line tokens and returns the selected
-handler result (or generated help text).
+`Application.run()` dispatches the selected command and returns the handler result (or
+generated help text).
 
-- It does **not** read `sys.argv` itself.
+- It reads `sys.argv[1:]` **by default** when called without arguments.
+- Pass an explicit list to override: `app.run(["greet", "Ada"])`.
+- Set `auto_sys_argv=False` at construction to always use an empty list instead.
 - It does **not** print output by default.
 - It does **not** choose process exit codes.
 
-That boundary keeps runtime behavior explicit in your executable wrapper.
+The output and exit-code responsibilities remain with your executable wrapper.
 
 ## Registration API
 

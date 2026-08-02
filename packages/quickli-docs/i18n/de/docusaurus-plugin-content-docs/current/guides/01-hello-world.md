@@ -28,8 +28,6 @@ Speichere die folgende Datei als `hello.py`:
 ```python
 from __future__ import annotations
 
-import sys
-
 from quickli import Application, Argument, Option
 
 
@@ -57,7 +55,7 @@ def greet(name: str, uppercase: bool = False) -> str:
 
 
 if __name__ == "__main__":
-    print(app.run(sys.argv[1:]))
+    print(app.run())
 ```
 
 ## Ausführen
@@ -168,11 +166,13 @@ bleibt beim ausführbaren Einstiegspunkt.
 
 ```python
 if __name__ == "__main__":
-    print(app.run(sys.argv[1:]))
+    print(app.run())
 ```
 
-`Application.run(argv)` akzeptiert explizite Tokens, nicht direkt `sys.argv`. Dadurch
-bleibt die Grenze zwischen deinem Programm und dem Betriebssystem sichtbar und testbar.
+`Application.run()` liest standardmäßig `sys.argv[1:]`, dispatcht den passenden Handler
+und gibt das Ergebnis zurück. Übergib eine explizite Liste zum Überschreiben:
+`app.run(["Ada", "--uppercase"])`. Setze `auto_sys_argv=False` bei der Konstruktion,
+um das automatische Lesen zu deaktivieren.
 
 ## Die Hilfeausgabe erkunden
 

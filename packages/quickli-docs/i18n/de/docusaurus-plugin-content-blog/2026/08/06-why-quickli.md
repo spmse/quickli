@@ -52,8 +52,8 @@ dass jeder Teil des Designs bewusst und sichtbar ist.
 - Argumente sind positional und geordnet. Optionen sind benannt. Das sind verschiedene
   Dinge.
 - Konvertierung und Validierung sind separate Schritte, die vor dem Handler stattfinden.
-- Das Framework gibt Ergebnisse an den Aufrufer zurück. Es druckt keine Ausgabe,
-  behandelt keine Exit-Codes und liest `sys.argv` nicht automatisch.
+- Das Framework gibt Ergebnisse an den Aufrufer zurück. Es liest `sys.argv[1:]`
+  standardmäßig, druckt aber keine Ausgabe und behandelt keine Exit-Codes.
 
 Jede dieser Entscheidungen wurde getroffen, weil sie die Mechanik einer CLI für jemanden
 sichtbar lässt, der lernt, wie sie funktioniert.

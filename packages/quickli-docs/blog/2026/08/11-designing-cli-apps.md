@@ -14,7 +14,7 @@ discover commands, provide values, recover from mistakes, and compose tools in s
 
 quiCkLI makes these decisions explicit: applications own dispatch, commands describe
 operations, and arguments and options describe inputs. That simplicity is useful, but it
-also means the caller still owns process output, exit codes, and `sys.argv` integration.
+also means the caller still owns process output and exit codes.
 
 :::note
 

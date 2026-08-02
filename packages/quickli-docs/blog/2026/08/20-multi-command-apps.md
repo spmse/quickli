@@ -104,7 +104,7 @@ can catch it and turn it into an exit code:
 ```python
 import sys
 try:
-    print(app.run(sys.argv[1:]))
+    print(app.run())
 except quickli.CommandExecutionError as error:
     print(f"Error: {error}", file=sys.stderr)
     sys.exit(1)

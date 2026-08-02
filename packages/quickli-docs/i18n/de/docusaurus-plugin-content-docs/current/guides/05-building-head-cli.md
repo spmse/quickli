@@ -27,7 +27,6 @@ Speichere die folgende Datei als `quickhead.py`:
 from __future__ import annotations
 
 from pathlib import Path
-from sys import argv
 
 from quickli import Application, Argument, Option, file_path, positive_number
 
@@ -67,7 +66,7 @@ def head(file: Path, lines: int = 10, tailmode: bool = False) -> str:
 
 
 if __name__ == "__main__":
-    print(app.run(argv[1:]))
+    print(app.run())
 ```
 
 ## Ausführen

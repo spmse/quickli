@@ -18,8 +18,8 @@ dokumentiert und überprüft, bevor er als abgeschlossen gilt.
    - Das Paket unter Python 3.12, 3.13 und 3.14 verifizieren.
    - Dieselben getesteten Distributionen auf PyPI veröffentlichen und Release-Nachweise an GitHub anhängen.
 2. **Ausführungsgrenze der Laufzeit**
-   - Eine kleine, explizite Hülle für `sys.argv`, Ausgabe, Fehler und Exit-Codes bereitstellen.
-   - `Application.run(tokens)` als API auf Bibliotheksebene beibehalten.
+   - Eine kleine, explizite Hülle für Ausgabe, Fehler und Exit-Codes bereitstellen.
+   - `Application.run()` als API auf Bibliotheksebene beibehalten.
 3. **Vollständigere Befehlskomposition**
    - Verschachtelte Subcommands und klarere Fehlermeldungen für unbekannte Befehle evaluieren.
    - Die aktuellen kleinen Abstraktionen für Befehle, Argumente und Optionen beibehalten.

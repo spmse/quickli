@@ -72,10 +72,11 @@ print(
 )
 ```
 
-`Application.run()` is a library-core dispatcher. It receives explicit tokens,
-dispatches the matching handler, and returns that handler's result.
-By default, it does not read `sys.argv`, print the result, render process-level errors, or
-select an exit code.
+`Application.run()` reads `sys.argv[1:]` by default when called without arguments.
+Pass an explicit list to override this for a single call, or set `auto_sys_argv=False`
+at construction time to always use an empty list instead.
+`run()` dispatches the matching handler and returns its result.
+It does not print the result, render process-level errors, or select an exit code.
 The caller decides how to adapt the returned value to an executable program.
 
 ## Current Behavior
@@ -93,8 +94,10 @@ The caller decides how to adapt the returned value to an executable program.
 - Applications can define global options that are parsed before or after the command name.
 - Flags are modeled as boolean options.
 - Commands can expose nested `Subcommand` resources.
+- Calling `run()` without arguments reads `sys.argv[1:]` and dispatches accordingly.
 - Calling `run([])` returns generated help text unless a root entrypoint is registered and
     can run directly.
+- Set `auto_sys_argv=False` at construction to disable automatic `sys.argv` reading.
 
 ## Resource Model
 

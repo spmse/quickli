@@ -54,8 +54,8 @@ every part of the design is deliberate and visible.
 - The application container owns registration and dispatch. That boundary is explicit.
 - Arguments are positional and ordered. Options are named. Those are different things.
 - Conversion and validation are separate steps, and they happen before the handler runs.
-- The framework returns results to the caller. It does not print output, handle exit
-  codes, or read `sys.argv` automatically.
+- The framework returns results to the caller. It reads `sys.argv[1:]` by default, but
+  does not print output or handle exit codes.
 
 Each of these decisions was made because it keeps the mechanics of a CLI visible to
 someone learning how they work.
