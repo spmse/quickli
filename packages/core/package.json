@@ -4,10 +4,10 @@
   "private": true,
   "description": "quickli Python core library package",
   "scripts": {
-    "test": "PYTHONPATH=src python -m unittest discover -s tests -v",
+    "test": "python -m pytest",
     "lint": "python -m ruff check .",
     "format:check": "python -m ruff format --check .",
-    "coverage": "python -m coverage run -m unittest discover -s tests -v",
+    "coverage": "python -m pytest --cov=quickli --cov-report=term-missing --cov-report=xml --cov-fail-under=80",
     "build": "python -m build --sdist --wheel"
   }
 }
