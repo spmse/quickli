@@ -16,6 +16,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
   pull-requests: write
 
 jobs:
@@ -39,6 +40,12 @@ jobs:
       - name: Run tests with coverage
         working-directory: packages/core
         run: python -m pytest --cov=quickli --cov-report=term-missing --cov-report=xml --cov-fail-under=80
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: packages/core/coverage.xml
+          fail_ci_if_error: false
 
       - name: Build coverage artifacts
         working-directory: packages/core
