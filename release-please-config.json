@@ -10,13 +10,15 @@
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
         "package.json"
-      ]
+      ],
+      "draft": true
     },
     "packages/quickli-docs": {
       "release-type": "node",
       "package-name": "quickli-docs",
       "component": "docs",
-      "changelog-path": "CHANGELOG.md"
+      "changelog-path": "CHANGELOG.md",
+      "draft": true
     }
   }
 }
