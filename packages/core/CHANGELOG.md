@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/spmse/quickli/compare/core-v0.2.2...core-v0.3.0) (2026-08-02)
+
+
+### Features
+
+* auto-read sys.argv ([#46](https://github.com/spmse/quickli/issues/46)) ([b066e8c](https://github.com/spmse/quickli/commit/b066e8c2121a129e7f3bc0f21d36540d392baf56))
+
+
+### Bug Fixes
+
+* update documentation URL to GitHub Pages deployment ([#55](https://github.com/spmse/quickli/issues/55)) ([3be5b60](https://github.com/spmse/quickli/commit/3be5b60517ae0d248ac3367334588a2df11fd3cc))
+
 ## [0.2.2](https://github.com/spmse/quickli/compare/core-v0.2.1...core-v0.2.2) (2026-07-31)
 
 
