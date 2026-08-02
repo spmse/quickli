@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 permissions:
   contents: write
@@ -12,6 +19,7 @@ permissions:
 
 jobs:
   release-please:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
 
     outputs:
@@ -27,6 +35,64 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           manifest-file: .release-please-manifest.json
           config-file: release-please-config.json
+
+  release-coverage:
+    if: >-
+      github.event_name == 'pull_request' &&
+      startsWith(github.head_ref, 'release-please--')
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install development dependencies
+        working-directory: packages/core
+        run: python -m pip install --upgrade pip && python -m pip install -e .[dev]
+
+      - name: Run tests with coverage
+        working-directory: packages/core
+        run: python -m pytest --cov=quickli --cov-report=term-missing --cov-report=xml --cov-fail-under=80
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: packages/core/coverage.xml
+          fail_ci_if_error: false
+
+      - name: Build coverage artifacts
+        working-directory: packages/core
+        run: |
+          python -m coverage html -d htmlcov
+          python -m coverage report -m > coverage-summary.txt
+
+      - name: Report coverage on pull request
+        uses: MishaKav/pytest-coverage-comment@v1
+        with:
+          pytest-coverage-path: packages/core/coverage-summary.txt
+          title: Core Framework Coverage
+          badge-title: Coverage
+          hide-badge: false
+
+      - name: Upload coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-coverage-artifacts
+          path: |
+            packages/core/coverage.xml
+            packages/core/coverage-summary.txt
+            packages/core/htmlcov/**
 
   build-release-evidence:
     needs: release-please
