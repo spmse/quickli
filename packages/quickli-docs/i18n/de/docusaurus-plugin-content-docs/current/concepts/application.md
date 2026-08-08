@@ -101,13 +101,13 @@ print(app.run(["build"]))  # building…
 
 ## Tipps
 
-:::tip Einzelaktion vs. mehrere Befehle
+:::note[Einzelaktion vs. mehrere Befehle]
 Verwende `@app.entrypoint` für ein Einzelaktions-Tool (wie `cat` oder `head`) und
 `@app.command` für ein Multi-Aktions-Tool (wie `git` oder `kubectl`). Du kannst jederzeit
 Befehle hinzufügen — der Einstiegspunkt wirkt als Fallback, wenn kein Befehlsname passt.
 :::
 
-:::tip `run()` in einem Wrapper aufrufen
+:::tip[`run()` in einem Wrapper aufrufen]
 `Application.run()` liest `sys.argv[1:]` standardmäßig und gibt einen String zurück.
 Ausgabe und Exit-Code-Behandlung gehören in deinen `main()`-Wrapper, damit die Anwendung
 unabhängig testbar bleibt.

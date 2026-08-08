@@ -60,7 +60,7 @@ print(app.run(["summarise", "data.json"]))
 
 ## Tips
 
-:::tip Which format to choose
+:::tip[Which format to choose]
 - Use **JSON** for machine-to-machine data and API responses.
 - Use **YAML** for human-edited configuration and Kubernetes-style manifests.
 - Use **TOML** for end-user configuration files (see [Configuration Files](./config.md)).
@@ -69,7 +69,7 @@ All three helpers are available from the top-level `quickli` import, so you do n
 to import `quickli.parsers` directly.
 :::
 
-:::tip Parsers vs. Config
+:::tip[Parsers vs. Config]
 `load_toml` / `render_toml` are useful for one-off parsing of TOML strings or files that
 you manage yourself. For persistent application configuration with schema validation and
 auto-initialisation, use the dedicated [Config](./config.md) resources instead.

@@ -99,7 +99,7 @@ Fehler fehl.
 
 ## Tipps
 
-:::tip Argument vs. Option
+:::tip[Argument vs. Option]
 Verwende ein `Argument`, wenn der Wert das *Subjekt* des Befehls ist — das, worauf der
 Befehl wirkt (ein Dateipfad, ein Name, eine ID). Verwende eine `Option`, wenn der Wert
 *verändert, wie* der Befehl sich verhält (ein Format, ein Ausführlichkeitsgrad, ein
@@ -114,7 +114,7 @@ cat --format json myfile.txt
 ```
 :::
 
-:::tip Reihenfolge ist wichtig
+:::tip[Reihenfolge ist wichtig]
 Argumente werden positional in der Reihenfolge abgeglichen, in der sie deklariert wurden.
 Platziere erforderliche Argumente vor optionalen, um die Befehlssignatur vorhersehbar zu
 halten.

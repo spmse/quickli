@@ -94,13 +94,13 @@ print(app.run(["env", "create", "dev"]))
 
 ## Tips
 
-:::tip Command vs. Subcommand
+:::tip[Command vs. Subcommand]
 Use a top-level `@app.command` for actions that are independent of each other, such as
 `build` and `clean`. Use a `Subcommand` when actions logically share a namespace, such as
 `env create`, `env list`, and `env delete`.
 :::
 
-:::tip Help text from docstrings
+:::tip[Help text from docstrings]
 If you do not pass `help_text`, `quickli` automatically uses the function's docstring.
 This keeps your handler code self-documenting.
 

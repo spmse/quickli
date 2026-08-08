@@ -88,14 +88,14 @@ except quickli.PluginLoadError as error:
 
 ## Tips
 
-:::tip When to use a plugin
+:::tip[When to use a plugin]
 Use a plugin when you want to package a reusable set of commands as a separate Python
 module or package. For example, a shared `audit` plugin can be loaded into any team's
 CLI without copying code. For small, app-specific commands, just use `@app.command`
 directly.
 :::
 
-:::tip Plugins cannot override existing commands
+:::warning[Plugins cannot override existing commands]
 A plugin cannot replace a command that has already been registered — either by the
 application itself or by an earlier plugin. Design your plugins to add new commands
 rather than replace existing ones.

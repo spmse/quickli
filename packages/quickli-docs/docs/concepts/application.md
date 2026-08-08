@@ -100,13 +100,16 @@ print(app.run(["build"]))  # building…
 
 ## Tips
 
-:::tip Single action vs. multiple commands
+:::note[Single action vs. multiple commands]
+
 Use `@app.entrypoint` for a single-action tool (like `cat` or `head`) and `@app.command`
 for a multi-action tool (like `git` or `kubectl`). You can always add commands later — the
 entrypoint acts as a fallback when no command name matches.
+
 :::
 
-:::tip Wrapping `run()` in an executable
+:::tip[Wrapping `run()` in an executable]
+
 `Application.run()` reads `sys.argv[1:]` by default and returns a string result.
 Printing and exit-code handling belong to your `main()` wrapper so that the application
 stays independently testable.
@@ -118,6 +121,7 @@ if __name__ == "__main__":
 
 Pass an explicit list to override the default: `app.run(["greet", "Ada"])`. Set
 `auto_sys_argv=False` at construction to disable automatic reading entirely.
+
 :::
 
 ## Where to go next

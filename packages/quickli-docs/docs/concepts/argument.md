@@ -95,7 +95,7 @@ If required arguments are missing, command execution fails with a deterministic 
 
 ## Tips
 
-:::tip Argument vs. Option
+:::tip[Argument vs. Option]
 Use an `Argument` when the value is the *subject* of the command — the thing the command
 acts on (a file path, a name, an ID). Use an `Option` when the value *modifies how* the
 command behaves (a format, a verbosity level, a boolean flag).
@@ -109,7 +109,7 @@ cat --format json myfile.txt
 ```
 :::
 
-:::tip Order matters
+:::tip[Order matters]
 Arguments are matched positionally in the order they are declared. Place required
 arguments before optional ones to keep the command signature predictable.
 :::

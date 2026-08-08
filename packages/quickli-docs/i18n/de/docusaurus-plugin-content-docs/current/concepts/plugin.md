@@ -88,14 +88,14 @@ except quickli.PluginLoadError as error:
 
 ## Tipps
 
-:::tip Wann ein Plugin verwenden
+:::tip[Wann ein Plugin verwenden]
 Verwende ein Plugin, wenn du einen wiederverwendbaren Befehlssatz als separates Python-Modul
 oder -Paket verpacken möchtest. Ein gemeinsames `audit`-Plugin kann z. B. in jede Team-CLI
 geladen werden, ohne Code zu kopieren. Für kleine, anwendungsspezifische Befehle verwende
 einfach direkt `@app.command`.
 :::
 
-:::tip Plugins können keine bestehenden Befehle überschreiben
+:::warning[Plugins können keine bestehenden Befehle überschreiben]
 Ein Plugin kann keinen Befehl ersetzen, der bereits registriert wurde — weder von der
 Anwendung selbst noch von einem früheren Plugin. Entwirf deine Plugins so, dass sie neue
 Befehle hinzufügen und keine bestehenden ersetzen.

@@ -58,7 +58,7 @@ In einem typischen Ablauf:
 | Benutzereinstellungen zwischen Ausführungen speichern | `Config` |
 | Strukturierte Daten als JSON, YAML oder TOML lesen/schreiben | `parsers`-Helfer |
 
-:::tip Nicht sicher, wo du anfangen sollst?
+:::note[Nicht sicher, wo du anfangen sollst?]
 Lies zuerst [Erste Schritte](../getting-started.md) und schau dann hier nach, um die
 einzelnen Konzepte im Detail zu erkunden.
 :::

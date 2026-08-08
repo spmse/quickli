@@ -126,19 +126,19 @@ print(app.run(["build", "--verbose"]))  # building… (verbose=True)
 
 ## Tipps
 
-:::tip Argument vs. Option
+:::note[Argument vs. Option]
 Verwende ein `Argument` für das primäre Subjekt des Befehls (worauf er wirkt). Verwende
 eine `Option` für alles, was *verändert, wie* der Befehl sich verhält — Ausgabeformat,
 Ausführlichkeitsgrad, ein Schalter oder ein sekundäres Ziel.
 :::
 
-:::tip Lokale vs. globale Optionen
+:::tip[Lokale vs. globale Optionen]
 Definiere eine Option als **lokal**, wenn sie nur für einen Befehl sinnvoll ist (wie
 `--output` für einen Schreibbefehl). Definiere sie als **global**, wenn sie für jeden
 Befehl in der Anwendung gelten soll (wie `--verbose` oder `--config`).
 :::
 
-:::tip Schalter für An/Aus-Umschalter
+:::tip[Schalter für An/Aus-Umschalter]
 Verwende `is_flag=True`, wenn die Option einen booleschen Schalter darstellt, der keinen
 Wert annimmt. Das Vorhandensein des Flags setzt es auf `True`; sein Fehlen lässt es auf
 `False`.

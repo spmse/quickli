@@ -57,7 +57,7 @@ In a typical flow:
 | Persist user settings between runs | `Config` |
 | Parse or produce JSON, YAML, or TOML | `parsers` helpers |
 
-:::tip Not sure where to start?
+:::note[Not sure where to start?]
 Read [Getting Started](../getting-started.md) first, then come back here to explore the
 individual concepts in detail.
 :::
