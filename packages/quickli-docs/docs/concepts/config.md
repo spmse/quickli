@@ -84,14 +84,14 @@ Both are subclasses of `CLIError`.
 
 ## Tips
 
-:::tip Config vs. Option for persistent settings
+:::tip[Config vs. Option for persistent settings]
 Use a **config file** for settings that users set once and expect to persist between
 runs — for example, a default server host or an API base URL. Use a **command option**
 for settings that change on a per-invocation basis, such as the output format or a
 one-off target path.
 :::
 
-:::tip Auto-init on first run
+:::tip[Auto-init on first run]
 `add_auto_init_config` is the recommended way to initialise a config file. It writes a
 file with all default values on the first run so the user has a concrete starting point
 to edit. On every subsequent run it loads and validates the existing file.

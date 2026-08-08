@@ -60,6 +60,7 @@ print(app.run(["write", "hello"]))                     # writing 'hello' to out.
 print(app.run(["write", "hello", "--output", "a.txt"]))  # writing 'hello' to a.txt
 ```
 
+
 ## Boolean flag example
 
 ```python
@@ -82,6 +83,11 @@ print(app.run(["version"]))            # demo 1.0.0
 print(app.run(["version", "--verbose"]))  # demo version 1.0.0 (debug build)
 print(app.run(["version", "-v"]))        # demo version 1.0.0 (debug build)
 ```
+
+:::tip[Flags for on/off switches]
+Use `is_flag=True` when the option represents a boolean toggle that does not take a
+value. The presence of the flag sets it to `True`; its absence leaves it as `False`.
+:::
 
 ## Repeatable option example
 
@@ -125,21 +131,16 @@ print(app.run(["build", "--verbose"]))  # building… (verbose=True)
 
 ## Tips
 
-:::tip Argument vs. Option
+:::note[Argument vs. Option]
 Use an `Argument` for the primary subject of the command (what it acts on). Use an
 `Option` for anything that *changes how* the command behaves — output format, verbosity,
 a toggle, or a secondary target.
 :::
 
-:::tip Local vs. global options
+:::tip[Local vs. global options]
 Define an option as **local** when it only makes sense for one command (like `--output`
 for a write command). Define it as **global** when it should apply to every command in
 the application (like `--verbose` or `--config`).
-:::
-
-:::tip Flags for on/off switches
-Use `is_flag=True` when the option represents a boolean toggle that does not take a
-value. The presence of the flag sets it to `True`; its absence leaves it as `False`.
 :::
 
 ## Where to go next

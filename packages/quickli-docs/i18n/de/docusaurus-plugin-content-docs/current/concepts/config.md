@@ -84,14 +84,14 @@ Beide sind Unterklassen von `CLIError`.
 
 ## Tipps
 
-:::tip Config vs. Option für persistente Einstellungen
+:::tip[Config vs. Option für persistente Einstellungen]
 Verwende eine **Konfigurationsdatei** für Einstellungen, die Nutzer einmal setzen und
 zwischen Ausführungen beibehalten möchten — zum Beispiel einen Standard-Serverhost oder
 eine API-Basis-URL. Verwende eine **Befehlsoption** für Einstellungen, die sich pro
 Ausführung ändern, etwa das Ausgabeformat oder einen einmaligen Zielpfad.
 :::
 
-:::tip Auto-Init beim ersten Start
+:::tip[Auto-Init beim ersten Start]
 `add_auto_init_config` ist der empfohlene Weg, eine Konfigurationsdatei zu initialisieren.
 Beim ersten Start schreibt es eine Datei mit allen Standardwerten, damit der Nutzer einen
 konkreten Ausgangspunkt zum Bearbeiten hat. Bei jedem weiteren Start lädt und validiert es
