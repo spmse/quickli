@@ -18,6 +18,7 @@ documentation page so the model can evolve without overcrowding one document.
 - [Parsers](./parsers.md)
 - [Plugin](./plugin.md)
 - [Configuration Files](./config.md)
+- [Comparing Click, argparse, and quickli](../comparison/overview.md)
 
 ## How the concepts fit together
 

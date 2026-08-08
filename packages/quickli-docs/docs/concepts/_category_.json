@@ -1,8 +1,5 @@
-{
-  "label": "Concepts",
-  "position": 2,
-  "link": {
-    "type": "doc",
-    "id": "concepts/quickli-concepts"
-  }
-}
+label: Concepts
+position: 2
+link:
+  type: doc
+  id: concepts/quickli-concepts
