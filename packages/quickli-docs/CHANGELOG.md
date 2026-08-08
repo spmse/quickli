@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/spmse/quickli/compare/docs-v0.4.0...docs-v0.4.1) (2026-08-08)
+
+
+### Bug Fixes
+
+* **docs:** correct admonition syntax for custom titles ([#74](https://github.com/spmse/quickli/issues/74)) ([dbf2500](https://github.com/spmse/quickli/commit/dbf250000fb981d2bca7a7f58086dff7fe73d4e0))
+
 ## [0.4.0](https://github.com/spmse/quickli/compare/docs-v0.3.1...docs-v0.4.0) (2026-08-02)
 
 
