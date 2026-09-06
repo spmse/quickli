@@ -1,115 +1,131 @@
 ---
 sidebar_position: 6
-description: Plugins erweitern eine quiCkLI-Anwendung mit wiederverwendbaren Befehlssets.
-keywords: [quickli, plugin, erweiterung, register, load_plugin]
+description: Modulare Plugin-Architektur zur Erweiterung von quiCkLI-Anwendungen mit wiederverwendbaren Befehlssätzen.
+keywords: [quickli, plugin, erweiterung, register, load_plugin, PluginLoadError, modulare befehle]
 ---
 
 # Plugin
 
-Plugins erweitern eine `quickli`-Anwendung, ohne das Kernpaket zu verändern.
-Jedes Plugin registriert seine Befehle und Ressourcen anhand eines klar definierten Vertrags
-bei einer `Application`-Instanz.
+Plugins bieten einen Erweiterungsmechanismus für `quickli`-Anwendungen, ohne den Anwendungscode im Kern zu verändern. Jedes Plugin kapselt eine Reihe von **[Command](./command.md)**-Handlern und -Ressourcen und registriert diese über einen strikten Vertrag bei einer **[Application](./application.md)**-Instanz.
 
-Plugins befinden sich in der Hierarchie auf derselben Ebene wie reguläre Befehle: Sie
-hängen neue Befehle von außen an eine bestehende `Application` an.
+Plugins befinden sich in der Architektur auf derselben Ebene wie reguläre Anwendungsbefehle:
 
 ```
 Application
-├── Command (direkt registriert)
+├── Command (direkt von der Anwendung registriert)
 └── Plugin              ← du bist hier
-    └── Command (vom Plugin registriert)
+    └── Command (von plugin.register() registriert)
 ```
 
-## Plugin-Vertrag
+## Der Plugin-Schnittstellenvertrag
 
-Jedes Plugin muss `quickli.Plugin` unterklassen und drei Elemente implementieren:
+Jedes Plugin muss `quickli.Plugin` unterklassen und drei erforderliche abstrakte Elemente implementieren:
 
-| Element | Art | Erforderlich | Beschreibung |
-|---|---|---|---|
-| `name` | `str`-Property | ja | Eindeutiger, nicht leerer Plugin-Bezeichner |
-| `description` | `str`-Property | ja | Kurze Beschreibung der bereitgestellten Funktionen |
-| `register(application)` | Methode | ja | Registriert Befehle und Ressourcen bei der Anwendung |
+| Element | Art | Beschreibung |
+|---|---|---|
+| `name` | `@property -> str` | Eindeutiger, nicht leerer String-Bezeichner für das Plugin (z. B. `"security-audit"`). |
+| `description` | `@property -> str` | Kurze Beschreibung der vom Plugin bereitgestellten Funktionen. |
+| `register(application)` | `method(Application) -> None` | Hook-Methode, in der das Plugin Befehle, Unterbefehle oder Ressourcen an der `Application` registriert. |
+
+### Vollständiges Plugin-Beispiel
 
 ```python
 import quickli
 
-
-class VersionPlugin(quickli.Plugin):
+class DatabasePlugin(quickli.Plugin):
     @property
     def name(self) -> str:
-        return "version-plugin"
+        return "database"
 
     @property
     def description(self) -> str:
-        return "Adds a version command."
+        return "Bietet Datenbankmigrations- und Seeding-Befehle."
 
     def register(self, application: quickli.Application) -> None:
-        @application.command(help_text="Prints the application version.")
-        def version() -> str:
-            return "1.0.0"
+        @application.command(
+            name="db-migrate",
+            help_text="Datenbankschemamigrationen ausführen.",
+        )
+        def migrate() -> str:
+            return "migrations applied"
+
+        @application.command(
+            name="db-seed",
+            help_text="Datenbank mit Beispieldaten befüllen.",
+        )
+        def seed() -> str:
+            return "database seeded"
 ```
 
-## Ein Plugin laden
+## Laden von Plugins (`Application.load_plugin`)
 
-Rufe `Application.load_plugin(plugin)` auf, um ein Plugin in deine Anwendung zu laden.
+Um ein Plugin zu registrieren, übergib eine Instanz deiner Plugin-Klasse an `Application.load_plugin()`:
 
 ```python
-app = quickli.Application(name="demo")
-app.load_plugin(VersionPlugin())
-print(app.run(["version"]))  # 1.0.0
+app = quickli.Application(name="mycli")
+
+# Datenbank-Plugin laden:
+app.load_plugin(DatabasePlugin())
+
+# Vom Plugin bereitgestellte Befehle ausführen:
+print(app.run(["db-migrate"]))  # migrations applied
+print(app.run(["db-seed"]))     # database seeded
 ```
 
-`load_plugin` validiert den Plugin-Namen, verhindert doppelte Ladevorgänge und ruft
-`plugin.register(application)` auf, damit das Plugin seine Befehle registrieren kann.
+## Geladene Plugins anzeigen (`app.plugins`)
 
-## Geladene Plugins anzeigen
-
-`Application.plugins` gibt eine Kopie der Liste geladener Plugins zurück.
+Du kannst alle geladenen Plugins über `app.plugins` abfragen:
 
 ```python
 for plugin in app.plugins:
-    print(f"{plugin.name}: {plugin.description}")
+    print(f"Plugin: {plugin.name} — {plugin.description}")
 ```
 
-## Fehlerbehandlung
+## Fehlerbehandlung (`PluginLoadError`)
 
-`quickli.PluginLoadError` wird ausgelöst, wenn:
+`quickli` erzwingt die Gültigkeit von Plugins und eindeutige Namen bei der Registrierung. Das Laden löst einen `PluginLoadError` aus, wenn:
 
-- der Plugin-Name leer ist,
-- bereits ein Plugin mit demselben Namen geladen wurde,
-- oder die `register`-Methode des Plugins eine Ausnahme auslöst.
+1. **Leerer Name**: Die `name`-Property gibt einen leeren String zurück.
+2. **Doppelter Name**: Ein Plugin mit demselben `name` ist bereits an der `Application` registriert.
+3. **Registrierungsausnahme**: Die `register(application)`-Methode des Plugins löst eine unbehandelte Ausnahme aus.
 
 ```python
+from quickli import Application, PluginLoadError
+
+app = Application(name="demo")
+db_plugin = DatabasePlugin()
+
+app.load_plugin(db_plugin)
+
 try:
-    app.load_plugin(VersionPlugin())
-except quickli.PluginLoadError as error:
-    print(f"Failed to load plugin: {error}")
+    # Das zweimalige Laden desselben Plugins löst PluginLoadError aus:
+    app.load_plugin(db_plugin)
+except PluginLoadError as err:
+    print(f"Failed to load plugin: {err}")
 ```
 
-## Tipps
-
-:::tip[Wann ein Plugin verwenden]
-Verwende ein Plugin, wenn du einen wiederverwendbaren Befehlssatz als separates Python-Modul
-oder -Paket verpacken möchtest. Ein gemeinsames `audit`-Plugin kann z. B. in jede Team-CLI
-geladen werden, ohne Code zu kopieren. Für kleine, anwendungsspezifische Befehle verwende
-einfach direkt `@app.command`.
+:::info[Eindeutigkeit von Plugins]
+Jedes Plugin muss einen eindeutigen `name`-String zurückgeben, um Kollisionen zwischen Plugin-Paketen zu vermeiden.
 :::
+
+## Reglementierung & Einschränkungen
 
 :::warning[Plugins können keine bestehenden Befehle überschreiben]
-Ein Plugin kann keinen Befehl ersetzen, der bereits registriert wurde — weder von der
-Anwendung selbst noch von einem früheren Plugin. Entwirf deine Plugins so, dass sie neue
-Befehle hinzufügen und keine bestehenden ersetzen.
+Ein Plugin kann keinen Befehl ersetzen, der bereits an der `Application` registriert wurde (weder von der Anwendung selbst noch von einem zuvor geladenen Plugin). Der Versuch, einen doppelten Befehlsnamen zu registrieren, löst einen `CommandRegistrationError` aus.
 :::
 
-## Aktueller Status
+:::tip[Modulare Anwendungsarchitektur]
+Verwende Plugins, um große CLI-Anwendungen in unabhängige, wiederverwendbare Module aufzuteilen. So kann beispielsweise ein gemeinsames `auth`- oder `telemetry`-Plugin teamübergreifend verwendet werden.
+:::
 
-Das Plugin-System ist im Alpha-Release mit explizitem Laden über
-`Application.load_plugin()` implementiert.
-Die automatische Plugin-Erkennung über Paketmetadaten (Entry Points von `importlib.metadata`)
-ist für ein zukünftiges Release geplant.
+## Aktueller Status & Roadmap
 
-## Referenz
+- **Aktuell (Alpha)**: Explizite Plugin-Instanziierung und Laden über `app.load_plugin(PluginInstance())`.
+- **Geplant (Zukunft)**: Automatische Plugin-Erkennung über Python-Paketeigenschaften (`importlib.metadata`).
 
-Siehe die [Plugin-Spezifikation](https://github.com/spmse/quickli/blob/main/packages/core/specs/plugin.md)
-und [ADR 0002](https://github.com/spmse/quickli/blob/main/packages/core/docs/adr/0002-plugin-api-design.md)
-für die vollständige Begründung des Designs.
+## Wie geht es weiter?
+
+- Erfahre mehr über Befehle in **[Command](./command.md)**.
+- Erfahre, wie die Befehlsausführung funktioniert in **[Application](./application.md)**.
+- Lade dauerhafte Konfigurationen in Plugins mit **[Config](./config.md)**.
+
