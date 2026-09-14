@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/spmse/quickli/compare/docs-v0.4.1...docs-v0.5.0) (2026-09-14)
+
+
+### Features
+
+* update and expand concept documentation pages ([#79](https://github.com/spmse/quickli/issues/79)) ([a71bda2](https://github.com/spmse/quickli/commit/a71bda28c48f71523d6f3ea6c5e311b7ec9452b0))
+
 ## [0.4.1](https://github.com/spmse/quickli/compare/docs-v0.4.0...docs-v0.4.1) (2026-08-08)
 
 
