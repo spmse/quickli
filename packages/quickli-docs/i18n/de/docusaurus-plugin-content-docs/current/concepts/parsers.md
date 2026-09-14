@@ -1,83 +1,127 @@
 ---
 sidebar_position: 8
-description: Helfer zum Parsen und Rendern von JSON, YAML und TOML in quiCkLI-CLIs.
-keywords: [quickli, parser, json, yaml, toml, laden, rendern]
+description: Hilfsfunktionen zur Serialisierung und Deserialisierung strukturierter Daten (JSON, YAML, TOML) in quiCkLI.
+keywords: [quickli, parsers, json, yaml, toml, load_json, render_json, load_yaml, render_yaml, load_toml, render_toml]
 ---
 
-# Parser
+# Parsers
 
-`quickli.parsers` bietet klar abgegrenzte Funktionen für strukturierte JSON-, YAML- und
-TOML-Ein- und -Ausgabe. Parser sind Hilfsfunktionen außerhalb der Befehlshierarchie — du
-kannst sie aus jedem Command-Handler aufrufen, der strukturierte Daten lesen oder erzeugen
-muss.
+`quickli.parsers` bietet Hilfsfunktionen zum Parsen und Rendern strukturierter Daten in den Formaten **JSON**, **YAML** und **TOML**. Parser sind zustandslose Hilfsfunktionen außerhalb der Befehlshierarchie — du kannst sie in **[Command](./command.md)**-Handlern, Konvertern für **[Argument](./argument.md#typ-konverter)** oder Datenverarbeitungspipelines aufrufen.
 
 ```
 Application
 └── Command
-    └── handler()   ← Parser-Helfer hier aufrufen
-        load_yaml / render_json / …
+    └── handler()   ← Parser-Helfer in Handlern oder Konvertern aufrufen
+        load_json / render_yaml / load_toml / …
 ```
 
-## Öffentliche APIs
+## Öffentliche API-Referenz
 
-| Funktion | Beschreibung |
-|---|---|
-| `load_json(text)` | Einen JSON-String in ein Python-Objekt parsen |
-| `render_json(value)` | Ein Python-Objekt in einen JSON-String serialisieren |
-| `load_yaml(text)` | Einen YAML-String in ein Python-Objekt parsen |
-| `render_yaml(value)` | Ein Python-Objekt in einen YAML-String serialisieren |
-| `load_toml(text)` | Einen TOML-String in ein Python-Objekt parsen |
-| `render_toml(value)` | Ein Python-Objekt in einen TOML-String serialisieren |
+Alle Parser-Helfer werden direkt aus dem Hauptpaket `quickli` re-exportiert:
 
-## Zwischen Formaten konvertieren
+| Funktion | Signatur | Beschreibung |
+|---|---|---|
+| `load_json` | `(text: str) -> Any` | Parst einen JSON-String in Python-Dictionaries/Listen. |
+| `render_json` | `(value: Any) -> str` | Serialisiert Python-Datenstrukturen in einen formatierten JSON-String. |
+| `load_yaml` | `(text: str) -> Any` | Parst einen YAML-String in Python-Dictionaries/Listen. |
+| `render_yaml` | `(value: Any) -> str` | Serialisiert Python-Datenstrukturen in einen formatierten YAML-String. |
+| `load_toml` | `(text: str) -> Any` | Parst einen TOML-String in Python-Dictionaries/Listen. |
+| `render_toml` | `(value: Any) -> str` | Serialisiert Python-Datenstrukturen in einen formatierten TOML-String. |
 
-```python
-from quickli import load_yaml, render_json
+:::info[Top-Level Modul-Export]
+Du kannst alle Parser-Helfer direkt aus `quickli` importieren (z. B. `from quickli import load_json, render_yaml`).
+:::
 
-data = load_yaml("kind: Pod\nmetadata:\n  name: web-preview\n")
-print(render_json(data))
-```
+## Beispiel 1: Format-Konvertierungs-Befehl (YAML zu JSON)
 
-## Strukturierte Eingabe aus einem Argument lesen
+Kombiniere `load_yaml` und `render_json`, um Konvertierungstools zu bauen:
 
 ```python
 from pathlib import Path
+from quickli import Application, Argument, load_yaml, render_json
+
+app = Application(name="yaml2json")
+
+@app.command(
+    help_text="Eine YAML-Datei in formatiertes JSON umwandeln.",
+    arguments=[Argument("path", converter=Path)],
+)
+def convert(path: Path) -> str:
+    raw_yaml = path.read_text(encoding="utf-8")
+    data = load_yaml(raw_yaml)
+    return render_json(data)
+```
+
+## Beispiel 2: Argument-Konvertierung mit `load_json`
+
+Verwende `load_json` als Konverter für `Argument` oder `Option`, um JSON-Strings auf der CLI zu parsen:
+
+```python
 from quickli import Application, Argument, load_json
 
 app = Application(name="demo")
 
-
 @app.command(
-    help_text="Eine JSON-Datei zusammenfassen.",
-    arguments=[Argument("path", converter=Path)],
+    help_text="JSON-Payload prüfen.",
+    arguments=[
+        Argument("payload", converter=load_json, help_text="Roher JSON-String."),
+    ],
 )
-def summarise(path: Path) -> str:
-    data = load_json(path.read_text())
-    return f"{len(data)} Schlüssel auf oberster Ebene"
+def inspect_payload(payload: dict) -> str:
+    keys = ", ".join(payload.keys())
+    return f"Payload contains {len(payload)} keys: {keys}"
 
-
-print(app.run(["summarise", "data.json"]))
+print(app.run(["inspect-payload", '{"name": "Alice", "role": "admin"}']))
 ```
 
-## Tipps
+## Beispiel 3: Ausgaben basierend auf Optionen formatieren
 
-:::tip[Welches Format wählen]
-- Verwende **JSON** für maschinelle Kommunikation und API-Antworten.
-- Verwende **YAML** für manuell bearbeitete Konfigurationen und Kubernetes-ähnliche Manifeste.
-- Verwende **TOML** für endnutzerorientierte Konfigurationsdateien (siehe [Konfigurationsdateien](./config.md)).
+Verwende Parser-Renderer, um Handler-Antworten dynamisch basierend auf einer `--format`-Option zu formatieren:
 
-Alle drei Helfer sind über den Top-Level-Import `quickli` verfügbar, du musst
-`quickli.parsers` nicht direkt importieren.
+```python
+from quickli import Application, Option
+from quickli import render_json, render_yaml, render_toml
+
+app = Application(name="demo")
+
+@app.command(
+    options=[
+        Option("format", short_name="f", default="json", help_text="Ausgabeformat (json, yaml, toml)."),
+    ],
+)
+def info(format: str = "json") -> str:
+    data = {
+        "app": "demo",
+        "status": "healthy",
+        "metrics": {"cpu": 12.5, "memory_mb": 256},
+    }
+    if format == "yaml":
+        return render_yaml(data)
+    elif format == "toml":
+        return render_toml(data)
+    return render_json(data)
+
+print(app.run(["info", "-f", "yaml"]))
+```
+
+## Leitfaden zur Formatauswahl
+
+:::tip[Wahl des richtigen Formats]
+- **JSON**: Optimal für Maschinen-zu-Maschinen-Kommunikation und API-Payloads.
+- **YAML**: Optimal für menschlich lesbare Konfigurationen und Kubernetes-Manifeste.
+- **TOML**: Optimal für menschlich bearbeitbare Anwendungskonfigurationsdateien.
 :::
 
-:::tip[Parser vs. Config]
-`load_toml` / `render_toml` sind nützlich für einmaliges Parsen von TOML-Strings oder
-Dateien, die du selbst verwaltest. Für persistente Anwendungskonfiguration mit
-Schema-Validierung und Auto-Initialisierung verwende stattdessen die dedizierten
-[Config](./config.md)-Ressourcen.
+## Parsers vs. Konfigurationsmodul
+
+:::note[Parsers vs. Config]
+- Verwende **`parsers`**-Helfer für einmaliges Parsen oder Rendern beliebiger JSON/YAML/TOML-Strings oder Dateien innerhalb der Befehlslogik.
+- Verwende **[Config](./config.md)**, wenn du eine dauerhafte, schema-validierte TOML-Konfigurationsdatei auf der Festplatte benötigst.
 :::
 
 ## Wie geht es weiter?
 
-- Siehe **[Konfigurationsdateien](./config.md)** für persistente, schema-validierte Konfiguration.
-- Geh zurück zu **[Command](./command.md)**, um zu sehen, wie Parser-Helfer in einen Handler eingebunden werden.
+- Erfahre mehr über Konverter in positionalen Eingaben in **[Argument](./argument.md)**.
+- Erfahre mehr über CLI-Optionen in **[Option](./option.md)**.
+- Siehe, wie dauerhafte TOML-Konfiguration funktioniert in **[Config](./config.md)**.
+
