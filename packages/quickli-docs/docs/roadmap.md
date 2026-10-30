@@ -11,25 +11,53 @@ quickli is an Alpha project. This roadmap describes the next planned steps rathe
 promising fixed delivery dates. Each step will be implemented, tested, documented, and
 reviewed before it is treated as complete.
 
-## Near-term priorities
+## Stability and fix release outline
 
-1. **Release readiness**
-   - Make versioning and release artifacts derive from the release tag.
-   - Verify the package on Python 3.12, 3.13, and 3.14.
-   - Publish the same tested distributions to PyPI and attach release evidence to GitHub.
-2. **Executable runtime follow-up**
-   - Refine beginner-facing examples around `Application.main()`.
-   - Expand guidance for structured error output and automation use cases.
-3. **More complete command composition**
-   - Evaluate nested subcommands and clearer unknown-command errors.
-   - Preserve the current small command, argument, and option abstractions.
+The next stabilization release should improve developer experience without replacing existing
+APIs. This is a release checklist, not a declaration of 1.0 stability.
+
+1. **Audit the current contract**
+   - Compare specifications, core documentation, and the official documentation package
+     against implementation and tests.
+   - Correct examples that refer to nonexistent `register_command`, `Option.metavar`, or
+     `ConfigField.description` APIs.
+   - Correct validator factory usage, positional defaults, JSON output envelopes, and
+     `run()` versus `main()` behavior.
+   - Remove contradictory TOML-only configuration claims.
+2. **Harden configuration**
+   - Preserve YAML, JSON, and TOML support and explicit format selection.
+   - Report invalid document shapes, syntax, encoding, and file access errors clearly.
+   - Offer opt-in `Application(config=..., auto_init_config=True)` registration of `init`,
+     plus explicit `app.init_config()` when automatic command registration is disabled.
+   - Preserve existing configuration files and existing command registration behavior.
+3. **Make the documentation executable**
+   - Expand command registration, arguments, value options, flags, and validation examples.
+   - Explain schema defaults, nested configuration limits, and explicit CLI overrides.
+   - Provide standard-library logging and application packaging guides, including
+     standalone binaries and containers.
+   - Use ordered steps for workflows, highlighted code, and admonitions for limitations.
+4. **Validate and review before publishing**
+   - Run regression tests on Python 3.12, 3.13, and 3.14.
+   - Run Ruff, build Python distributions, and build the Docusaurus site.
+   - Exercise documented examples and inspect errors, stdout, stderr, and exit codes.
+   - Review backward compatibility, security findings, and release notes.
+   - Obtain maintainer/user acceptance before declaring the release ready.
+
+:::note[Implemented versus planned]
+Nested subcommands, explicit plugin loading, combined short flags, shell completion, and
+multi-format configuration already exist. Future work below extends them; it does not
+describe missing baseline support.
+:::
 
 ## Following priorities
 
-- configuration files with an explicit precedence model
-- shell completion generated from registered commands and options
-- a deliberate plugin loading and registration API
-- combined short flags, if they can be added without making parsing ambiguous
+- Layered configuration with an explicit file/environment/CLI precedence model.
+- Shell completion for arguments and options, beyond registered top-level commands.
+- Plugin discovery, beyond explicit `app.load_plugin(...)`.
+- A separately specified automatic `--help`/`-h` policy and clearer unknown-command errors.
+
+For example, `app.render_help()` currently generates help programmatically; `--help` is not
+an automatically registered option. Adding it is a separate runtime feature.
 
 ## How priorities are chosen
 

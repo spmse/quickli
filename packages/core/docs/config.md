@@ -46,7 +46,7 @@ schema = ConfigSchema(
             default=3,
             help_text="Number of retry attempts.",
         ),
-        ConfigField("host", value_type=str, required=True, help_text="Remote host to connect to."),
+        ConfigField("host", default="localhost", help_text="Remote host to connect to."),
     ]
 )
 
@@ -58,6 +58,33 @@ print(data["host"])
 
 `add_auto_init_config` creates the file with defaults on first run, or loads it when
 the file already exists.
+
+## Application initialization
+
+Attach the schema and format through `Config`, and opt into a built-in `init` command:
+
+```python
+from quickli import Application, Config, ConfigField, ConfigSchema
+
+schema = ConfigSchema(fields=[ConfigField("host", default="localhost")])
+config = Config("settings.json", schema=schema, format="json")
+app = Application("myapp", config=config, auto_init_config=True)
+assert app.run(["init"]) == {"host": "localhost"}
+```
+
+- Construction and help rendering do not create files.
+- `init` writes defaults only when the file is absent; otherwise it loads and validates
+  without overwriting user changes.
+- `auto_init_config` defaults to `False`. Call `app.init_config()` explicitly for startup
+  initialization or from your own command when automatic registration is disabled.
+- `app.config` exposes the attached configuration. Enabling the command without a `Config`
+  raises `ValueError`; calling the routine without one raises `ConfigError`.
+- Required fields without defaults are omitted from the template and must be filled in.
+- Loading does not merge schema defaults. Choose fallbacks and CLI override precedence
+  explicitly, for example `data.get("host", "localhost")`.
+
+For complete examples, see the official
+[configuration guide](https://spmse.github.io/quickli/docs/concepts/config).
 
 ## Resource Model
 
@@ -135,8 +162,10 @@ data = config.load()
 print(data["host"])
 ```
 
-`Config.load()` raises `ConfigError` when the file is missing or contains invalid
-syntax.  When a schema is attached, it also raises `ConfigValidationError` for
+`Config.load()` raises `ConfigError` for missing/unreadable files, invalid encoding
+or syntax, or roots that are not mappings with string keys. Empty/null YAML documents
+load as `{}`, but JSON `null` is rejected. When a schema is attached, loading raises
+`ConfigValidationError` for
 missing required fields or type mismatches.
 
 ### Using a different format
@@ -155,6 +184,10 @@ config.save({"host": "example.com", "port": 9000})
 
 `Config.save(data)` writes a config file at the configured path.  Parent directories
 are created automatically.  `None` values are silently skipped.
+
+Only top-level `None` values are skipped; nested JSON/YAML nulls are preserved.
+Saving does not perform schema validation. File access and encoding failures raise
+`ConfigError`. Unknown explicit format names raise `ValueError` at construction.
 
 ### Supported value types
 

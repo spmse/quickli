@@ -29,6 +29,8 @@
 - `Config`, `ConfigField`, `ConfigSchema`, `add_auto_init_config`, `validate_config`,
   and `generate_schema_json` provide multi-format configuration file handling.
   YAML is the recommended default format; JSON and TOML are also supported.
+- `Application(config=..., auto_init_config=True)` registers an opt-in `init` command.
+  `app.init_config()` supports explicit initialization without automatic registration.
 
 ## Local Workflow
 
@@ -54,6 +56,31 @@ PYTHONPATH=src python examples/complex/pyk5l/app.py get pods --verbose
   default, prints results, returns exit codes, and can emit JSON payloads for automation.
 - Use the application-level `error_handler` callback when an integrating application needs a
   custom global error layer on top of quickli errors.
+
+## Application Logging and Distribution
+
+Use the standard-library `logging` module in application code. Create named loggers in
+modules and configure handlers once in the executable entrypoint, keeping logs on stderr:
+
+```python
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def main() -> int:
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+    logger.info("Starting application")
+    return app.main()
+```
+
+In this excerpt, `app` is your assembled `Application`. Do not configure logging during
+library or plugin imports, log credentials, or print diagnostics into JSON result streams.
+See the official [logging guide](https://spmse.github.io/quickli/docs/guides#logging-guide)
+for a complete configurable example and repeatable verbosity flags.
+
+The [packaging guide](https://spmse.github.io/quickli/docs/guides#packaging-guide)
+covers console-script entry points, standalone executables, and non-root containers.
 
 ## Planned Work
 

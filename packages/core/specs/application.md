@@ -18,6 +18,8 @@ It owns the command registry and dispatches explicit input tokens to a handler.
 - Parse application-level global options before command dispatch.
 - Optionally register a built-in `shell-completion` command that generates scripts for
   bash, zsh, and PowerShell.
+- Optionally attach a `Config` with its custom schema and format, and register an `init`
+  command with `auto_init_config=True`. Provide `init_config()` for explicit initialization.
 
 ## Technical Notes
 
@@ -63,11 +65,11 @@ It owns the command registry and dispatches explicit input tokens to a handler.
 - The standalone functions `generate_bash_completion`, `generate_zsh_completion`, and
   `generate_powershell_completion` are available from the public package interface.
 - `SUPPORTED_SHELLS` is a public constant that lists all supported shell names.
+- Configuration initialization is opt-in and does not happen during construction.
+  See [Configuration](config.md#application-integration) for the initialization contract.
 
 ## Future Extensions
 
-- Typed argument conversion beyond booleans and raw strings.
-- Nested command groups.
 - Shell completion within commands (arguments and options).
-- Config-driven application setup.
-- Plugin discovery and registration.
+- Layered configuration precedence.
+- Plugin discovery beyond explicit registration.

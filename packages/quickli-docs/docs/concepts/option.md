@@ -22,15 +22,17 @@ When creating an `Option`, you can configure the following properties:
 | Property | Type | Default | Description |
 |---|---|---|---|
 | `name` | `str` | Required | Option name, accessed via CLI flags like `--output` and handler parameters like `output`. |
-| `help_text` | `str \| None` | `None` | Human-readable explanation rendered in help output. |
+| `help_text` | `str` | `""` | Human-readable explanation rendered in help output. |
 | `short_name` | `str \| None` | `None` | Single-character short alias (e.g., `"o"` for `-o`). |
 | `required` | `bool` | `False` | Whether the option must be explicitly supplied by the caller. |
 | `default` | `Any` | `None` | Default value if the option is omitted. (Default for `is_flag=True` is `False`). |
 | `is_flag` | `bool` | `False` | When `True`, treats the option as a boolean toggle switch that takes no value argument. |
-| `converter` | `Callable \| None` | `None` | Transformation callable applied to raw option values before validation. |
-| `validators` | `list[Callable] \| None` | `None` | Callable validation rules executed after conversion. |
+| `converter` | `Callable` | `str` | Transformation callable applied to supplied values before validation. |
+| `validators` | `tuple[Validator, ...]` | `()` | Callables returning the validated value or raising `ValueError`. |
 | `multiple` | `bool` | `False` | When `True`, allows the option to be repeated on the command line. |
-| `metavar` | `str \| None` | `None` | Custom placeholder text rendered in usage lines and help screens (e.g. `metavar="PATH"`). |
+
+Option destinations replace hyphens with underscores: `Option("dry-run", is_flag=True)`
+passes `dry_run=True` to the handler. `metavar` belongs to `Argument`, not `Option`.
 
 ## Supported CLI Syntax Forms
 
@@ -124,6 +126,14 @@ print(app.run(["run-job", "-vvv"]))   # Log verbosity level: 3
 A standard flag (`is_flag=True`, `multiple=False`) returns a `bool`. A repeatable flag (`is_flag=True`, `multiple=True`) returns an `int` representing the occurrence count. Make sure your handler function type hint matches the expected return type.
 :::
 
+:::note[Defaults and repeated values]
+- A value option normally defaults to `None`; repeatable values default to a fresh `[]`.
+- Repeatable values append to any configured list default, rather than replacing it.
+- Supplied tokens are converted; defaults must already have the desired Python type.
+- A non-repeatable option keeps its last supplied value.
+- Flags take no value: `--verbose=false` is an error, not a way to turn a flag off.
+:::
+
 ## Global and Local Options
 
 Options can be registered as **local** options on a command or **global** options on the application:
@@ -152,6 +162,8 @@ print(app.run(["process", "-f", "yaml", "--config", "settings.toml", "-q"]))
 
 :::note[Global Option Placement]
 `quickli` filters global options flexibly regardless of whether the user places them before the command name (`mycli -q process`) or after the command name (`mycli process -q`).
+Every selected handler must accept all global option destinations or `**kwargs`.
+Do not reuse a global destination on a local option.
 :::
 
 ## Converters and Built-in Validators
@@ -171,15 +183,14 @@ app = Application(name="demo")
             "file",
             short_name="f",
             converter=Path,
-            validators=[file_path],
-            metavar="PATH",
+            validators=[file_path()],
             help_text="Input file path.",
         ),
         Option(
             "retries",
             short_name="r",
             converter=int,
-            validators=[positive_number],
+            validators=[positive_number()],
             default=3,
             help_text="Retry count.",
         ),
@@ -196,4 +207,3 @@ def sync(file: Path | None = None, retries: int = 3) -> str:
 - See how options are attached to command handlers in **[Command](./command.md)**.
 - Learn how application-wide global options are configured in **[Application](./application.md)**.
 - Store persistent settings on disk instead of per-run options using **[Config](./config.md)**.
-

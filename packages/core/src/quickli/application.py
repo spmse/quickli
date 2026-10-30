@@ -10,11 +10,13 @@ from typing import Callable, TextIO
 
 from quickli.argument import Argument
 from quickli.command import Command, Subcommand
+from quickli.config import Config, add_auto_init_config
 from quickli.exceptions import (
     CLIError,
     CommandExecutionError,
     CommandNotFoundError,
     CommandRegistrationError,
+    ConfigError,
     InternalCLIError,
     PluginLoadError,
     UserCodeError,
@@ -40,7 +42,12 @@ class Application:
         shell_completion: bool = False,
         auto_sys_argv: bool = True,
         error_handler: ErrorHandler | None = None,
+        *,
+        config: Config | None = None,
+        auto_init_config: bool = False,
     ) -> None:
+        if auto_init_config and config is None:
+            raise ValueError("auto_init_config requires a Config instance.")
         self.name = name
         self.description = description.strip()
         self._commands: dict[str, Command] = {}
@@ -54,8 +61,30 @@ class Application:
         self._auto_sys_argv = auto_sys_argv
         self._plugins: list[Plugin] = []
         self._error_handler = error_handler
+        self._config = config
+        if auto_init_config:
+            self.register(
+                lambda **_: self.init_config(),
+                name="init",
+                help_text="Create configuration defaults or load the existing configuration.",
+            )
         if shell_completion:
             self._register_shell_completion_command()
+
+    @property
+    def config(self) -> Config | None:
+        """Returns the optional configuration, including its schema and format."""
+        return self._config
+
+    def init_config(self) -> dict[str, object]:
+        """Creates configuration defaults, or loads an existing file without overwriting it.
+
+        This routine is available even when the built-in ``init`` command is disabled.
+        Required fields without defaults must be filled in before the next load.
+        """
+        if self._config is None:
+            raise ConfigError("No configuration is attached to this application.")
+        return add_auto_init_config(self._config)
 
     @property
     def commands(self) -> dict[str, Command]:

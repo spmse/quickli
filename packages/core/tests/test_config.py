@@ -6,6 +6,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from quickli.config import (
     Config,
@@ -22,6 +23,72 @@ from quickli.config import (
 )
 from quickli.exceptions import ConfigError, ConfigValidationError
 from quickli.validators import positive_number
+
+
+class ConfigParsingRegressionTests(unittest.TestCase):
+    def test_json_and_yaml_round_trip_nested_data(self) -> None:
+        data = {
+            "service": {"name": "café", "ports": [8000, 8001], "enabled": False},
+            "retries": 3,
+        }
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for extension in ("json", "yaml", "yml"):
+                with self.subTest(extension=extension):
+                    config = Config(Path(tmpdir) / f"config.{extension}")
+                    config.save(data)
+                    self.assertEqual(config.load(), data)
+
+    def test_non_mapping_documents_raise_instead_of_discarding_data(self) -> None:
+        documents = {
+            "json": ['["host"]', '"host"', "42", "false", "null"],
+            "yaml": ["- host\n", "host\n", "42\n", "false\n", "1: host\n"],
+        }
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for extension, contents in documents.items():
+                for content in contents:
+                    with self.subTest(extension=extension, content=content):
+                        path = Path(tmpdir) / f"config.{extension}"
+                        path.write_text(content, encoding="utf-8")
+                        with self.assertRaisesRegex(ConfigError, "mapping with string keys"):
+                            Config(path).load()
+
+    def test_invalid_syntax_and_unsafe_yaml_raise_config_error(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for extension, content in (
+                ("json", '{"host":'),
+                ("yaml", "host: ["),
+                ("yaml", "host: !!python/object:builtins.object {}"),
+            ):
+                with self.subTest(extension=extension, content=content):
+                    path = Path(tmpdir) / f"config.{extension}"
+                    path.write_text(content, encoding="utf-8")
+                    with self.assertRaises(ConfigError):
+                        Config(path).load()
+
+    def test_unreadable_files_and_invalid_encoding_raise_config_error(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for extension in ("json", "yaml", "toml"):
+                path = Path(tmpdir) / f"config.{extension}"
+                with self.subTest(extension=extension, failure="directory"):
+                    path.mkdir()
+                    with self.assertRaises(ConfigError):
+                        Config(path).load()
+                    path.rmdir()
+                with self.subTest(extension=extension, failure="encoding"):
+                    path.write_bytes(b"\xff")
+                    with self.assertRaises(ConfigError):
+                        Config(path).load()
+
+    def test_write_failures_raise_config_error(self) -> None:
+        config = Config("config.json")
+        with patch.object(Path, "mkdir", side_effect=PermissionError("read only")):
+            with self.assertRaisesRegex(ConfigError, "Failed to write"):
+                config.save({"host": "localhost"})
+        self.assertEqual(config.data, {})
+
+    def test_unknown_format_is_rejected(self) -> None:
+        with self.assertRaisesRegex(ValueError, "Unsupported configuration format"):
+            Config("config.yaml", format="xml")
 
 
 # ---------------------------------------------------------------------------

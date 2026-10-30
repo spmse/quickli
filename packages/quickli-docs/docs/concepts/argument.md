@@ -21,16 +21,17 @@ When defining an `Argument`, you can configure several properties:
 | Property | Type | Default | Description |
 |---|---|---|---|
 | `name` | `str` | Required | Internal parameter name bound to the handler function signature. |
-| `help_text` | `str \| None` | `None` | Description shown in command help output. |
-| `required` | `bool` | `True` | Whether the positional argument must be provided. Automatically `False` if `default` is given. |
+| `help_text` | `str` | `""` | Description shown in command help output. |
+| `required` | `bool` | `True` | Whether the positional argument must be provided. Set `False` explicitly to allow omission. |
 | `default` | `Any` | `None` | Fallback value used when an optional positional argument is omitted. |
-| `converter` | `Callable \| None` | `None` | Transformation function applied to the raw string token before validation and execution. |
-| `validators` | `list[Callable] \| None` | `None` | Callable checks executed against the converted value. |
+| `converter` | `Callable` | `str` | Transformation function applied to the raw string token before validation and execution. |
+| `validators` | `tuple[Validator, ...]` | `()` | Callables that return the validated value or raise `ValueError`. |
 | `metavar` | `str \| None` | `None` | Custom placeholder name displayed in generated usage lines and help listings. |
 
 ## Required vs Optional Arguments
 
-Positional arguments are **required** by default. They become **optional** when a `default` value is provided:
+Positional arguments are required by default, even if a default is supplied. Set
+`required=False` to make one optional; the resource default supplies the omitted value:
 
 ```python
 from quickli import Application, Argument
@@ -41,7 +42,7 @@ app = Application(name="demo")
     help_text="Greet a user with an optional fallback name.",
     arguments=[
         Argument("greeting", help_text="Greeting word."),
-        Argument("name", default="World", help_text="Recipient name."),
+        Argument("name", required=False, default="World", help_text="Recipient name."),
     ],
 )
 def greet(greeting: str, name: str = "World") -> str:
@@ -80,9 +81,9 @@ def count_lines(file: Path) -> str:
 
 `quickli` exports several built-in validator functions that run after type conversion:
 
-- `file_path`: Validates that the path exists and is an existing file.
-- `directory_path`: Validates that the path exists and is an existing directory.
-- `positive_number`: Validates that a numeric value is strictly greater than 0.
+- `file_path()`: Creates a validator for an existing file.
+- `directory_path()`: Creates a validator for an existing directory.
+- `positive_number()`: Creates a validator requiring a numeric value greater than zero.
 - `number_range(min_val, max_val)`: Validates that a numeric value lies within `[min_val, max_val]`.
 
 ### Example with Built-in Validators
@@ -97,7 +98,7 @@ app = Application(name="demo")
 @app.command(
     help_text="Process a target file with a specific thread count.",
     arguments=[
-        Argument("path", converter=Path, validators=[file_path], metavar="FILE"),
+        Argument("path", converter=Path, validators=[file_path()], metavar="FILE"),
         Argument("threads", converter=int, validators=[number_range(1, 16)], metavar="N"),
     ],
 )
@@ -109,13 +110,14 @@ print(app.run(["process", "README.md", "4"]))
 
 ### Custom Validator Example
 
-You can also provide custom validator callables that raise an error or return `False` when validation fails:
+Custom validators must return the value to pass to the next validator or handler,
+or raise `ValueError` on failure. Returning `False` replaces the value; it does not reject it:
 
 ```python
-def validate_even_number(val: int) -> bool:
+def validate_even_number(val: int) -> int:
     if val % 2 != 0:
         raise ValueError("Value must be an even integer")
-    return True
+    return val
 
 @app.command(
     arguments=[Argument("amount", converter=int, validators=[validate_even_number])],
@@ -143,6 +145,22 @@ def fetch(target_url: str) -> str:
 Generated usage line:
 `Usage: demo fetch URL`
 
+## Values that look like options
+
+Use the `--` separator to stop option parsing when a positional value begins with `-`:
+
+```python
+from quickli import Application, Argument
+
+app = Application("demo")
+app.register(lambda text: text, name="echo", arguments=[Argument("text")])
+assert app.run(["echo", "--", "--not-an-option"]) == "--not-an-option"
+```
+
+Defaults should already have the desired Python type. Conversion applies to supplied
+tokens, not omitted defaults. For example, use `default=4`, not `default="4"`, with
+`converter=int`.
+
 ## Argument vs Option Guidelines
 
 :::tip[Choosing Between Argument and Option]
@@ -163,4 +181,3 @@ quickpython run main.py --debug --output=json
 - Learn about named inputs and flags in **[Option](./option.md)**.
 - See how arguments attach to commands in **[Command](./command.md)**.
 - Use **[Parsers](./parsers.md)** inside converters to parse complex string input like JSON or YAML.
-

@@ -146,6 +146,34 @@ In JSON mode, quickli prints payloads such as:
 {"ok": false, "error": {"code": "user_code_error", "message": "..."}}
 ```
 
+Successful JSON output goes to stdout as `{"ok": true, "result": ...}`. Errors go to
+stderr with a nonzero exit status. Return a dictionary from handlers for structured
+results rather than a pre-serialized JSON string.
+
+## Configuration and Application Guides
+
+Attach a configuration with a custom schema and format, and opt into an `init` command:
+
+```python
+from quickli import Application, Config, ConfigField, ConfigSchema
+
+schema = ConfigSchema(fields=[ConfigField("host", default="localhost")])
+app = Application("demo", config=Config("settings.json", schema), auto_init_config=True)
+data = app.run(["init"])
+```
+
+The default is `auto_init_config=False`. With an attached `Config`, use `app.init_config()`
+for explicit initialization instead. Existing files are loaded, not reset. See
+[Configuration](config.md) for validation, defaults, and JSON/YAML structures.
+
+The official documentation includes deeper
+[command registration](https://spmse.github.io/quickli/docs/concepts/command),
+[logging](https://spmse.github.io/quickli/docs/guides#logging-guide), and
+[packaging](https://spmse.github.io/quickli/docs/guides#packaging-guide) guides.
+
+Help generation is explicit: `print(app.render_help())` renders application help.
+`--help` and `-h` are not automatically registered.
+
 ## Resource Model
 
 - `Application` owns the global CLI configuration and optional command registry.

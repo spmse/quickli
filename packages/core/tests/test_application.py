@@ -10,8 +10,79 @@ from pathlib import Path
 
 from quickli import Application, Argument, Option, Subcommand, directory_path, file_path
 from quickli import number_range, positive_number
+from quickli import Config, ConfigField, ConfigSchema, ConfigError, ConfigValidationError
 from quickli.exceptions import CommandExecutionError, CommandNotFoundError
 from quickli.exceptions import CommandRegistrationError, InternalCLIError, UserCodeError
+
+
+class ApplicationConfigTests(unittest.TestCase):
+    def test_init_command_uses_custom_schema_and_format_without_startup_writes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for format_name in ("json", "yaml", "toml"):
+                with self.subTest(format=format_name):
+                    path = Path(tmpdir) / format_name / "settings.conf"
+                    schema = ConfigSchema(fields=[ConfigField("retries", int, default=3)])
+                    config = Config(path, schema=schema, format=format_name)
+                    app = Application("demo", config=config, auto_init_config=True)
+                    self.assertIs(app.config, config)
+                    self.assertIn("init", app.render_help())
+                    self.assertFalse(path.exists())
+                    self.assertEqual(app.run(["init"]), {"retries": 3})
+                    self.assertEqual(config.load(), {"retries": 3})
+                    config.save({"retries": 7})
+                    original = path.read_bytes()
+                    self.assertEqual(app.run(["init"]), {"retries": 7})
+                    self.assertEqual(path.read_bytes(), original)
+
+    def test_manual_init_when_auto_command_is_disabled(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.json"
+            app = Application("demo", config=Config(path))
+            self.assertNotIn("init", app.commands)
+            self.assertEqual(app.init_config(), {})
+            self.assertEqual(app.config.load(), {})
+
+    def test_missing_configuration_is_reported(self) -> None:
+        app = Application("demo")
+        self.assertIsNone(app.config)
+        with self.assertRaises(ConfigError):
+            app.init_config()
+        with self.assertRaises(ValueError):
+            Application("demo", auto_init_config=True)
+
+    def test_auto_init_does_not_replace_user_commands(self) -> None:
+        app = Application("demo", config=Config("config.json"), auto_init_config=True)
+        with self.assertRaises(CommandRegistrationError):
+            app.register(lambda: None, name="init")
+        manual_app = Application("demo")
+        manual_app.register(lambda: "custom", name="init")
+        self.assertEqual(manual_app.run(["init"]), "custom")
+
+    def test_init_accepts_global_options_and_appears_in_completion(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            app = Application(
+                "demo",
+                global_options=[Option("verbose", short_name="v", is_flag=True)],
+                config=Config(Path(tmpdir) / "config.yaml"),
+                auto_init_config=True,
+                shell_completion=True,
+            )
+            self.assertEqual(app.run(["-v", "init"]), {})
+            self.assertIn("init", app.generate_completion("bash"))
+
+    def test_init_preserves_invalid_existing_file_and_main_reports_error(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.json"
+            path.write_text('{"retries": "wrong"}', encoding="utf-8")
+            schema = ConfigSchema(fields=[ConfigField("retries", int)])
+            app = Application("demo", config=Config(path, schema), auto_init_config=True)
+            with self.assertRaises(ConfigValidationError):
+                app.run(["init"])
+            stdout, stderr = io.StringIO(), io.StringIO()
+            self.assertNotEqual(app.main(["init"], stdout=stdout, stderr=stderr), 0)
+            self.assertIn("Configuration validation failed", stderr.getvalue())
+            self.assertEqual(stdout.getvalue(), "")
+            self.assertEqual(path.read_text(encoding="utf-8"), '{"retries": "wrong"}')
 
 
 class ApplicationTests(unittest.TestCase):

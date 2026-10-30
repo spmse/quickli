@@ -46,3 +46,9 @@ The target support range is Python 3.12, 3.13, and 3.14.
 - The repository uses the `src` layout.
 - The project is licensed under MIT.
 - Release Please manages versioned releases through `.github/workflows/release.yml`.
+
+To distribute your own application, expose a function returning `app.main()` through
+`[project.scripts]`, for example `mytool = "mytool.cli:main"`. Build a wheel first, then
+choose an optional standalone binary or container if your deployment needs one.
+See the official [packaging guide](https://spmse.github.io/quickli/docs/guides#packaging-guide)
+for a complete `pyproject.toml`, PyInstaller commands, and a Dockerfile.

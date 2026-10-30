@@ -38,6 +38,8 @@ Save this example as `hello.py`:
 ```python
 from __future__ import annotations
 
+import sys
+
 from quickli import Application, Argument, Option
 
 
@@ -81,11 +83,12 @@ The first command prints `Hello, Ada!`; the second prints `HELLO, ADA!`.
 
 ## Explore generated help
 
-The application generates help from its registered arguments and options. Run it without
-arguments to see the usage text:
+The application generates help from its registered arguments and options. For this
+entrypoint, `name` is required; running without arguments reports a missing argument.
+Inspect the help explicitly:
 
 ```bash
-python hello.py
+python -c "from hello import app; print(app.render_help())"
 ```
 
 `Application.main()` is the beginner-friendly executable entrypoint. It reads `sys.argv[1:]`
@@ -95,6 +98,11 @@ for you, prints the returned value, reports quickli runtime errors, and returns 
 that wants direct control. It also reads `sys.argv[1:]` by default when you call it
 without arguments. Pass an explicit list to override or set `auto_sys_argv=False` to
 disable automatic reading.
+
+:::note[Help flags]
+`--help` and `-h` are not automatically registered. Applications without an entrypoint
+return help when called with no tokens; entrypoint applications execute their handler.
+:::
 
 ## Where to go next
 

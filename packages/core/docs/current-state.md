@@ -44,6 +44,8 @@ implemented:
   - nested_subcommands
   - shell_completion
   - configuration_files
+  - opt_in_config_init_command
+  - explicit_config_init_routine
   - plugin_loading
   - standard_executable_runtime
   - structured_cli_errors
@@ -65,8 +67,6 @@ example still keeps its own table and wide renderers.
 
 | Input or operation                         | Current behavior                         | Evidence                   |
 | ------------------------------------------ | ---------------------------------------- | -------------------------- |
-| Input or operation                         | Current behavior                         | Evidence                   |
-| ---                                        | ---                                      | ---                        |
 | `run([])` without entrypoint               | Returns generated application help       | application, tests         |
 | `run([])` with entrypoint                  | Invokes entrypoint with defaults         | application, tests         |
 | Named command token                        | Dispatches to matching command           | application, tests         |
@@ -83,6 +83,9 @@ example still keeps its own table and wide renderers.
 | Converter                                  | Runs before validators and handler       | validation guide           |
 | Validator                                  | Runs after conversion and before handler | validation guide           |
 | Handler exception                          | Raises `UserCodeError` with original cause | command, tests          |
+| `auto_init_config=True` with `Config`       | Registers `init` without startup writes   | application, config tests |
+| `app.init_config()`                        | Creates defaults or loads existing config | application, config spec |
+| JSON/YAML non-mapping config root          | Raises `ConfigError`                     | config, config tests      |
 | `load_plugin` with valid plugin            | Calls register, appends to plugin list   | plugin spec, tests         |
 | `load_plugin` with empty name              | Raises `PluginLoadError`                 | plugin spec, tests         |
 | `load_plugin` with duplicate name          | Raises `PluginLoadError`                 | plugin spec, tests         |
@@ -97,8 +100,6 @@ tests.
 
 | Exception                  | Raised for                                           | Owner                |
 | -------------------------- | ---------------------------------------------------- | -------------------- |
-| Exception                  | Raised for                                           | Owner                |
-| ---                        | ---                                                  | ---                  |
 | `CLIError`                 | Base class for framework errors                      | exceptions           |
 | `CommandRegistrationError` | Invalid or duplicate registration                    | registration         |
 | `CommandNotFoundError`     | Unknown command without entrypoint                   | application dispatch |
@@ -106,6 +107,8 @@ tests.
 | `UserCodeError`            | User-provided handler or error override failure      | runtime boundary     |
 | `InternalCLIError`         | Unexpected quickli internal runtime failure          | runtime boundary     |
 | `PluginLoadError`          | Invalid plugin name, duplicate plugin, or register failure | plugin loading |
+| `ConfigError`              | Configuration access, parsing, encoding, or shape failure | configuration |
+| `ConfigValidationError`    | Loaded configuration fails its schema                    | configuration |
 
 Framework exceptions remain usable as library errors. `Application.main()` now provides the
 default executable policy for printing them, serializing them as JSON, and returning exit
@@ -113,11 +116,15 @@ codes.
 
 ## Do Not Assume
 
-- Do not assume `Application.run()` reads `sys.argv` or behaves like a complete executable.
+- `Application.run()` reads `sys.argv[1:]` only when its argument is omitted and
+  `auto_sys_argv=True`. Explicit `None` or `[]` means no tokens.
 - Do not assume `Application.run()` prints a returned string; call `Application.main()` when
   you want quickli to own process I/O.
 - Do not assume unknown commands already follow the approved future failure behavior.
 - Do not assume advanced YAML syntax is supported by the minimal core YAML parser.
+  Configuration files use PyYAML instead; for example, `Config("app.yaml").load()`
+  supports nested mappings and flow collections.
+- Do not assume `--help` or `-h` is registered automatically; use `app.render_help()`.
 - Do not assume plugin discovery via entry points is supported; only explicit loading through
   `Application.load_plugin()` is implemented.
 - Do not change `src/quickli` or `tests/` for documentation-only work.
@@ -127,8 +134,6 @@ codes.
 
 | Change area                | Required validation                                  | Scope                       |
 | -------------------------- | ---------------------------------------------------- | --------------------------- |
-| Change area                | Required validation                                  | Scope                       |
-| ---                        | ---                                                  | ---                         |
 | Agent guidance or Markdown | Check links, tables, YAML, and line length           | Required                    |
 | Public behavior docs       | Compare claims with implementation, tests, and specs | Required                    |
 | Python runtime behavior    | Ruff and the unit suite                              | Baseline; no source changes |
@@ -136,8 +141,10 @@ codes.
 | Packaging                  | Build distributions when packaging files change      | Not required                |
 | GitHub workflows           | Validate workflow files when workflows change        | Out of scope                |
 
-For this work, inspect the final diff and verify that only documentation or repository guidance
-changed. Do not commit the changes; user acceptance remains a separate step.
+For each change, inspect the final diff against the approved scope. User acceptance remains
+a separate release gate. The official
+[stability outline](https://spmse.github.io/quickli/docs/roadmap#stability-and-fix-release-outline)
+tracks the documentation audit, configuration fixes, and release validation.
 
 ## Agent Scope Checklist
 

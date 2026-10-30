@@ -25,15 +25,16 @@ A `Command` object contains the following explicit attributes:
 | Property | Type | Default | Description |
 |---|---|---|---|
 | `name` | `str` | Required | Public command invocation name (e.g., `"build"`). Normalized from function names if omitted. |
-| `help_text` | `str \| None` | `None` | Human-readable help text. If `None`, falls back to the handler function's docstring. |
-| `arguments` | `list[Argument]` | `[]` | Positional argument definitions. |
-| `options` | `list[Option]` | `[]` | Named local option definitions. |
-| `subcommands` | `list[Subcommand]` | `[]` | Nested subcommand definitions. |
+| `help_text` | `str` | `""` | Description; application registration falls back to the handler docstring. |
+| `arguments` | `tuple[Argument, ...]` | `()` | Ordered positional argument definitions. |
+| `options` | `tuple[Option, ...]` | `()` | Named local option definitions. |
+| `subcommands` | `tuple[Subcommand, ...]` | `()` | Nested subcommand definitions. |
 | `handler` | `Callable` | Required | The Python function or callable executed when the command matches. |
 
 ## Ways to Author and Register Commands
 
-`quickli` supports three explicit ways to define and register commands:
+Use decorators for nearby handlers and `app.register()` for imported handlers. A standalone
+`Command` can also execute tokens directly. Docstrings supply help, not registration.
 
 ### 1. Decorator Authoring (`@app.command`)
 
@@ -56,31 +57,42 @@ def deploy_app(target: str, env: str = "production") -> str:
 print(app.run(["deploy", "web-api", "-e", "staging"]))
 ```
 
-### 2. Standalone Class Authoring (`Command` Instance)
+### 2. Registering Handlers from Other Modules
 
-You can instantiate `Command` objects directly for modular codebases where commands are defined across separate modules or packages:
+Keep domain logic independent of the application, then register it where the app is assembled:
 
 ```python
-from quickli import Application, Command, Argument, Option
+from quickli import Application, Argument, Option
 
 # Module: commands/build.py
 def build_handler(target: str, release: bool = False) -> str:
     mode = "release" if release else "debug"
     return f"Building {target} ({mode})"
 
-build_command = Command(
+app = Application(name="demo")
+app.register(
+    build_handler,
     name="build",
     help_text="Compile the source project.",
     arguments=[Argument("target")],
     options=[Option("release", is_flag=True)],
-    handler=build_handler,
 )
 
-# Module: main.py
-app = Application(name="demo")
-app.register_command(build_command)
-
 print(app.run(["build", "core", "--release"]))
+```
+
+In a multi-file project, put `build_handler` in `commands/build.py` and import it into your
+application module. Register once during assembly, not inside another handler.
+There is no `app.register_command()` method.
+
+For lower-level use without an application registry:
+
+```python
+from quickli import Argument, Command
+
+command = Command("echo", handler=lambda text: text, arguments=[Argument("text")])
+assert command.execute(["hello"]) == "hello"
+print(command.render_help("demo"))
 ```
 
 ### 3. Docstring Help Text Authoring
@@ -97,11 +109,12 @@ def test() -> str:
     """Run all automated unit tests in the workspace."""
     return "tests passed"
 
-print(app.run(["test", "--help"]))
+print(app.commands["test"].render_help(app.name))
 ```
 
 :::tip[Docstrings Keep Code Self-Documenting]
-Using docstrings for `help_text` eliminates duplication between code documentation and CLI help screens. The first paragraph of the docstring is rendered in command listings.
+Application registration uses the handler's cleaned docstring when `help_text` is empty.
+Keep it concise: the full text is used, not just its first paragraph.
 :::
 
 ## Command Name Normalization
@@ -117,7 +130,8 @@ print(app.run(["list-users"]))
 ```
 
 :::note[Explicit Names Override Normalization]
-If you pass `name="list_users"` explicitly to `@app.command()`, the exact string provided will be used as the CLI command name.
+Explicit names are normalized too: `name="list_users"` registers `list-users`.
+Names must remain unique after normalization; duplicates raise `CommandRegistrationError`.
 :::
 
 ## Parameter Binding & Validation
@@ -126,7 +140,10 @@ When a command executes, `quickli` parses input tokens into positional arguments
 
 1. **Token Parsing**: Positional tokens fill **[Argument](./argument.md)** definitions in declaration order. Named tokens (`--flag` or `--option=value`) fill **[Option](./option.md)** definitions.
 2. **Conversion & Validation**: Raw string tokens pass through converters (e.g. `int`, `Path`) and validators (e.g., `file_path`, `number_range`).
-3. **Signature Binding**: Parsed values are bound to function parameters matching the argument/option names. Missing required arguments or unknown options raise a `CommandExecutionError`.
+3. **Signature binding**: Arguments are passed positionally in declaration order. Options
+   are passed as keywords, replacing hyphens with underscores in destination names.
+   Missing required input, unknown options, or incompatible signatures raise
+   `CommandExecutionError` during execution.
 
 ```python
 from quickli import Application, Argument, Option
@@ -144,7 +161,9 @@ print(app.run(["repeat", "3", "--label", "hello"]))  # hello, hello, hello
 ```
 
 :::info[Signature Parameter Matching]
-Handler parameter names **must** match the defined `Argument` and `Option` resource names. If a parameter is missing or mismatched, `quickli` raises a registration error during setup.
+Type annotations document intent; they do not enable conversion. Declare `converter=int`
+explicitly. Handler positional parameter order must match arguments; option destination
+names must be accepted as keywords. Signature mismatches fail at execution, not registration.
 :::
 
 ## Nested Subcommands
@@ -176,14 +195,16 @@ app = Application(name="cloud")
     ],
 )
 def env_root() -> str:
-    return "Use 'cloud env --help' to list subcommands."
+    return app.commands["env"].render_help(app.name)
 
 print(app.run(["env", "create", "staging", "--region", "eu-central-1"]))
 # Returns: Created staging in eu-central-1
 ```
 
 :::tip[Subcommand Scope]
-Subcommands inherit global options defined on the **[Application](./application.md)**, but local options belong specifically to the command or subcommand on which they are declared.
+Selected subcommands receive application-global options, but not their parent's local
+options. Their handlers must accept global keyword destinations, explicitly or through
+`**kwargs`. Declare local options on the selected subcommand; they do not apply to siblings.
 :::
 
 ## Where to Go Next
@@ -193,4 +214,3 @@ Subcommands inherit global options defined on the **[Application](./application.
 - Learn how global options and entrypoints are configured on **[Application](./application.md)**.
 - Parse structured handler input/output using **[Parsers](./parsers.md)**.
 - Package sets of commands into reusable modules using **[Plugin](./plugin.md)**.
-
