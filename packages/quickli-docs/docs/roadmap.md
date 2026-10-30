@@ -39,6 +39,8 @@ APIs. This is a release checklist, not a declaration of 1.0 stability.
 4. **Validate and review before publishing**
    - Run regression tests on Python 3.12, 3.13, and 3.14.
    - Run Ruff, build Python distributions, and build the Docusaurus site.
+   - Resolve the existing core build warning: `pyproject.toml` names `README.md`, but
+     `packages/core/README.md` is absent. Verify the packaged project description.
    - Exercise documented examples and inspect errors, stdout, stderr, and exit codes.
    - Review backward compatibility, security findings, and release notes.
    - Obtain maintainer/user acceptance before declaring the release ready.
