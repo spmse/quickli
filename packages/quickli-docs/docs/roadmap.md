@@ -31,6 +31,8 @@ APIs. This is a release checklist, not a declaration of 1.0 stability.
      plus explicit `app.init_config()` when automatic command registration is disabled.
    - Preserve existing configuration files and existing command registration behavior.
 3. **Make the documentation executable**
+   - Provide automatic application, command, and nested `--help`/`-h`, preserving
+     explicit aliases and escaped values; allow opt-out through `auto_help=False`.
    - Expand command registration, arguments, value options, flags, and validation examples.
    - Explain schema defaults, nested configuration limits, and explicit CLI overrides.
    - Provide standard-library logging and application packaging guides, including
@@ -46,9 +48,9 @@ APIs. This is a release checklist, not a declaration of 1.0 stability.
    - Obtain maintainer/user acceptance before declaring the release ready.
 
 :::note[Implemented versus planned]
-Nested subcommands, explicit plugin loading, combined short flags, shell completion, and
-multi-format configuration already exist. Future work below extends them; it does not
-describe missing baseline support.
+Nested subcommands, automatic help flags, explicit plugin loading, combined short flags,
+shell completion, and multi-format configuration already exist. Future work below extends
+them; it does not describe missing baseline support.
 :::
 
 ## Following priorities
@@ -56,10 +58,10 @@ describe missing baseline support.
 - Layered configuration with an explicit file/environment/CLI precedence model.
 - Shell completion for arguments and options, beyond registered top-level commands.
 - Plugin discovery, beyond explicit `app.load_plugin(...)`.
-- A separately specified automatic `--help`/`-h` policy and clearer unknown-command errors.
+- Clearer unknown-command errors.
 
-For example, `app.render_help()` currently generates help programmatically; `--help` is not
-an automatically registered option. Adding it is a separate runtime feature.
+For example, `app.run(["--help"])` and `app.run(["command", "-h"])` already return help
+without executing handlers. Unknown-command error refinements remain separate work.
 
 ## How priorities are chosen
 

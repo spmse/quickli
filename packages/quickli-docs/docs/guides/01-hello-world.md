@@ -93,7 +93,7 @@ app = Application(
 ```
 
 `Application` is the root container. `name` is used in help output. Inspect the description
-and usage with `python -c "from hello import app; print(app.render_help())"`. Running this
+and usage with `python hello.py --help` or `python hello.py -h`. Running this
 required-argument entrypoint without arguments reports an error, rather than showing help.
 
 ### Registering the entrypoint
@@ -181,13 +181,16 @@ Pass an explicit list to override or set `auto_sys_argv=False` to disable automa
 
 ## Explore help output
 
-Inspect generated help without invoking the required-argument handler:
+Use either automatic help flag without invoking the required-argument handler:
 
 ```bash
-python -c "from hello import app; print(app.render_help())"
+python hello.py --help
+python hello.py -h
 ```
 
 quickli generates usage text from the registered arguments, options, and help strings.
+Help prints on stdout and exits successfully, even when the required `name` is missing.
+For Python-level introspection, `app.render_help()` remains available.
 
 ## What to try next
 

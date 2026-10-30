@@ -109,13 +109,19 @@ def test() -> str:
     """Run all automated unit tests in the workspace."""
     return "tests passed"
 
-print(app.commands["test"].render_help(app.name))
+print(app.run(["test", "--help"]))
 ```
 
 :::tip[Docstrings Keep Code Self-Documenting]
 Application registration uses the handler's cleaned docstring when `help_text` is empty.
 Keep it concise: the full text is used, not just its first paragraph.
 :::
+
+Through an `Application`, both `command --help` and `command -h` display generated help
+without calling the handler, even when arguments or options are required.
+Nested requests such as `app.run(["env", "create", "--help"])` include the full usage path.
+See [Automatic help](./application.md#automatic-help) for alias conflicts and escaping.
+For standalone `Command` objects, keep using `command.render_help("demo")` explicitly.
 
 ## Command Name Normalization
 

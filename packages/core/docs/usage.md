@@ -172,7 +172,27 @@ The official documentation includes deeper
 [packaging](https://spmse.github.io/quickli/docs/guides#packaging-guide) guides.
 
 Help generation is explicit: `print(app.render_help())` renders application help.
-`--help` and `-h` are not automatically registered.
+Application dispatch also handles `--help` and `-h` automatically:
+
+```python
+print(app.run(["--help"]))
+print(app.run(["init", "-h"]))
+```
+
+Help returns before required-input validation or handler execution, so `init -h` does not
+create a configuration file. Nested commands work too, for example
+`app.run(["env", "show", "--help"])` renders the selected subcommand with its full path.
+`app.main(["--help"])` prints help to stdout and returns `0`; JSON output mode wraps the
+help string in the usual success payload.
+
+- Use `--` to pass a help-looking positional value, such as `echo -- --help`.
+- Help-looking option values remain data, such as `echo --label --help`.
+- Explicit options claiming `--help` or `-h` retain their behavior. The other unclaimed
+  alias still provides automatic help.
+- Use `Application("demo", auto_help=False)` to disable automatic help handling.
+- Automatic help uses standalone flags, not clusters such as `-vh` or `--help=true`.
+- No `help` command is reserved. Standalone `Command.execute()` is unchanged; use
+  `Command.render_help()` when bypassing application dispatch.
 
 ## Resource Model
 

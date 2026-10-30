@@ -45,6 +45,7 @@ class Application:
         *,
         config: Config | None = None,
         auto_init_config: bool = False,
+        auto_help: bool = True,
     ) -> None:
         if auto_init_config and config is None:
             raise ValueError("auto_init_config requires a Config instance.")
@@ -59,6 +60,7 @@ class Application:
             options=self._global_options,
         )
         self._auto_sys_argv = auto_sys_argv
+        self._auto_help = auto_help
         self._plugins: list[Plugin] = []
         self._error_handler = error_handler
         self._config = config
@@ -232,11 +234,19 @@ class Application:
         explicit list to override this behaviour for a single call, or set
         ``auto_sys_argv=False`` when creating the :class:`Application` to
         disable it permanently.
+
+        Unless ``auto_help=False``, unclaimed ``--help`` and ``-h`` flags
+        return application or selected-command help without running user code.
+        Option values and tokens after ``--`` are not automatic help requests.
         """
         if argv is _UNSET:
             arguments: list[str] = list(sys.argv[1:]) if self._auto_sys_argv else []
         else:
             arguments = list(argv or [])
+        if self._auto_help:
+            help_text = self._resolve_help(arguments)
+            if help_text is not None:
+                return help_text
         if not arguments:
             if self._entrypoint is not None:
                 return self._invoke_entrypoint([], [])
@@ -251,6 +261,8 @@ class Application:
         command_name, *command_args = remaining_arguments
         if command_name not in self._commands:
             if self._entrypoint is not None:
+                if arguments[len(leading_global_tokens)] == "--":
+                    remaining_arguments = ["--", *remaining_arguments]
                 return self._invoke_entrypoint(remaining_arguments, leading_global_tokens)
             raise CommandNotFoundError(f"Unknown command: {command_name}")
 
@@ -265,6 +277,53 @@ class Application:
             local_command_args,
             global_keyword_arguments,
         )
+
+    def _resolve_help(self, arguments: list[str]) -> str | None:
+        """Finds a help flag without converting values or invoking user callbacks."""
+        command = self._entrypoint
+        candidates = self._commands
+        command_path: list[str] = []
+        index = 0
+        while index < len(arguments):
+            token = arguments[index]
+            if token == "--":
+                return None
+
+            local_options = command.options if command is not None else ()
+            option_map = self._build_option_map((*local_options, *self._global_options))
+            option, inline_value = self._resolve_known_option(token, option_map)
+            if token in {"--help", "-h"} and option is None:
+                if command_path:
+                    return self._render_command_help(command, parent_names=command_path[:-1])
+                return self.render_help()
+
+            if option is not None:
+                if option not in self._global_options:
+                    candidates = {}
+                index += 2 if option.takes_value and inline_value is None else 1
+                continue
+
+            selected = candidates.get(token)
+            if selected is not None:
+                command = selected
+                command_path.append(selected.name)
+                candidates = {child.name: child for child in selected.subcommands}
+            else:
+                if command is None:
+                    return None
+                candidates = {}
+            index += 1
+        return None
+
+    def _with_help_options(self, text: str, options: tuple[Option, ...]) -> str:
+        """Advertises only automatic help aliases not claimed by explicit options."""
+        if not self._auto_help:
+            return text
+        option_map = self._build_option_map(options)
+        aliases = [token for token in ("--help", "-h") if token not in option_map]
+        if not aliases:
+            return text
+        return text + f"\n\nHelp Options:\n  {', '.join(aliases):<18}Show help and exit."
 
     def main(
         self,
@@ -307,7 +366,7 @@ class Application:
             lines.extend(["", self.description])
         if not self._commands:
             lines.extend(["", "No commands registered."])
-            return "\n".join(lines)
+            return self._with_help_options("\n".join(lines), self._global_options)
 
         if self._entrypoint is not None:
             lines.extend(["", "Application Entry Point:"])
@@ -336,7 +395,8 @@ class Application:
             if lines[-1] == "":
                 lines.pop()
 
-        return "\n".join(lines)
+        root_options = self._entrypoint.options if self._entrypoint is not None else ()
+        return self._with_help_options("\n".join(lines), (*root_options, *self._global_options))
 
     def generate_completion(self, shell: str) -> str:
         """Generates a shell completion script for the specified shell.
@@ -395,22 +455,20 @@ class Application:
             ],
         )
 
-    def _render_command_help(self, command: Command) -> str:
+    def _render_command_help(self, command: Command, *, parent_names: Iterable[str] = ()) -> str:
         usage_prefix = self.name
         if self._global_options:
             usage_prefix = (
                 f"{usage_prefix} {' '.join(self._global_option_parser.option_usage_parts())}"
             )
 
+        usage_prefix = " ".join((usage_prefix, *parent_names))
         command_help = command.render_help(usage_prefix)
-        if not self._global_options:
-            return command_help
 
         global_option_lines = self._global_option_parser._render_option_lines()
-        if not global_option_lines:
-            return command_help
-
-        return command_help + "\n\nGlobal Options:\n" + "\n".join(global_option_lines)
+        if global_option_lines:
+            command_help += "\n\nGlobal Options:\n" + "\n".join(global_option_lines)
+        return self._with_help_options(command_help, (*command.options, *self._global_options))
 
     def _validate_option_overlap(
         self,
@@ -536,6 +594,9 @@ class Application:
             )
 
         entrypoint_help = self._entrypoint.render_help(usage_prefix)
+        entrypoint_help = self._with_help_options(
+            entrypoint_help, (*self._entrypoint.options, *self._global_options)
+        )
         if not self._global_options:
             if self.description:
                 return entrypoint_help + "\n\n" + self.description

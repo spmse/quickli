@@ -55,6 +55,7 @@ app = Application(
 | `error_handler` | `Callable \| None` | `None` | Optional error callback that can inspect or adapt exceptions before `main()` renders them. |
 | `config` | `Config \| None` | `None` | Keyword-only configuration carrying a custom schema, path, and format. |
 | `auto_init_config` | `bool` | `False` | Keyword-only switch registering a built-in `init` command; requires `config`. |
+| `auto_help` | `bool` | `True` | Keyword-only switch enabling automatic standalone `--help` and `-h` handling. |
 
 ## Command Registration Methods
 
@@ -238,12 +239,60 @@ Errors use `{"ok": false, "error": {...}}` on stderr and a nonzero exit code.
 Success goes to stdout. Return Python dictionaries from handlers for structured JSON results;
 returning a pre-serialized JSON string will encode it as a string inside `result`.
 
-:::important[Help is an explicit API]
-`app.render_help()` generates application and command help. With no entrypoint,
-`app.run([])` returns it too. With an entrypoint, an empty token list invokes that handler
-and may fail if required arguments are missing. Neither `--help` nor `-h` is automatically
-registered. For a specific command, use `app.commands["greet"].render_help(app.name)`.
+## Automatic help
+
+Every application supports standalone `--help` and `-h` flags by default, without defining
+an `Option` or accepting a `help` parameter in handlers:
+
+```python
+from quickli import Application, Argument, Subcommand
+
+app = Application("demo")
+
+@app.command(
+    help_text="Manage environments.",
+    subcommands=[
+        Subcommand(
+            "show", handler=lambda name: name,
+            arguments=[Argument("name")], help_text="Show one environment.",
+        ),
+    ],
+)
+def env() -> str:
+    return "Choose a subcommand."
+
+print(app.run(["--help"]))                # Application help
+print(app.run(["env", "-h"]))              # Group help, including subcommands
+print(app.run(["env", "show", "--help"]))  # Usage: demo env show NAME
+```
+
+1. Use `mytool --help` or `mytool -h` for application help.
+2. Use `mytool command --help` for a command's arguments, options, and description.
+3. Use `mytool group subcommand -h` to inspect a nested operation.
+
+Help bypasses required arguments/options, converters, validators, and handlers.
+For example, `mytool init --help` does not create configuration files.
+`run()` returns help text; `main()` prints it on stdout and returns exit code `0`.
+With `output_format="json"`, help uses `{"ok": true, "result": "Usage: ..."}`.
+
+:::important[Keep help distinct from data]
+- Tokens after `--` are positional: `mytool echo -- --help` passes the literal `--help`.
+- Option values remain data: `mytool echo --label --help` supplies `--help` as the label.
+- Automatic help recognizes exact standalone flags, not `-vh` clusters or `--help=true`.
+- Explicit global or selected-command options claiming `--help` or `-h` keep their
+  behavior. For example, `Option("host", short_name="h")` keeps `-h` as a value option;
+  the unclaimed `--help` alias still displays help.
 :::
+
+Set `Application("demo", auto_help=False)` to disable automatic help handling and its
+`Help Options` listings. Automatic help does not reserve a `help` command name, so existing
+commands with that name keep working.
+
+`app.render_help()` remains available for programmatic use. Without an entrypoint,
+`app.run([])` returns it too; with an entrypoint, an empty token list still invokes that
+handler and may fail if required arguments are missing. The lower-level
+`Command.execute()` does not handle application help flags; use `Command.render_help()`
+when executing commands outside an `Application`.
 
 ## Configuration initialization
 

@@ -37,6 +37,7 @@ implemented:
   - repeatable_options
   - boolean_flags
   - generated_help
+  - automatic_help_flags
   - docstring_help_fallback
   - render_json
   - render_yaml
@@ -69,6 +70,8 @@ example still keeps its own table and wide renderers.
 | ------------------------------------------ | ---------------------------------------- | -------------------------- |
 | `run([])` without entrypoint               | Returns generated application help       | application, tests         |
 | `run([])` with entrypoint                  | Invokes entrypoint with defaults         | application, tests         |
+| `run(["--help"])` or `run(["-h"])`          | Returns application help without execution | application, help tests |
+| `run(["env", "show", "--help"])`           | Returns nested command help with full path | application, help tests |
 | Named command token                        | Dispatches to matching command           | application, tests         |
 | Nested subcommand token                    | Dispatches to matching nested subcommand | command, tests             |
 | Unknown command without entrypoint         | Raises `CommandNotFoundError`            | application                |
@@ -124,7 +127,9 @@ codes.
 - Do not assume advanced YAML syntax is supported by the minimal core YAML parser.
   Configuration files use PyYAML instead; for example, `Config("app.yaml").load()`
   supports nested mappings and flow collections.
-- Do not assume `--help` or `-h` is registered automatically; use `app.render_help()`.
+- Automatic `--help`/`-h` handling is enabled by default through `Application`.
+  For example, `app.run(["deploy", "--help"])` bypasses required input and handler execution.
+  Explicit options keep their aliases; `auto_help=False` disables the feature.
 - Do not assume plugin discovery via entry points is supported; only explicit loading through
   `Application.load_plugin()` is implemented.
 - Do not change `src/quickli` or `tests/` for documentation-only work.
