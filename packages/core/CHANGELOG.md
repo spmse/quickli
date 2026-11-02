@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/spmse/quickli/compare/core-v0.6.0...core-v0.6.1) (2026-11-02)
+
+
+### Bug Fixes
+
+* harden configuration, fix wrong documentation, stabilize quickli ([45f923a](https://github.com/spmse/quickli/commit/45f923aafcfb22c91d7f010261301b466d025bdb))
+
 ## [0.6.0](https://github.com/spmse/quickli/compare/core-v0.5.0...core-v0.6.0) (2026-08-02)
 
 
