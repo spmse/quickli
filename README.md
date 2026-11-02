@@ -99,12 +99,12 @@ Ruff, coverage, and build are development dependencies.
 
 - [Documentation site](https://spmse.github.io/quickli/)
 - [Documentation package](packages/quickli-docs/README.md)
+- [Python package README](packages/core/README.md)
 - [Getting started guide](packages/quickli-docs/docs/getting-started.md)
 - [Core concepts](packages/quickli-docs/docs/concepts/quickli-concepts.md)
 - [Configuration and initialization](packages/quickli-docs/docs/concepts/config.md)
 - [Logging guide](https://spmse.github.io/quickli/docs/guides#logging-guide)
 - [Packaging, executable binaries, and containers][packaging-guide]
-- [Release preparation checklist][release-checklist]
 - [Examples](packages/core/examples/README.md)
 - [Specifications](packages/core/specs)
 - [Architectural decisions](packages/core/docs/adr)
@@ -140,4 +140,3 @@ Do not assume the latest PyPI release already includes every documented change.
 quiCkLI is licensed under the [MIT License](LICENSE).
 
 [packaging-guide]: https://spmse.github.io/quickli/docs/guides#packaging-guide
-[release-checklist]: packages/core/docs/open-source-release.md#release-preparation-checklist

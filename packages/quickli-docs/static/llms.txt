@@ -67,7 +67,6 @@ It is designed to stay small, educational, and easy to learn.
 ## Key references
 
 - Overview: https://github.com/spmse/quickli#readme
-- Current state: https://github.com/spmse/quickli/blob/main/packages/core/docs/current-state.md
 - Installation: https://github.com/spmse/quickli/blob/main/packages/core/docs/installation.md
 - Usage: https://github.com/spmse/quickli/blob/main/packages/core/docs/usage.md
 - Validation: https://github.com/spmse/quickli/blob/main/packages/core/docs/validation.md
@@ -75,7 +74,6 @@ It is designed to stay small, educational, and easy to learn.
 - Configuration: https://spmse.github.io/quickli/docs/concepts/config
 - Logging guide: https://spmse.github.io/quickli/docs/guides#logging-guide
 - Packaging guide: https://spmse.github.io/quickli/docs/guides#packaging-guide
-- Release preparation: https://github.com/spmse/quickli/blob/main/packages/core/docs/open-source-release.md
 - Application spec: https://github.com/spmse/quickli/blob/main/packages/core/specs/application.md
 - Command spec: https://github.com/spmse/quickli/blob/main/packages/core/specs/command.md
 - Argument spec: https://github.com/spmse/quickli/blob/main/packages/core/specs/argument.md

@@ -35,9 +35,8 @@ corepack pnpm --filter quickli-docs build
 The release workflow builds the site and deploys its artifact to GitHub Pages after Release
 Please creates component releases. A local build does not publish the site.
 The configured `pnpm deploy` script invokes Docusaurus directly; it is not the normal
-release path. Follow the
-[maintainer release checklist](../core/docs/open-source-release.md#release-preparation-checklist)
-instead of deploying manually during release preparation.
+release path. Track release-specific publishing approvals and validation evidence in the
+release PR rather than deploying manually during release preparation.
 
 ## Content entry points
 
@@ -45,7 +44,7 @@ instead of deploying manually during release preparation.
 - [Configuration](docs/concepts/config.md): JSON/YAML/TOML, schemas, and initialization.
 - [Implementation guides](docs/guides/index.md): runnable examples, logging integration,
   console scripts, binary packaging, and containerization.
-- [Stability outline](docs/roadmap.md): scope and remaining release gates.
+- [Roadmap](docs/roadmap.md): future user-facing capabilities.
 
 The site follows the source checkout, which may contain unreleased APIs. Use an editable
 core installation when validating new examples. A successful Docusaurus build checks site

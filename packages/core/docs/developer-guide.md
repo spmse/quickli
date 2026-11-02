@@ -89,12 +89,6 @@ for a complete configurable example and repeatable verbosity flags.
 The [packaging guide](https://spmse.github.io/quickli/docs/guides#packaging-guide)
 covers console-script entry points, standalone executables, and non-root containers.
 
-## Planned Work
-
-- Release Please maintains independent releases for the core library and documentation site.
-  Their version updates are grouped into one release pull request.
-  See the [release checklist](open-source-release.md#release-preparation-checklist).
-
 ## Naming and License
 
 - Use `quickli` for the Python package, imports, and distribution metadata.
@@ -103,13 +97,10 @@ covers console-script entry points, standalone executables, and non-root contain
 
 ## Documentation Maintenance
 
-- Keep [Current State and Agent Guide](current-state.md) aligned with implementation,
-  tests, specifications, and documented limitations.
-
 - Update `README.md` when the public feature set changes.
 - Update `docs/usage.md` when the API shape or examples change.
 - Update `docs/validation.md` when built-in validators or validation behavior change.
-- Update the release documentation and workflow when release automation changes.
+- Keep contributor instructions aligned with release automation changes.
 - Update `docs/config.md` when the config API, format support, or schema generation behavior changes.
 - Update the relevant file in `specs/` when behavior changes.
 - Add or update an ADR in `docs/adr` when a significant design decision affects future evolution.

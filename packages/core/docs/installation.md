@@ -49,8 +49,6 @@ The target support range is Python 3.12, 3.13, and 3.14.
 - The repository uses the `src` layout.
 - The project is licensed under MIT.
 - Release Please manages versioned releases through `.github/workflows/release.yml`.
-- The maintainer [release checklist](open-source-release.md#release-preparation-checklist)
-  records package metadata checks and publication approval gates.
 
 To distribute your own application, expose a function returning `app.main()` through
 `[project.scripts]`, for example `mytool = "mytool.cli:main"`. Build a wheel first, then

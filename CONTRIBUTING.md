@@ -74,8 +74,7 @@ Release Please groups the independently versioned core library and documentation
 one release pull request. Merging it creates draft component releases. The release workflow
 then builds evidence, publishes the core distributions to PyPI when a core tag exists, publishes
 the corresponding GitHub releases, and deploys documentation to GitHub Pages.
-See the [release checklist](packages/core/docs/open-source-release.md#release-preparation-checklist)
-for approval gates, trusted publishing, and post-release verification.
+Track release-specific approval gates, validation evidence, and follow-up work in the release PR.
 
 Use `feat(docs):` for new documentation content and `fix(docs):` for documentation corrections.
 Release Please does not treat the bare `docs:` conventional-commit type as a release-triggering
