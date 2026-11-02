@@ -26,11 +26,11 @@ project name in human-facing text where appropriate.
 
 - License: MIT.
 - Package and distribution name: `quickli`.
-- Package source layout: `src/quickli`.
-- Technical specifications live in `specs`.
-- User and developer documentation live in `docs`.
+- Package source layout: `packages/core/src/quickli`.
+- Technical specifications live in `packages/core/specs`.
+- User and developer documentation live in `packages/core/docs` and `packages/quickli-docs/docs`.
 - GitHub-specific automation and AI guidance live in `.github`.
-- ADRs live in `docs/adr`.
+- ADRs live in `packages/core/docs/adr`.
 
 ## Required Working Style
 
@@ -127,7 +127,7 @@ Architectural Decision Records document significant design choices, their ration
 options considered, and their consequences.
 
 ADR rules:
-- store ADRs in `docs/adr`
+- store ADRs in `packages/core/docs/adr`
 - write them in clear English
 - include context, decision, options, and consequences
 - create one ADR per significant design decision

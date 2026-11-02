@@ -53,6 +53,43 @@ shell completion, and multi-format configuration already exist. Future work belo
 them; it does not describe missing baseline support.
 :::
 
+## Release preparation next steps
+
+Complete these gates in order; this outline does not publish a release or assign its version.
+
+1. **Approve scope and compatibility.** Review the new initialization and help APIs and the
+   stricter configuration error behavior. Decide the appropriate alpha release version.
+2. **Resolve the missing package description.** The core build still references an absent
+   package-local README. Choose the document to ship, update metadata if needed, and verify
+   the description is included in both source and wheel distributions.
+3. **Validate the candidate.** Run Ruff, coverage, Python 3.12–3.14 tests, documentation
+   typechecking/builds, and clean-wheel installation checks. Exercise configuration, help,
+   logger output, and console scripts. Do not equate site generation with example execution.
+4. **Validate optional distribution recipes.** Build and smoke-test PyInstaller bundles and
+   containers before claiming those artifacts are verified; the release workflow does not
+   build them.
+5. **Review the grouped Release Please PR.** Confirm the independently versioned core/docs
+   metadata and changelogs. Confirm PyPI trusted publishing, environment approval, and Pages
+   configuration, then obtain maintainer/user acceptance before merging.
+6. **Verify publication.** Monitor builds and uploads, inspect GitHub release evidence,
+   install the published package in a clean environment, and check the deployed docs.
+
+For example, after choosing an actual release version, install `quickli==<approved-version>`
+in a fresh virtual environment and check automatic help and JSON/YAML initialization.
+Replace the placeholder before running the install command.
+
+:::important[Release workflow boundaries]
+Merging a Release Please PR creates draft component releases. Separate jobs build evidence,
+publish the core package to PyPI, publish GitHub releases, and deploy the site.
+The workflow runs from `main` pushes, not arbitrary manual tag pushes. The protected `pypi`
+environment may require approval even for docs-only evidence work.
+:::
+
+The complete [maintainer checklist][release-checklist]
+includes commands, compatibility notes, approval gates, and partial-failure handling.
+
+[release-checklist]: https://github.com/spmse/quickli/blob/main/packages/core/docs/open-source-release.md#release-preparation-checklist
+
 ## Following priorities
 
 - Layered configuration with an explicit file/environment/CLI precedence model.

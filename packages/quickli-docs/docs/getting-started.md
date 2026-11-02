@@ -12,6 +12,12 @@ import { AddToProject } from '@site/src/components/QuickliExamples';
 This guide creates a small command-line application with one entrypoint, one positional
 argument, and one flag. quickli supports Python 3.12, 3.13, and 3.14.
 
+:::note[Source checkout versus released package]
+These pages follow the current source checkout. New initialization and automatic-help APIs
+may not yet be in the latest PyPI release. To try unreleased behavior, use the editable
+repository installation below; for production, select and test a published version.
+:::
+
 ## Install quickli
 
 For a project using the released package, install quickli in a virtual environment:
@@ -112,5 +118,8 @@ See [Automatic help](./concepts/application.md#automatic-help) for custom alias 
 - Use `@app.command()` to build a multi-command CLI.
 - Use `converter=int` or `converter=Path` to convert input values.
 - Add validators such as `file_path()` or `number_range()` for checked input.
+- Define persistent settings with [configuration schemas and initialization](./concepts/config.md).
+- Add diagnostics using the [logging guide](./guides/index.md#logging-guide).
+- Distribute your CLI using the [packaging guide](./guides/index.md#packaging-guide).
 - Read the [project examples](https://github.com/spmse/quickli/tree/main/packages/core/examples)
   for small, focused applications.

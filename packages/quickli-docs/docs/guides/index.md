@@ -46,6 +46,14 @@ pip install quickli
 
 All examples run on Python 3.12, 3.13, and 3.14.
 
+:::important[Use the matching framework version]
+The guides describe the current source APIs. Until a release containing the new
+initialization/help features is published, install the checkout with
+`python -m pip install -e packages/core` from the repository root.
+The dependency range in the packaging example is illustrative: choose a published version
+that includes the APIs you use, then verify it in a clean environment.
+:::
+
 ## Logging guide
 
 quiCkLI does not install logging handlers or choose a logging policy. Use Python's
@@ -157,6 +165,14 @@ for handler composition.
 Start with a Python package and console script. Build a standalone binary only if users
 should not install Python; use a container when the deployment environment already runs
 containers. These are application distribution choices, not features of quiCkLI itself.
+
+:::note[Validation scope]
+Python application/console-script examples have been exercised during this update.
+The binary and container recipes still require artifact builds and target-platform smoke
+tests before you distribute them. A Docusaurus build does not verify these recipes, and the
+quiCkLI release workflow produces framework wheels/source archives, not application binaries
+or container images.
+:::
 
 ### 1. Create a package with a console script
 

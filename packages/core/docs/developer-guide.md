@@ -9,7 +9,10 @@
 - `examples`: runnable example applications with matching guides.
 - `examples/simple`: focused single-purpose examples.
 - `examples/complex`: larger multi-command examples.
-- `.github`: GitHub-specific automation and AI guidance.
+- Repository-root `.github`: GitHub-specific automation and AI guidance.
+
+The paths above, except `.github`, are relative to `packages/core`. The official
+Docusaurus documentation lives in `packages/quickli-docs`.
 
 ## Development Rules
 
@@ -25,6 +28,8 @@
 - `Argument` and `Option` support conversion and validation.
 - Global options may be parsed before or after the command name.
 - Help text may come from explicit `help_text` values or handler docstrings.
+- `Application` handles `--help`/`-h` before user callbacks. For example,
+  `app.run(["deploy", "--help"])` returns help without required-input validation.
 - `quickli.parsers` provides explicit JSON, YAML, and TOML rendering and loading helpers.
 - `Config`, `ConfigField`, `ConfigSchema`, `add_auto_init_config`, `validate_config`,
   and `generate_schema_json` provide multi-format configuration file handling.
@@ -33,6 +38,8 @@
   `app.init_config()` supports explicit initialization without automatic registration.
 
 ## Local Workflow
+
+Run from `packages/core` after the [development install](installation.md):
 
 ```bash
 python -m ruff check .
@@ -44,7 +51,7 @@ python -m build --sdist --wheel
 Run examples manually when changing user-facing CLI behavior.
 
 ```bash
-PYTHONPATH=src python examples/simple/quickhead/app.py AGENTS.md -n 5
+PYTHONPATH=src python examples/simple/quickhead/app.py docs/usage.md -n 5
 PYTHONPATH=src python examples/simple/ls-cli/quickls.py . --suffix .md
 PYTHONPATH=src python examples/complex/pyk5l/app.py get pods --verbose
 ```
@@ -85,7 +92,8 @@ covers console-script entry points, standalone executables, and non-root contain
 ## Planned Work
 
 - Release Please maintains independent releases for the core library and documentation site.
-	Merging its release pull requests creates GitHub releases and triggers evidence generation.
+  Their version updates are grouped into one release pull request.
+  See the [release checklist](open-source-release.md#release-preparation-checklist).
 
 ## Naming and License
 
