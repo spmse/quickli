@@ -71,6 +71,7 @@ build = "python -m build --sdist --wheel"
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+include = ["*.py", "*.pyi"]
 
 [tool.ruff.lint]
 select = ["E", "F"]

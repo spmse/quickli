@@ -33,6 +33,10 @@ python -m pytest
 python -m build --sdist --wheel
 ```
 
+Ruff checks Python source and stub files (`.py` and `.pyi`), including tests and executable
+examples. Markdown documentation and its code blocks are not formatting inputs; for example,
+`packages/core/README.md` is excluded from `python -m ruff format --check .`.
+
 For documentation changes, use Node.js 24 and the pinned pnpm version. Run from the
 repository root:
 
