@@ -11,25 +11,21 @@ quickli is an Alpha project. This roadmap describes the next planned steps rathe
 promising fixed delivery dates. Each step will be implemented, tested, documented, and
 reviewed before it is treated as complete.
 
-## Near-term priorities
+:::note[Implemented versus planned]
+Nested subcommands, automatic help flags, explicit plugin loading, combined short flags,
+shell completion, and multi-format configuration already exist. Future work below extends
+them; it does not describe missing baseline support.
+:::
 
-1. **Release readiness**
-   - Make versioning and release artifacts derive from the release tag.
-   - Verify the package on Python 3.12, 3.13, and 3.14.
-   - Publish the same tested distributions to PyPI and attach release evidence to GitHub.
-2. **Executable runtime follow-up**
-   - Refine beginner-facing examples around `Application.main()`.
-   - Expand guidance for structured error output and automation use cases.
-3. **More complete command composition**
-   - Evaluate nested subcommands and clearer unknown-command errors.
-   - Preserve the current small command, argument, and option abstractions.
+## Future priorities
 
-## Following priorities
+- Layered configuration with an explicit file/environment/CLI precedence model.
+- Shell completion for arguments and options, beyond registered top-level commands.
+- Plugin discovery, beyond explicit `app.load_plugin(...)`.
+- Clearer unknown-command errors.
 
-- configuration files with an explicit precedence model
-- shell completion generated from registered commands and options
-- a deliberate plugin loading and registration API
-- combined short flags, if they can be added without making parsing ambiguous
+For example, `app.run(["--help"])` and `app.run(["command", "-h"])` already return help
+without executing handlers. Unknown-command error refinements remain separate work.
 
 ## How priorities are chosen
 

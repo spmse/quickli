@@ -12,12 +12,15 @@ It owns the command registry and dispatches explicit input tokens to a handler.
 - Expose a declarative registration API.
 - Route user input to the selected command.
 - Render plain-text help output.
+- Handle automatic `--help` and `-h` requests without executing handlers.
 - Return the selected handler result to the caller.
 - Optionally expose an executable shell through `Application.main()`.
 - Aggregate command help into application-level help output.
 - Parse application-level global options before command dispatch.
 - Optionally register a built-in `shell-completion` command that generates scripts for
   bash, zsh, and PowerShell.
+- Optionally attach a `Config` with its custom schema and format, and register an `init`
+  command with `auto_init_config=True`. Provide `init_config()` for explicit initialization.
 
 ## Technical Notes
 
@@ -63,11 +66,39 @@ It owns the command registry and dispatches explicit input tokens to a handler.
 - The standalone functions `generate_bash_completion`, `generate_zsh_completion`, and
   `generate_powershell_completion` are available from the public package interface.
 - `SUPPORTED_SHELLS` is a public constant that lists all supported shell names.
+- Configuration initialization is opt-in and does not happen during construction.
+  See [Configuration](config.md#application-integration) for the initialization contract.
+
+## Automatic Help
+
+`Application(..., auto_help=True)` enables automatic help by default:
+
+```python
+app.run(["--help"])
+app.run(["deploy", "-h"])
+app.run(["env", "remote", "add", "--help"])
+```
+
+- A root flag returns application help, including the entrypoint when present.
+- A flag after a selected command returns help for that command or nested subcommand.
+  Nested usage includes the full command path and application-global options.
+- Help returns before required-input checks, converters, validators, or handlers run.
+  `init --help` does not initialize configuration.
+- `run()` returns help text; `main()` prints it to stdout and returns `0`.
+  JSON output mode retains the normal success envelope with the text in `result`.
+- Help aliases are exact, standalone tokens, not short-flag clusters or value assignments.
+- Tokens after `--` and tokens consumed as option values are not help requests.
+- Explicit global or selected-command options claiming `--help` or `-h` retain their
+  parsing behavior. The other unclaimed alias still provides automatic help.
+- Automatic aliases appear in a separate `Help Options` section; they are not added to
+  `global_options`, command resource definitions, or handler keyword arguments.
+- Set the keyword-only `auto_help=False` to disable automatic help handling and listings.
+- No command name is reserved: applications may still register a command called `help`.
+- Calling a standalone `Command.execute()` does not use this application-level feature;
+  call `Command.render_help()` explicitly in that lower-level API.
 
 ## Future Extensions
 
-- Typed argument conversion beyond booleans and raw strings.
-- Nested command groups.
 - Shell completion within commands (arguments and options).
-- Config-driven application setup.
-- Plugin discovery and registration.
+- Layered configuration precedence.
+- Plugin discovery beyond explicit registration.

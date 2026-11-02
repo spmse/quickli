@@ -10,8 +10,288 @@ from pathlib import Path
 
 from quickli import Application, Argument, Option, Subcommand, directory_path, file_path
 from quickli import number_range, positive_number
+from quickli import Config, ConfigField, ConfigSchema, ConfigError, ConfigValidationError
 from quickli.exceptions import CommandExecutionError, CommandNotFoundError
 from quickli.exceptions import CommandRegistrationError, InternalCLIError, UserCodeError
+
+
+class ApplicationConfigTests(unittest.TestCase):
+    def test_init_command_uses_custom_schema_and_format_without_startup_writes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for format_name in ("json", "yaml", "toml"):
+                with self.subTest(format=format_name):
+                    path = Path(tmpdir) / format_name / "settings.conf"
+                    schema = ConfigSchema(fields=[ConfigField("retries", int, default=3)])
+                    config = Config(path, schema=schema, format=format_name)
+                    app = Application("demo", config=config, auto_init_config=True)
+                    self.assertIs(app.config, config)
+                    self.assertIn("init", app.render_help())
+                    self.assertFalse(path.exists())
+                    self.assertEqual(app.run(["init"]), {"retries": 3})
+                    self.assertEqual(config.load(), {"retries": 3})
+                    config.save({"retries": 7})
+                    original = path.read_bytes()
+                    self.assertEqual(app.run(["init"]), {"retries": 7})
+                    self.assertEqual(path.read_bytes(), original)
+
+    def test_manual_init_when_auto_command_is_disabled(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.json"
+            app = Application("demo", config=Config(path))
+            self.assertNotIn("init", app.commands)
+            self.assertEqual(app.init_config(), {})
+            self.assertEqual(app.config.load(), {})
+
+    def test_missing_configuration_is_reported(self) -> None:
+        app = Application("demo")
+        self.assertIsNone(app.config)
+        with self.assertRaises(ConfigError):
+            app.init_config()
+        with self.assertRaises(ValueError):
+            Application("demo", auto_init_config=True)
+
+    def test_auto_init_does_not_replace_user_commands(self) -> None:
+        app = Application("demo", config=Config("config.json"), auto_init_config=True)
+        with self.assertRaises(CommandRegistrationError):
+            app.register(lambda: None, name="init")
+        manual_app = Application("demo")
+        manual_app.register(lambda: "custom", name="init")
+        self.assertEqual(manual_app.run(["init"]), "custom")
+
+    def test_init_accepts_global_options_and_appears_in_completion(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            app = Application(
+                "demo",
+                global_options=[Option("verbose", short_name="v", is_flag=True)],
+                config=Config(Path(tmpdir) / "config.yaml"),
+                auto_init_config=True,
+                shell_completion=True,
+            )
+            self.assertEqual(app.run(["-v", "init"]), {})
+            self.assertIn("init", app.generate_completion("bash"))
+
+    def test_init_preserves_invalid_existing_file_and_main_reports_error(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.json"
+            path.write_text('{"retries": "wrong"}', encoding="utf-8")
+            schema = ConfigSchema(fields=[ConfigField("retries", int)])
+            app = Application("demo", config=Config(path, schema), auto_init_config=True)
+            with self.assertRaises(ConfigValidationError):
+                app.run(["init"])
+            stdout, stderr = io.StringIO(), io.StringIO()
+            self.assertNotEqual(app.main(["init"], stdout=stdout, stderr=stderr), 0)
+            self.assertIn("Configuration validation failed", stderr.getvalue())
+            self.assertEqual(stdout.getvalue(), "")
+            self.assertEqual(path.read_text(encoding="utf-8"), '{"retries": "wrong"}')
+
+
+class ApplicationHelpTests(unittest.TestCase):
+    def test_root_help_flags_work_with_or_without_commands_and_entrypoint(self) -> None:
+        for commands, entrypoint in ((False, False), (True, False), (False, True), (True, True)):
+            app = Application("demo", description="Demonstrate automatic help.")
+
+            def unexpected(*args: object, **kwargs: object) -> None:
+                self.fail("Help must not invoke a handler.")
+
+            if commands:
+                app.register(unexpected, name="greet", arguments=[Argument("name")])
+            if entrypoint:
+                app.register_entrypoint(unexpected, arguments=[Argument("name")])
+            for flag in ("--help", "-h"):
+                with self.subTest(commands=commands, entrypoint=entrypoint, flag=flag):
+                    self.assertEqual(app.run([flag]), app.render_help())
+                    self.assertIn("--help, -h", app.run([flag]))
+
+    def test_command_help_bypasses_required_input_conversion_and_validation(self) -> None:
+        def unexpected(*args: object, **kwargs: object) -> None:
+            self.fail("Help must not execute user code.")
+
+        app = Application(
+            "demo",
+            global_options=[
+                Option("workspace", required=True, validators=[unexpected]),
+                Option("verbose", short_name="v", is_flag=True),
+            ],
+        )
+        app.register(
+            unexpected,
+            name="greet",
+            help_text="Greet one person.",
+            arguments=[Argument("count", converter=unexpected)],
+            options=[Option("format", required=True, default="text", validators=[unexpected])],
+        )
+        for tokens in (
+            ["greet", "--help"],
+            ["greet", "-h"],
+            ["-v", "greet", "--help"],
+            ["--workspace", "demo", "greet", "--help"],
+            ["greet", "invalid", "--format", "text", "--help"],
+        ):
+            with self.subTest(tokens=tokens):
+                result = app.run(tokens)
+                self.assertIn("Usage: demo --workspace WORKSPACE [--verbose] greet", result)
+                self.assertIn("Greet one person.", result)
+                self.assertIn("Global Options:", result)
+                self.assertIn("--format", result)
+                self.assertIn("--help, -h", result)
+
+    def test_nested_help_includes_full_path_and_selected_resources(self) -> None:
+        app = Application("demo", global_options=[Option("verbose", short_name="v", is_flag=True)])
+        app.register(
+            lambda **_: self.fail("Parent handler must not run."),
+            name="env",
+            help_text="Environment commands.",
+            subcommands=[
+                Subcommand(
+                    "remote",
+                    handler=lambda **_: self.fail("Group handler must not run."),
+                    subcommands=[
+                        Subcommand(
+                            "add",
+                            handler=lambda **_: self.fail("Leaf handler must not run."),
+                            help_text="Add a remote.",
+                            arguments=[Argument("name")],
+                            options=[Option("url", required=True)],
+                        ),
+                    ],
+                ),
+            ],
+        )
+        for flag in ("--help", "-h"):
+            for tokens in (
+                ["env", "remote", "add", flag],
+                ["env", "-v", "remote", "add", flag],
+                ["env", "remote", "add", "--verbose", flag],
+            ):
+                with self.subTest(tokens=tokens):
+                    result = app.run(tokens)
+                    self.assertIn("Usage: demo [--verbose] env remote add --url URL NAME", result)
+                    self.assertIn("Add a remote.", result)
+                    self.assertIn("Global Options:", result)
+            self.assertIn("Subcommands:", app.run(["env", flag]))
+            self.assertIn("Usage: demo [--verbose] env remote", app.run(["env", "remote", flag]))
+
+    def test_help_tokens_used_as_option_values_remain_data(self) -> None:
+        app = Application("demo", global_options=[Option("label")])
+        app.register(lambda **kwargs: kwargs, name="show", options=[Option("text", short_name="t")])
+        app.register_entrypoint(lambda **kwargs: kwargs, options=[Option("text", short_name="t")])
+        for flag in ("--help", "-h"):
+            for tokens, expected in (
+                (["show", "--text", flag], {"text": flag}),
+                (["show", "-t", flag], {"text": flag}),
+                (["show", f"--text={flag}"], {"text": flag}),
+                (["--label", flag, "show"], {"label": flag}),
+                (["show", "--label", flag], {"label": flag}),
+                (["--text", flag], {"text": flag}),
+            ):
+                with self.subTest(tokens=tokens):
+                    self.assertEqual(app.run(tokens), expected)
+            self.assertIn("Usage:", app.run(["show", "--text", flag, flag]))
+
+    def test_nested_option_values_remain_data(self) -> None:
+        app = Application("demo")
+        app.register(
+            lambda: None,
+            name="env",
+            subcommands=[
+                Subcommand(
+                    "show",
+                    handler=lambda text: text,
+                    options=[Option("text", short_name="t")],
+                ),
+            ],
+        )
+        for tokens in (["env", "show", "-t", "-h"], ["env", "show", "--text", "--help"]):
+            with self.subTest(tokens=tokens):
+                self.assertEqual(app.run(tokens), tokens[-1])
+
+    def test_help_after_separator_is_a_positional_value(self) -> None:
+        app = Application("demo")
+        app.register(lambda text: text, name="echo", arguments=[Argument("text")])
+        app.register_entrypoint(lambda text: text, arguments=[Argument("text")])
+        for flag in ("--help", "-h"):
+            with self.subTest(flag=flag):
+                self.assertEqual(app.run(["echo", "--", flag]), flag)
+                self.assertEqual(app.run(["--", flag]), flag)
+
+    def test_explicit_help_aliases_keep_existing_behavior(self) -> None:
+        for option, tokens, expected, remaining_alias in (
+            (Option("help", is_flag=True), ["--help"], {"help": True}, "-h"),
+            (Option("host", short_name="h"), ["-h", "localhost"], {"host": "localhost"}, "--help"),
+        ):
+            app = Application("demo")
+            app.register(lambda **kwargs: kwargs, name="show", options=[option])
+            app.register_entrypoint(lambda **kwargs: kwargs, options=[option])
+            with self.subTest(option=option.name):
+                self.assertEqual(app.run(["show", *tokens]), expected)
+                self.assertEqual(app.run(tokens), expected)
+                self.assertIn("Show help and exit.", app.run(["show", remaining_alias]))
+                self.assertIn("Show help and exit.", app.run([remaining_alias]))
+        app = Application("demo", global_options=[Option("help", short_name="h", is_flag=True)])
+        app.register(lambda help=False: help, name="show")
+        self.assertIs(app.run(["--help", "show"]), True)
+        self.assertIs(app.run(["show", "-h"]), True)
+        self.assertNotIn("Help Options:", app.render_help())
+
+    def test_automatic_help_can_be_disabled(self) -> None:
+        app = Application("demo", auto_help=False)
+        app.register(lambda: "show", name="show")
+        self.assertNotIn("Help Options:", app.render_help())
+        with self.assertRaises(CommandExecutionError):
+            app.run(["show", "--help"])
+
+    def test_only_exact_standalone_help_flags_are_automatic(self) -> None:
+        app = Application("demo")
+        app.register(
+            lambda verbose=False: "show",
+            name="show",
+            options=[Option("verbose", short_name="v", is_flag=True)],
+        )
+        for token in ("--help=true", "-vh"):
+            with self.subTest(token=token):
+                with self.assertRaises(CommandExecutionError):
+                    app.run(["show", token])
+
+    def test_help_does_not_reserve_a_command_name(self) -> None:
+        app = Application("demo")
+        app.register(lambda: "custom help", name="help")
+        self.assertEqual(app.run(["help"]), "custom help")
+        self.assertIn("Usage: demo help", app.run(["help", "--help"]))
+
+    def test_help_does_not_hide_unknown_command_errors(self) -> None:
+        app = Application("demo")
+        with self.assertRaises(CommandNotFoundError):
+            app.run(["missing", "--help"])
+
+    def test_init_help_does_not_create_configuration(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "config.yaml"
+            app = Application("demo", config=Config(path), auto_init_config=True)
+            self.assertIn("Usage: demo init", app.run(["init", "--help"]))
+            self.assertFalse(path.exists())
+
+    def test_main_prints_help_to_stdout_with_success_status(self) -> None:
+        app = Application("demo")
+        app.register(
+            lambda name: self.fail("Handler must not run."),
+            name="greet",
+            arguments=[Argument("name")],
+        )
+        for flag in ("--help", "-h"):
+            for output_format in ("text", "json"):
+                with self.subTest(flag=flag, output_format=output_format):
+                    stdout, stderr = io.StringIO(), io.StringIO()
+                    result = app.main(
+                        ["greet", flag], output_format=output_format, stdout=stdout, stderr=stderr
+                    )
+                    self.assertEqual(result, 0)
+                    self.assertEqual(stderr.getvalue(), "")
+                    if output_format == "json":
+                        payload = json.loads(stdout.getvalue())
+                        self.assertTrue(payload["ok"])
+                        self.assertIn("Usage: demo greet NAME", payload["result"])
+                    else:
+                        self.assertIn("Usage: demo greet NAME", stdout.getvalue())
 
 
 class ApplicationTests(unittest.TestCase):

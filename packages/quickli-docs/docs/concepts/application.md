@@ -47,12 +47,15 @@ app = Application(
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `name` | `str` | `"app"` | The binary/application name used in help text and usage lines. |
-| `description` | `str \| None` | `None` | Short description shown at the top of application help output. |
+| `name` | `str` | Required | The application name used in help and usage lines. |
+| `description` | `str` | `""` | Short description shown in application help. |
 | `global_options` | `list[Option] \| None` | `None` | List of global **[Option](./option.md)** definitions available to all commands. |
 | `shell_completion` | `bool` | `False` | When `True`, automatically registers a built-in `shell-completion` command. |
-| `auto_sys_argv` | `bool` | `True` | When `True`, `run()` reads `sys.argv[1:]` by default when `argv` is `None`. |
+| `auto_sys_argv` | `bool` | `True` | `run()` reads `sys.argv[1:]` when its argument is omitted. Explicit `None` or `[]` means no tokens. |
 | `error_handler` | `Callable \| None` | `None` | Optional error callback that can inspect or adapt exceptions before `main()` renders them. |
+| `config` | `Config \| None` | `None` | Keyword-only configuration carrying a custom schema, path, and format. |
+| `auto_init_config` | `bool` | `False` | Keyword-only switch registering a built-in `init` command; requires `config`. |
+| `auto_help` | `bool` | `True` | Keyword-only switch enabling automatic standalone `--help` and `-h` handling. |
 
 ## Command Registration Methods
 
@@ -78,23 +81,26 @@ def greet_user(name: str, shout: bool = False) -> str:
     return msg.upper() if shout else msg
 ```
 
-### 2. Imperative Command Registration (`app.register_command`)
+### 2. Imperative Command Registration (`app.register`)
 
-Useful when commands are constructed dynamically or created in separate modules using the `Command` class.
+Useful when handler functions live in separate modules. Register the callable with explicit
+resources; `register()` returns the original function, just like the decorator.
 
 ```python
-from quickli import Application, Command, Argument
+from quickli import Application, Argument
 
 app = Application(name="demo")
 
-build_cmd = Command(
+def build(target: str) -> str:
+    return f"building {target}"
+
+app.register(
+    build,
     name="build",
     help_text="Build the target artefact.",
     arguments=[Argument("target")],
-    handler=lambda target: f"building {target}…",
 )
-
-app.register_command(build_cmd)
+assert app.run(["build", "wheel"]) == "building wheel"
 ```
 
 ### 3. Root Entrypoint Registration (`@app.entrypoint`)
@@ -167,7 +173,9 @@ print(app.run(["deploy", "-c", "app.toml", "--verbose"]))
 ```
 
 :::info[Global Option Availability]
-Global options are automatically injected into handler signatures when the handler accepts parameters matching the global option names. See **[Option](./option.md#global-and-local-options)** for more details.
+Global options are passed as keyword arguments to every selected handler. Accept their
+destination names explicitly or use `**kwargs`; otherwise execution fails during signature
+binding. See **[Option](./option.md#global-and-local-options)**.
 :::
 
 ## Execution Models: `run()` vs `main()`
@@ -190,13 +198,14 @@ Global options are automatically injected into handler signatures when the handl
 └──────────────────────┘        └───────────────────────────┘
 ```
 
-### `Application.run(argv=None)`
+### `Application.run(argv)`
 
-Runs the command dispatch loop and returns the string output or help text.
+Runs command dispatch and returns the handler result unchanged, or generated help text.
 
-- **Arguments**: `argv` (`list[str] | None`). If `None` and `auto_sys_argv=True`, reads `sys.argv[1:]`.
-- **Side effects**: None (does not print to stdout/stderr and does not terminate the process).
-- **Return value**: The return value of the matched command handler (coerced to string) or generated help text.
+- **Arguments**: Omit `argv` to read `sys.argv[1:]` when `auto_sys_argv=True`.
+  Explicit `None` or `[]` means an empty token list.
+- **I/O**: Does not itself print or terminate the process; handlers can have side effects.
+- **Return value**: The handler's original object, not necessarily a string.
 
 ```python
 # Pure string execution — ideal for unit tests:
@@ -215,7 +224,7 @@ Provides an executable wrapper suitable for CLI binaries (`if __name__ == "__mai
 
 ```python
 if __name__ == "__main__":
-    app.main()
+    raise SystemExit(app.main())
 ```
 
 #### JSON Output Format Example
@@ -223,8 +232,88 @@ if __name__ == "__main__":
 ```python
 app.main(argv=["greet", "Alice"], output_format="json")
 # Outputs JSON payload:
-# {"status": "success", "result": "Hello, Alice!"}
+# {"ok": true, "result": "Hello, Alice!"}
 ```
+
+Errors use `{"ok": false, "error": {...}}` on stderr and a nonzero exit code.
+Success goes to stdout. Return Python dictionaries from handlers for structured JSON results;
+returning a pre-serialized JSON string will encode it as a string inside `result`.
+
+## Automatic help
+
+Every application supports standalone `--help` and `-h` flags by default, without defining
+an `Option` or accepting a `help` parameter in handlers:
+
+```python
+from quickli import Application, Argument, Subcommand
+
+app = Application("demo")
+
+@app.command(
+    help_text="Manage environments.",
+    subcommands=[
+        Subcommand(
+            "show", handler=lambda name: name,
+            arguments=[Argument("name")], help_text="Show one environment.",
+        ),
+    ],
+)
+def env() -> str:
+    return "Choose a subcommand."
+
+print(app.run(["--help"]))                # Application help
+print(app.run(["env", "-h"]))              # Group help, including subcommands
+print(app.run(["env", "show", "--help"]))  # Usage: demo env show NAME
+```
+
+1. Use `mytool --help` or `mytool -h` for application help.
+2. Use `mytool command --help` for a command's arguments, options, and description.
+3. Use `mytool group subcommand -h` to inspect a nested operation.
+
+Help bypasses required arguments/options, converters, validators, and handlers.
+For example, `mytool init --help` does not create configuration files.
+`run()` returns help text; `main()` prints it on stdout and returns exit code `0`.
+With `output_format="json"`, help uses `{"ok": true, "result": "Usage: ..."}`.
+
+:::important[Keep help distinct from data]
+- Tokens after `--` are positional: `mytool echo -- --help` passes the literal `--help`.
+- Option values remain data: `mytool echo --label --help` supplies `--help` as the label.
+- Automatic help recognizes exact standalone flags, not `-vh` clusters or `--help=true`.
+- Explicit global or selected-command options claiming `--help` or `-h` keep their
+  behavior. For example, `Option("host", short_name="h")` keeps `-h` as a value option;
+  the unclaimed `--help` alias still displays help.
+:::
+
+Set `Application("demo", auto_help=False)` to disable automatic help handling and its
+`Help Options` listings. Automatic help does not reserve a `help` command name, so existing
+commands with that name keep working.
+
+`app.render_help()` remains available for programmatic use. Without an entrypoint,
+`app.run([])` returns it too; with an entrypoint, an empty token list still invokes that
+handler and may fail if required arguments are missing. The lower-level
+`Command.execute()` does not handle application help flags; use `Command.render_help()`
+when executing commands outside an `Application`.
+
+## Configuration initialization
+
+Attach a `Config` to opt into initialization without changing ordinary startup behavior:
+
+```python
+from quickli import Application, Config, ConfigField, ConfigSchema
+
+schema = ConfigSchema(fields=[ConfigField("host", default="localhost")])
+app = Application(
+    "demo",
+    config=Config("settings.yaml", schema=schema),
+    auto_init_config=True,
+)
+data = app.run(["init"])
+```
+
+By default, no `init` command is added. Call `app.init_config()` explicitly instead.
+Neither constructing the application nor rendering help creates files.
+See [Configuration Files](./config.md#application-initialization-automatic-command-or-explicit-routine)
+for JSON/YAML structures, existing-file behavior, and custom initialization.
 
 ## Built-in Shell Completion
 
@@ -254,12 +343,21 @@ The standalone completion generators `generate_bash_completion`, `generate_zsh_c
 You can pass a custom `error_handler` callback to `Application` to process or format exceptions before `main()` outputs them:
 
 ```python
-def log_and_format_error(error: Exception) -> str | None:
-    print(f"[LOG] CLI error encountered: {error}")
-    return f"Custom Error Message: {error}"
+import logging
+from quickli import CLIError
 
-app = Application(name="demo", error_handler=log_and_format_error)
+logger = logging.getLogger("demo")
+
+def log_error(error: CLIError) -> None:
+    logger.error("%s", error)
+
+app = Application(name="demo", error_handler=log_error)
 ```
+
+Returning `None` preserves the error. Return a `CLIError` to replace it, or a string to
+replace its displayed message while preserving its code and exit status.
+Configure logging at the executable boundary, not in reusable modules.
+The [logging guide](../guides/index.md#logging-guide) shows configuration and stderr handling.
 
 ## Where to Go Next
 
@@ -268,4 +366,3 @@ app = Application(name="demo", error_handler=log_and_format_error)
 - Accept flags and options using **[Option](./option.md)**.
 - Persist settings across runs with **[Config](./config.md)**.
 - Modularize your application with **[Plugin](./plugin.md)**.
-

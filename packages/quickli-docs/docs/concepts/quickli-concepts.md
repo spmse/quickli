@@ -52,7 +52,10 @@ Every `quickli` CLI has a single **[Application](./application.md)** instance at
 :::
 
 :::tip[Separation of Execution Models]
-When executing a CLI, `Application.run()` executes the selected command and returns its string result without printing or calling `sys.exit()`. This makes unit testing straightforward. For production binaries, `Application.main()` wraps `run()` with standard output formatting, structured error handling, and process exit codes. See the **[Application](./application.md#execution-models-run-vs-main)** documentation for details.
+`Application.run()` returns the selected handler's original result without printing or
+exiting. For example, a handler returning `{"status": "ready"}` produces a dictionary in
+tests, not a string. `Application.main()` wraps `run()` with output formatting, structured
+error handling, and exit codes. See [Application](./application.md#execution-models-run-vs-main).
 :::
 
 :::note[Where to Start]
@@ -68,4 +71,3 @@ If you are new to `quickli`, start with the **[Getting Started](../getting-start
 - **[Config](./config.md)** — Native TOML configuration files, field validation, auto-initialization, and schema JSON.
 - **[Parsers](./parsers.md)** — Format helpers for JSON, YAML, and TOML serialization and deserialization.
 - **[Plugin](./plugin.md)** — Plugin contract, registration lifecycle, duplicate protection, and error handling.
-

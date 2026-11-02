@@ -19,9 +19,10 @@ The Python package and distribution name is `quickli`. The stylized project name
 - named commands and subcommands for multi-command applications
 - positional arguments, options, flags, repeatable values, and global options
 - type conversion and validators for files, directories, positive numbers, and ranges
-- generated help text with docstring fallback
+- automatic application, command, and nested `--help`/`-h` with docstring fallback
 - JSON, YAML, and TOML loading and rendering helpers
-- configuration schemas, validation, and JSON Schema generation
+- YAML/JSON/TOML configuration schemas, validation, and JSON Schema generation
+- opt-in `init` command and explicit `app.init_config()` with custom configuration defaults
 - explicit plugin registration and loading
 - Bash, PowerShell, and ZSH completion generation
 - executable-shell output with structured quickli errors and JSON mode
@@ -50,6 +51,10 @@ def greet(name: str, uppercase: bool = False) -> str:
 
 print(app.run(["Ada", "--uppercase"]))
 ```
+
+Inspect usage without invoking the handler with `print(app.run(["--help"]))`.
+For named commands, use `app.run(["command", "-h"])`. Explicit aliases remain available
+to your options; `Application("hello", auto_help=False)` disables automatic help.
 
 For an executable shell:
 
@@ -94,8 +99,12 @@ Ruff, coverage, and build are development dependencies.
 
 - [Documentation site](https://spmse.github.io/quickli/)
 - [Documentation package](packages/quickli-docs/README.md)
+- [Python package README](packages/core/README.md)
 - [Getting started guide](packages/quickli-docs/docs/getting-started.md)
 - [Core concepts](packages/quickli-docs/docs/concepts/quickli-concepts.md)
+- [Configuration and initialization](packages/quickli-docs/docs/concepts/config.md)
+- [Logging guide](https://spmse.github.io/quickli/docs/guides#logging-guide)
+- [Packaging, executable binaries, and containers][packaging-guide]
 - [Examples](packages/core/examples/README.md)
 - [Specifications](packages/core/specs)
 - [Architectural decisions](packages/core/docs/adr)
@@ -122,6 +131,12 @@ developed together as an educational reference project. Release automation uses 
 Please; the core package is published to PyPI and the documentation site is deployed to
 GitHub Pages.
 
+The documentation describes the current source checkout. When trying unreleased additions,
+install it with `python -m pip install -e packages/core` from the repository root.
+Do not assume the latest PyPI release already includes every documented change.
+
 ## License
 
 quiCkLI is licensed under the [MIT License](LICENSE).
+
+[packaging-guide]: https://spmse.github.io/quickli/docs/guides#packaging-guide

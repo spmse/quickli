@@ -30,6 +30,11 @@ the application.
 - Combined short flags are parsed when all short options in the token are flags.
 - Commands can declare nested `Subcommand` resources.
 - Subcommands inherit the same command parsing and help behavior as commands.
+- `Application` handles automatic `--help`/`-h` before invoking commands. For example,
+  `app.run(["env", "show", "--help"])` returns nested command help without executing it.
+  See [Automatic Help](application.md#automatic-help) for escaping and alias conflicts.
+- Standalone `Command.execute()` remains a lower-level token execution API; use
+  `Command.render_help(application_name)` to request help outside an application.
 - When a matching subcommand name is the next positional token, execution dispatches to that
   subcommand with the remaining tokens.
 

@@ -27,6 +27,8 @@ Save the following file as `hello.py`:
 ```python
 from __future__ import annotations
 
+import sys
+
 from quickli import Application, Argument, Option
 
 
@@ -78,8 +80,8 @@ python hello.py Ada -u
 from quickli import Application, Argument, Option
 ```
 
-You only need to import the three classes you use. `quickli` keeps its public API small
-and explicit.
+Import the three framework classes and the standard-library `sys` module, which the
+executable entrypoint uses to propagate the exit code.
 
 ### Creating the application
 
@@ -90,8 +92,9 @@ app = Application(
 )
 ```
 
-`Application` is the root container. `name` is used in help output. `description` appears
-below the usage line when you run the tool without arguments.
+`Application` is the root container. `name` is used in help output. Inspect the description
+and usage with `python hello.py --help` or `python hello.py -h`. Running this
+required-argument entrypoint without arguments reports an error, rather than showing help.
 
 ### Registering the entrypoint
 
@@ -178,13 +181,16 @@ Pass an explicit list to override or set `auto_sys_argv=False` to disable automa
 
 ## Explore help output
 
-Run without arguments to see the generated help:
+Use either automatic help flag without invoking the required-argument handler:
 
 ```bash
-python hello.py
+python hello.py --help
+python hello.py -h
 ```
 
 quickli generates usage text from the registered arguments, options, and help strings.
+Help prints on stdout and exits successfully, even when the required `name` is missing.
+For Python-level introspection, `app.render_help()` remains available.
 
 ## What to try next
 

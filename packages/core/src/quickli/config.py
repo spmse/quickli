@@ -303,10 +303,12 @@ class Config:
         self._schema = schema
         self._data: dict[str, object] = {}
         self._format: ConfigFormat = format if format is not None else _detect_format(self._path)
+        if self._format not in ("yaml", "json", "toml"):
+            raise ValueError(f"Unsupported configuration format: {self._format!r}")
 
     @property
     def path(self) -> Path:
-        """The resolved absolute path of the configuration file."""
+        """The configuration file path with tilde expansion applied."""
         return self._path
 
     @property
@@ -372,8 +374,11 @@ class Config:
         TypeError
             When *data* contains a value of an unsupported type (TOML only).
         """
-        self._path.parent.mkdir(parents=True, exist_ok=True)
-        _save_file(self._path, self._format, data)
+        try:
+            self._path.parent.mkdir(parents=True, exist_ok=True)
+            _save_file(self._path, self._format, data)
+        except (OSError, UnicodeError) as exc:
+            raise ConfigError(f"Failed to write configuration file '{self._path}': {exc}") from exc
         self._data = dict(data)
 
 
@@ -620,11 +625,21 @@ def generate_schema_json(
 
 def _load_file(path: Path, fmt: ConfigFormat) -> dict[str, object]:
     """Loads and parses *path* according to *fmt*."""
-    if fmt == "yaml":
-        return _load_yaml(path)
-    if fmt == "json":
-        return _load_json(path)
-    return _load_toml(path)
+    try:
+        if fmt == "yaml":
+            return _load_yaml(path)
+        if fmt == "json":
+            return _load_json(path)
+        return _load_toml(path)
+    except (OSError, UnicodeError) as exc:
+        raise ConfigError(f"Failed to read configuration file '{path}': {exc}") from exc
+
+
+def _config_mapping(result: object, path: Path) -> dict[str, object]:
+    """Checks the top-level configuration contract after parsing."""
+    if not isinstance(result, dict) or any(not isinstance(key, str) for key in result):
+        raise ConfigError(f"Configuration file '{path}' must contain a mapping with string keys.")
+    return result
 
 
 def _save_file(path: Path, fmt: ConfigFormat, data: dict[str, object]) -> None:
@@ -651,7 +666,7 @@ def _load_yaml(path: Path) -> dict[str, object]:
     except yaml.YAMLError as exc:
         raise ConfigError(f"Failed to parse configuration file '{path}': {exc}") from exc
 
-    return result if isinstance(result, dict) else {}
+    return _config_mapping({} if result is None else result, path)
 
 
 def _save_yaml(path: Path, data: dict[str, object]) -> None:
@@ -659,7 +674,7 @@ def _save_yaml(path: Path, data: dict[str, object]) -> None:
 
     filtered = {k: v for k, v in data.items() if v is not None}
     path.write_text(
-        yaml.dump(filtered, default_flow_style=False, allow_unicode=True, sort_keys=False),
+        yaml.safe_dump(filtered, default_flow_style=False, allow_unicode=True, sort_keys=False),
         encoding="utf-8",
     )
 
@@ -676,7 +691,7 @@ def _load_json(path: Path) -> dict[str, object]:
     except json.JSONDecodeError as exc:
         raise ConfigError(f"Failed to parse configuration file '{path}': {exc}") from exc
 
-    return result if isinstance(result, dict) else {}
+    return _config_mapping(result, path)
 
 
 def _save_json(path: Path, data: dict[str, object]) -> None:

@@ -27,7 +27,7 @@ runs.
 ## Technical Notes
 
 - **YAML** (`.yaml`, `.yml`) is the recommended default.  Reading and writing use
-  `pyyaml` (`yaml.safe_load` / `yaml.dump`).  `pyyaml>=6.0.1` is a required
+  `pyyaml` (`yaml.safe_load` / `yaml.safe_dump`).  `pyyaml>=6.0.1` is a required
   project dependency.
 - **JSON** (`.json`) is fully supported via the standard library `json` module.
 - **TOML** (`.toml`) is supported via the standard library `tomllib` module
@@ -39,7 +39,12 @@ runs.
   because `bool` is a subclass of `int` in Python.  A `bool` value is not
   accepted when `value_type=int`, and an `int` value is not accepted when
   `value_type=bool`.
-- `None` values are silently omitted from all output formats.
+- Top-level `None` values are omitted from all output formats. Nested nulls are
+  retained by JSON and YAML.
+- JSON and YAML configuration roots must be mappings with string keys. Other
+  document shapes raise `ConfigError`; empty/null YAML documents load as `{}`.
+- File access and encoding failures during loading or saving raise `ConfigError`.
+- Unsupported explicit format identifiers raise `ValueError` at construction.
 - `ConfigError` and `ConfigValidationError` are subclasses of `CLIError`.
 - `Config.load()` raises `ConfigValidationError` for hard errors: missing
   required fields and type mismatches.
@@ -88,7 +93,7 @@ not raise.
 
 | Property | Type              | Description                          |
 | -------- | ----------------- | ------------------------------------ |
-| `path`   | `Path`            | Resolved configuration file path     |
+| `path`   | `Path`            | Configuration path with tilde expansion |
 | `schema` | `ConfigSchema`    | Attached schema, or `None`           |
 | `format` | `str`             | Active format: `"yaml"`, `"json"`, or `"toml"` |
 | `data`   | `dict[str,object]`| Copy of the currently loaded values  |
@@ -107,6 +112,31 @@ Methods:
 | ------------------- | ------------------------------------------------------------- |
 | `load()`            | Reads the file, validates against schema, returns data        |
 | `save(data)`        | Serialises data and writes the file                           |
+
+`save()` does not validate the schema. `load()` validates present fields but does
+not merge missing defaults into the returned data. Nested field structure requires
+custom validators; `value_type=dict` checks only the outer type.
+
+### Application integration
+
+```python
+config = Config("settings.json", schema=schema, format="json")
+app = Application("demo", config=config, auto_init_config=True)
+data = app.run(["init"])
+```
+
+- `config` and `auto_init_config` are optional keyword-only `Application` parameters.
+- `auto_init_config=False` is the default and preserves the existing command registry.
+- When enabled, a `Config` is required and a built-in `init` command is registered.
+- Construction and help rendering do not read or write configuration files.
+- `Application.config` exposes the attached `Config`, including its schema and format.
+- `Application.init_config()` delegates to `add_auto_init_config` whether or not
+  the automatic command is enabled. No attached configuration raises `ConfigError`.
+- Initialization writes only fields with non-`None` defaults; required fields
+  without defaults remain for the user to fill in. Existing files are loaded and
+  validated, never intentionally overwritten.
+- The normal duplicate-command rules apply to the reserved `init` name.
+- CLI option precedence and loading before other handlers remain application policy.
 
 ### `ConfigIssue`
 
@@ -165,7 +195,7 @@ An absent optional field with a default is not reported.
 
 | Exception              | Condition                                                    |
 | ---------------------- | ------------------------------------------------------------ |
-| `ConfigError`          | File missing, unreadable, or invalid syntax for the format   |
+| `ConfigError`          | Missing/unreadable file, invalid encoding/syntax/root, write failure |
 | `ConfigValidationError`| `load()` discovers required field missing or type mismatch   |
 
 ## TOML Serialisation Rules
@@ -183,121 +213,3 @@ An absent optional field with a default is not reported.
 - Provide a merge utility for layered configuration (file + env + CLI overrides).
 - Expose schema-generated documentation for configuration reference pages.
 - Support TOML array-of-tables for list-of-sections configuration.
-
-
-## Responsibilities
-
-- Describe the expected configuration structure through `ConfigField` and
-  `ConfigSchema` resources.
-- Load TOML configuration files and validate them against an optional schema.
-- Save Python dicts to TOML files.
-- Provide `add_auto_init_config` to create default config files on first run.
-- Provide `validate_config` to report all issues in a loaded config without
-  raising.
-- Expose structured `ConfigIssue` objects with severity levels for diagnostic
-  use cases.
-
-## Technical Notes
-
-- TOML is the only supported format.  The standard library `tomllib` module
-  (Python 3.11+) handles reading.
-- Writing uses a minimal built-in TOML serialiser that supports scalars and one
-  level of nested tables.  Deep nesting raises `TypeError`.
-- Boolean values are treated as a distinct type from integers in type checking
-  because `bool` is a subclass of `int` in Python.  A `bool` value is not
-  accepted when `value_type=int`, and an `int` value is not accepted when
-  `value_type=bool`.
-- `None` values are silently omitted from TOML output.
-- `ConfigError` and `ConfigValidationError` are subclasses of `CLIError`.
-- `Config.load()` raises `ConfigValidationError` for hard errors: missing
-  required fields and type mismatches.
-- `validate_config()` never raises.  It returns a `list[ConfigIssue]` that
-  includes both errors and warnings (e.g. unrecognised fields).
-- The resource must remain dependency-free beyond the standard library.
-- The implementation is compatible with Python 3.12 to 3.14.
-
-## Resources
-
-### `ConfigField`
-
-| Property     | Type                    | Description                                |
-| ------------ | ----------------------- | ------------------------------------------ |
-| `name`       | `str`                   | Field name in the TOML file                |
-| `value_type` | `type`                  | Expected Python type                       |
-| `required`   | `bool`                  | Whether absence is a hard error            |
-| `default`    | `object`                | Default written on first-run init          |
-| `help_text`  | `str`                   | Human-readable description                 |
-| `validators` | `tuple[Validator, ...]` | Post-type-check constraints                |
-
-Names are stripped at construction.  An empty name raises `ValueError`.
-
-### `ConfigSchema`
-
-| Property      | Type                     | Description                     |
-| ------------- | ------------------------ | ------------------------------- |
-| `fields`      | `tuple[ConfigField, ...]`| Ordered list of field contracts |
-| `field_names` | `frozenset[str]`         | Set of all defined field names  |
-
-Duplicate field names raise `ValueError` at construction.
-
-`ConfigSchema.validate(data)` returns a `list[str]` of error messages.  It does
-not raise.
-
-### `Config`
-
-| Property | Type              | Description                          |
-| -------- | ----------------- | ------------------------------------ |
-| `path`   | `Path`            | Resolved configuration file path     |
-| `schema` | `ConfigSchema`    | Attached schema, or `None`           |
-| `data`   | `dict[str,object]`| Copy of the currently loaded values  |
-
-Methods:
-
-| Method              | Description                                                   |
-| ------------------- | ------------------------------------------------------------- |
-| `load()`            | Reads the file, validates against schema, returns data        |
-| `save(data)`        | Serialises data and writes the file                           |
-
-### `ConfigIssue`
-
-| Attribute  | Type  | Description                                        |
-| ---------- | ----- | -------------------------------------------------- |
-| `field`    | `str` | Name of the affected key, or `""` for schema-level |
-| `message`  | `str` | Human-readable description                         |
-| `severity` | `str` | `"error"` or `"warning"`                           |
-
-## Validation Contract
-
-`validate_config(config)` produces issues in the following cases:
-
-| Condition                                | Severity   |
-| ---------------------------------------- | ---------- |
-| Required field absent, no default        | `error`    |
-| Field value has wrong type               | `error`    |
-| Field value fails an attached validator  | `error`    |
-| Key present but not in schema            | `warning`  |
-
-An absent optional field with a default is not reported.
-
-## Error Contract
-
-| Exception              | Condition                                                    |
-| ---------------------- | ------------------------------------------------------------ |
-| `ConfigError`          | File missing, unreadable, or invalid TOML syntax             |
-| `ConfigValidationError`| `load()` discovers required field missing or type mismatch   |
-
-## TOML Serialisation Rules
-
-- `bool` is serialised before `int` to prevent Python's `bool`/`int` overlap.
-- `None` values are skipped.
-- `dict` values become TOML table headers (`[section]`).
-- Lists must contain only scalar values.
-- Tables deeper than one level raise `TypeError`.
-- Every output file ends with a trailing newline.
-
-## Future Extensions
-
-- Support TOML array-of-tables for list-of-sections configuration.
-- Support configurable config file search paths (XDG, platform defaults).
-- Provide a merge utility for layered configuration (file + env + CLI overrides).
-- Expose schema-generated documentation for configuration reference pages.

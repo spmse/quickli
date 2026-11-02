@@ -119,12 +119,20 @@ print(app.run(["info", "-f", "yaml"]))
 
 :::note[Parsers vs Config]
 - Use **`parsers`** helpers for one-off parsing or rendering of arbitrary JSON/YAML/TOML strings or files inside command logic.
-- Use **[Config](./config.md)** when you need a persistent, schema-validated TOML configuration file on disk with default fallback generation (`add_auto_init_config`).
+- Use **[Config](./config.md)** for persistent, schema-validated YAML/JSON/TOML files and
+  initialization from defaults.
+:::
+
+:::warning[YAML parser scope]
+`load_yaml()` and `render_yaml()` are minimal, dependency-free string helpers, not full
+YAML implementations. `Config` uses PyYAML safe loading/dumping for configuration files,
+including features such as flow collections and multiline strings.
+For example, load a YAML configuration with `Config("settings.yaml").load()` rather than
+assuming every YAML document is supported by `load_yaml()`.
 :::
 
 ## Where to Go Next
 
 - Learn how to integrate converters into positional input in **[Argument](./argument.md)**.
 - Learn how to format CLI options in **[Option](./option.md)**.
-- See how persistent TOML configuration works in **[Config](./config.md)**.
-
+- See how persistent YAML, JSON, and TOML configuration works in **[Config](./config.md)**.
