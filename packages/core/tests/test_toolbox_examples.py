@@ -1,7 +1,5 @@
 """Integration tests for the three toolbox example applications."""
 
-from __future__ import annotations
-
 import contextlib
 import importlib
 import io

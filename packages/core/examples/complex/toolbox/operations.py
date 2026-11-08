@@ -1,7 +1,5 @@
 """File and text operations shared by the toolbox example applications."""
 
-from __future__ import annotations
-
 import shutil
 from pathlib import Path
 
