@@ -4,3 +4,4 @@ The `complex` examples combine multiple `quickli` features in a more realistic a
 shape.
 
 - [Build `pyk5l`, a minimal kubectl-like CLI with quickli](pyk5l/README.md)
+- [Build a four-command toolbox with quickli, Click, and argparse](toolbox/README.md)

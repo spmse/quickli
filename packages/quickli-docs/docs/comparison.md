@@ -188,6 +188,11 @@ This larger example highlights the trade-off: quickli and Click provide applicat
 command organization, while argparse gives the application direct control over how parsing
 connects to its handlers.
 
+The [complete runnable applications](https://github.com/spmse/quickli/tree/main/packages/core/examples/complex/toolbox)
+share the same file operations. Their
+[integration tests](https://github.com/spmse/quickli/blob/main/packages/core/tests/test_toolbox_examples.py)
+exercise all four commands against temporary files and directories.
+
 ## Which library should I choose?
 
 - **Choose quickli** when you want a small framework with explicit command and input
