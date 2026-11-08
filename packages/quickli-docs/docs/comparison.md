@@ -60,6 +60,134 @@ The examples show the declaration style rather than complete applications. In pa
 `quickli.Application.main()` provides an executable shell, whereas `Application.run()` lets
 the caller use the handler result directly.
 
+## A four-command `toolbox`
+
+Consider a small `toolbox` application that combines file copying, directory creation, file
+touching, and text output:
+
+```text
+toolbox cp SOURCE DESTINATION
+toolbox mkdir PATH
+toolbox touch PATH
+toolbox echo TEXT
+```
+
+Assume the ordinary Python operation functions `copy_file(source, destination)`,
+`make_directory(path)`, `touch_file(path)`, and `echo_text(text)` are defined in
+`operations.py`. They perform the operation and return a message string. The examples focus on
+how each library assembles and dispatches the same commands.
+
+With quickli, register the functions with explicit argument resources. The application
+provides command routing and executable help:
+
+```python
+from quickli import Application, Argument
+
+from operations import copy_file, echo_text, make_directory, touch_file
+
+app = Application(name="toolbox", description="File and text utilities.")
+
+app.register(
+    copy_file,
+    name="cp",
+    arguments=[Argument("source"), Argument("destination")],
+)
+app.register(
+    make_directory,
+    name="mkdir",
+    arguments=[Argument("path")],
+)
+app.register(touch_file, name="touch", arguments=[Argument("path")])
+app.register(echo_text, name="echo", arguments=[Argument("text")])
+
+if __name__ == "__main__":
+    raise SystemExit(app.main())
+```
+
+With Click, a group organizes the subcommands, and decorators declare each command's
+parameters:
+
+```python
+import click
+
+from operations import copy_file, echo_text, make_directory, touch_file
+
+@click.group()
+def toolbox():
+    """File and text utilities."""
+
+@toolbox.command()
+@click.argument("source")
+@click.argument("destination")
+def cp(source, destination):
+    click.echo(copy_file(source, destination))
+
+@toolbox.command()
+@click.argument("path")
+def mkdir(path):
+    click.echo(make_directory(path))
+
+@toolbox.command()
+@click.argument("path")
+def touch(path):
+    click.echo(touch_file(path))
+
+@toolbox.command()
+@click.argument("text")
+def echo(text):
+    click.echo(echo_text(text))
+
+if __name__ == "__main__":
+    toolbox()
+```
+
+With argparse, create a parser for each subcommand, then explicitly dispatch the parsed
+arguments to the corresponding operation:
+
+```python
+import argparse
+
+from operations import copy_file, echo_text, make_directory, touch_file
+
+parser = argparse.ArgumentParser(prog="toolbox", description="File and text utilities.")
+commands = parser.add_subparsers(dest="command", required=True)
+
+cp_parser = commands.add_parser("cp", help="Copy a file.")
+cp_parser.add_argument("source")
+cp_parser.add_argument("destination")
+cp_parser.set_defaults(
+    run=lambda args: print(copy_file(args.source, args.destination))
+)
+
+mkdir_parser = commands.add_parser("mkdir", help="Create a directory.")
+mkdir_parser.add_argument("path")
+mkdir_parser.set_defaults(run=lambda args: print(make_directory(args.path)))
+
+touch_parser = commands.add_parser("touch", help="Create a file or update its timestamp.")
+touch_parser.add_argument("path")
+touch_parser.set_defaults(run=lambda args: print(touch_file(args.path)))
+
+echo_parser = commands.add_parser("echo", help="Write text.")
+echo_parser.add_argument("text")
+echo_parser.set_defaults(run=lambda args: print(echo_text(args.text)))
+
+args = parser.parse_args()
+args.run(args)
+```
+
+Each design supports this command tree and generated help, but the application structure
+differs as it grows:
+
+| Concern | quickli | Click | argparse |
+|---|---|---|---|
+| Add a command | Register a handler and its `Argument`/`Option` resources with the application | Add a decorated callback to the command group | Create a subparser, add its inputs, and set its dispatch handler |
+| Dispatch | Handled by `Application.run()` or `Application.main()` | Handled by invoking the group | Application code calls the handler selected by the parser |
+| Extend from another module | Register imported handlers or load a `Plugin` | Add or attach commands to a group | Add subparsers while assembling the parser, or factor parser setup into application code |
+
+This larger example highlights the trade-off: quickli and Click provide application-level
+command organization, while argparse gives the application direct control over how parsing
+connects to its handlers.
+
 ## Which library should I choose?
 
 - **Choose quickli** when you want a small framework with explicit command and input
