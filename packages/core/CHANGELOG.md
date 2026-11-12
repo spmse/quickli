@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/spmse/quickli/compare/core-v0.6.1...core-v0.6.2) (2026-11-12)
+
+
+### Documentation
+
+* compare quickli, Click, and argparse in the docs ([#84](https://github.com/spmse/quickli/issues/84)) ([f3f2de1](https://github.com/spmse/quickli/commit/f3f2de145d6e350601111181ee7ca2591b2f9a9b))
+
 ## [0.6.1](https://github.com/spmse/quickli/compare/core-v0.6.0...core-v0.6.1) (2026-11-02)
 
 
