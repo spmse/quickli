@@ -47,12 +47,15 @@ app = Application(
 
 | Parameter | Typ | Standard | Beschreibung |
 |---|---|---|---|
-| `name` | `str` | `"app"` | Der Anwendungsname, der in Hilfetexten und Usage-Zeilen verwendet wird. |
-| `description` | `str \| None` | `None` | Kurze Beschreibung, die oben in der Anwendungshilfe angezeigt wird. |
+| `name` | `str` | erforderlich | Der Anwendungsname, der in Hilfetexten und Usage-Zeilen verwendet wird. |
+| `description` | `str` | `""` | Kurze Beschreibung, die oben in der Anwendungshilfe angezeigt wird. |
 | `global_options` | `list[Option] \| None` | `None` | Liste globaler **[Option](./option.md)**-Definitionen, die für alle Befehle gelten. |
 | `shell_completion` | `bool` | `False` | Bei `True` wird automatisch ein integrierter `shell-completion`-Befehl registriert. |
-| `auto_sys_argv` | `bool` | `True` | Bei `True` liest `run()` standardmäßig `sys.argv[1:]`, wenn `argv` gleich `None` ist. |
+| `auto_sys_argv` | `bool` | `True` | `run()` liest `sys.argv[1:]`, wenn das Argument weggelassen wird. |
 | `error_handler` | `Callable \| None` | `None` | Optionaler Fehler-Callback zur Überprüfung oder Anpassung von Ausnahmen vor der Ausgabe in `main()`. |
+| `config` | `Config \| None` | `None` | Optionale Konfiguration mit Schema, Pfad und Format. |
+| `auto_init_config` | `bool` | `False` | Registriert den integrierten `init`-Befehl; erfordert `config`. |
+| `auto_help` | `bool` | `True` | Aktiviert automatische Hilfe über eigenständige `--help`- und `-h`-Flags. |
 
 ## Befehlsregistrierungs-Methoden
 
@@ -78,23 +81,26 @@ def greet_user(name: str, shout: bool = False) -> str:
     return msg.upper() if shout else msg
 ```
 
-### 2. Imperative Befehlsregistrierung (`app.register_command`)
+### 2. Imperative Befehlsregistrierung (`app.register`)
 
-Nützlich, wenn Befehle dynamisch erstellt oder in separaten Modulen mit der `Command`-Klasse definiert werden.
+Nützlich, wenn Handler in separaten Modulen definiert sind. `register()` registriert den
+Handler mit den Eingabe-Ressourcen und gibt die ursprüngliche Funktion zurück.
 
 ```python
-from quickli import Application, Command, Argument
+from quickli import Application, Argument
 
 app = Application(name="demo")
 
-build_cmd = Command(
+def build(target: str) -> str:
+    return f"building {target}"
+
+app.register(
+    build,
     name="build",
     help_text="Ziel-Artefakt bauen.",
     arguments=[Argument("target")],
-    handler=lambda target: f"building {target}…",
 )
-
-app.register_command(build_cmd)
+assert app.run(["build", "wheel"]) == "building wheel"
 ```
 
 ### 3. Root-Einstiegspunkt-Registrierung (`@app.entrypoint`)
@@ -176,11 +182,15 @@ Globale Optionen werden automatisch in Handler-Signaturen injiziert, wenn der Ha
 
 ### `Application.run(argv=None)`
 
-Führt die Befehlsausführungsschleife aus und gibt das Ergebnis oder den Hilfetext als String zurück.
+Führt den ausgewählten Befehl aus und gibt dessen ursprüngliches Handler-Ergebnis oder den
+generierten Hilfetext zurück.
 
-- **Argumente**: `argv` (`list[str] | None`). Wenn `None` und `auto_sys_argv=True`, wird `sys.argv[1:]` gelesen.
-- **Nebeneffekte**: Keine (druckt nicht auf stdout/stderr und beendet den Prozess nicht).
-- **Rückgabewert**: Rückgabewert des gematchten Befehlshandlers (in String umgewandelt) oder generierter Hilfetext.
+- **Argumente**: Ohne `argv` wird bei `auto_sys_argv=True` `sys.argv[1:]` gelesen. Explizites
+  `None` oder `[]` entspricht einer leeren Token-Liste.
+- **Ein-/Ausgabe**: `run()` druckt selbst nichts und beendet den Prozess nicht. Handler können
+  jedoch eigene Nebeneffekte haben.
+- **Rückgabewert**: Das unveränderte Ergebnis des passenden Handlers (nicht notwendigerweise
+  ein String) oder generierter Hilfetext.
 
 ```python
 # Reine String-Ausführung — ideal für Unit-Tests:
@@ -207,8 +217,56 @@ if __name__ == "__main__":
 ```python
 app.main(argv=["greet", "Alice"], output_format="json")
 # Gibt JSON-Payload aus:
-# {"status": "success", "result": "Hello, Alice!"}
+# {"ok": true, "result": "Hello, Alice!"}
 ```
+
+Erfolgreiche Ergebnisse werden auf stdout ausgegeben. Fehler verwenden
+`{"ok": false, "error": {...}}` auf stderr und liefern einen Exit-Code ungleich null.
+Gib für strukturierte JSON-Ergebnisse Python-Dictionaries aus Handlern zurück; ein bereits
+serialisierter JSON-String wird als String im Feld `result` codiert.
+
+## Automatische Hilfe
+
+Standardmäßig verarbeitet jede Anwendung eigenständige `--help`- und `-h`-Flags, ohne dass
+eine `Option` oder ein Handler-Parameter dafür definiert werden muss:
+
+```python
+print(app.run(["--help"]))                # Anwendungshilfe
+print(app.run(["deploy", "--help"]))      # Hilfe für einen Befehl
+print(app.run(["greet", "-h"]))           # Hilfe für einen Befehl
+```
+
+Die Hilfe wird vor der Validierung erforderlicher Eingaben und vor Handler-Aufrufen
+zurückgegeben. `run()` gibt den Hilfetext zurück; `main()` gibt ihn auf stdout aus und
+liefert den Exit-Code `0`. Bei `output_format="json"` wird die Hilfe in
+`{"ok": true, "result": "..."}` verpackt.
+
+- `--` leitet nachfolgende Token als positionale Werte weiter, auch wenn sie `--help` lauten.
+- Werte von Optionen bleiben Daten und werden nicht als Hilfe-Flags behandelt.
+- Explizite Optionen mit `--help` oder `-h` behalten ihre Funktion.
+- Setze `auto_help=False`, um die automatische Hilfe zu deaktivieren.
+- Die Befehlsausführung über `Command.execute()` verarbeitet keine automatischen Hilfe-Flags.
+
+## Konfigurationsinitialisierung
+
+Füge `Config` hinzu, um optional einen integrierten `init`-Befehl zu registrieren:
+
+```python
+from quickli import Application, Config, ConfigField, ConfigSchema
+
+schema = ConfigSchema(fields=[ConfigField("host", default="localhost")])
+app = Application(
+    "demo",
+    config=Config("settings.yaml", schema=schema),
+    auto_init_config=True,
+)
+data = app.run(["init"])
+```
+
+Standardmäßig wird kein `init`-Befehl registriert. Alternativ kannst du
+`app.init_config()` explizit aufrufen. Das Erstellen der Anwendung und das Rendern der Hilfe
+schreiben keine Dateien. Eine vorhandene Datei wird geladen, nicht überschrieben; siehe
+**[Config](./config.md)** für weitere Details.
 
 ## Integrierte Shell-Vervollständigung
 
@@ -238,12 +296,19 @@ Die eigenständigen Generatoren `generate_bash_completion`, `generate_zsh_comple
 Du kannst einen benutzerdefinierten `error_handler`-Callback an `Application` übergeben, um Ausnahmen zu verarbeiten oder zu formatieren, bevor `main()` sie ausgibt:
 
 ```python
-def log_and_format_error(error: Exception) -> str | None:
-    print(f"[LOG] CLI-Fehler aufgetreten: {error}")
-    return f"Benutzerdefinierter Fehler: {error}"
+import logging
+from quickli import CLIError
 
-app = Application(name="demo", error_handler=log_and_format_error)
+logger = logging.getLogger("demo")
+
+def log_error(error: CLIError) -> None:
+    logger.error("%s", error)
+
+app = Application(name="demo", error_handler=log_error)
 ```
+
+`None` lässt den Fehler unverändert. Ein `CLIError` ersetzt ihn; ein String ersetzt die
+angezeigte Meldung und behält Fehlercode und Exit-Status bei.
 
 ## Wie geht es weiter?
 
@@ -252,4 +317,3 @@ app = Application(name="demo", error_handler=log_and_format_error)
 - Akzeptiere Flags und Optionen mit **[Option](./option.md)**.
 - Speichere Einstellungen dauerhaft mit **[Config](./config.md)**.
 - Modularisiere deine Anwendung mit **[Plugin](./plugin.md)**.
-
