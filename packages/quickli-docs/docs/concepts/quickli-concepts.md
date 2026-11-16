@@ -18,7 +18,7 @@ Application
 │   └── Subcommand "create"  ← nested action under parent command
 ├── Plugin "metrics"
 │   └── Command "stats"      ← external commands attached via plugin contract
-├── Config                   ← persistent TOML config loaded at application startup
+├── Config                   ← persistent YAML, JSON, or TOML config
 └── Parsers                  ← format helpers (JSON, YAML, TOML) used inside handlers
 ```
 
@@ -30,7 +30,8 @@ Every `quickli` CLI has a single **[Application](./application.md)** instance at
 - **[Command](./command.md)** wraps an individual CLI operation. Commands define positional **[Argument](./argument.md)** resources and named **[Option](./option.md)** resources, and can contain nested **[Subcommand](./command.md#nested-subcommands)** trees.
 - **[Argument](./argument.md)** represents required or optional positional input passed to a command in a fixed order.
 - **[Option](./option.md)** represents named, order-independent input (such as `--verbose` or `--output=file.txt`). Options can be **local** to a command or **global** across the application.
-- **[Config](./config.md)** manages persistent TOML settings on disk, using a `ConfigSchema` to validate user configuration on startup.
+- **[Config](./config.md)** manages persistent YAML, JSON, or TOML files and uses a
+  `ConfigSchema` to validate loaded values.
 - **[Parsers](./parsers.md)** provide utility functions (`load_json`, `render_yaml`, `load_toml`, etc.) to parse and format structured data within handlers or converters.
 - **[Plugin](./plugin.md)** allows external packages or modules to attach new commands to an `Application` without modifying the core application code.
 
@@ -43,7 +44,7 @@ Every `quickli` CLI has a single **[Application](./application.md)** instance at
 | Accept required or optional positional input | `Argument` | [Argument](./argument.md) |
 | Accept optional named flags, toggles, or key-value settings | `Option` | [Option](./option.md) |
 | Define flags that apply to *all* commands in the CLI | Global `Option` on `Application` | [Option](./option.md#global-and-local-options) |
-| Persist user settings to a TOML file across runs | `Config` + `ConfigSchema` | [Config](./config.md) |
+| Persist user settings to a YAML, JSON, or TOML file across runs | `Config` + `ConfigSchema` | [Config](./config.md) |
 | Parse or produce JSON, YAML, or TOML data within a command | `parsers` helpers | [Parsers](./parsers.md) |
 | Package reusable commands across teams or projects | `Plugin` | [Plugin](./plugin.md) |
 
@@ -68,6 +69,6 @@ If you are new to `quickli`, start with the **[Getting Started](../getting-start
 - **[Command](./command.md)** — Command authoring, docstrings, subcommands, signature binding, and validation.
 - **[Argument](./argument.md)** — Positional inputs, converters, built-in validators, and metavar formatting.
 - **[Option](./option.md)** — Short/long options, boolean flags, repeatable flags/values, local vs global scope.
-- **[Config](./config.md)** — Native TOML configuration files, field validation, auto-initialization, and schema JSON.
+- **[Config](./config.md)** — YAML, JSON, and TOML configuration files, field validation, auto-initialization, and schema JSON.
 - **[Parsers](./parsers.md)** — Format helpers for JSON, YAML, and TOML serialization and deserialization.
 - **[Plugin](./plugin.md)** — Plugin contract, registration lifecycle, duplicate protection, and error handling.

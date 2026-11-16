@@ -18,7 +18,7 @@ Application
 │   └── Subcommand "create"  ← verschachtelte Aktion unter einem Elternbefehl
 ├── Plugin "metrics"
 │   └── Command "stats"      ← externe Befehle, die über das Plugin-Interface eingebunden werden
-├── Config                   ← permanente TOML-Konfiguration, die beim Start geladen wird
+├── Config                   ← dauerhafte YAML-, JSON- oder TOML-Konfiguration
 └── Parsers                  ← Format-Helfer (JSON, YAML, TOML) innerhalb von Handlern
 ```
 
@@ -30,7 +30,8 @@ Jede `quickli`-CLI besitzt eine einzelne **[Application](./application.md)**-Ins
 - **[Command](./command.md)** kapselt eine einzelne CLI-Operation. Befehle definieren positionale **[Argument](./argument.md)**-Ressourcen und benannte **[Option](./option.md)**-Ressourcen und können verschachtelte **[Subcommand](./command.md#verschachtelte-subcommands)**-Bäume enthalten.
 - **[Argument](./argument.md)** repräsentiert erforderliche oder optionale positionale Eingaben in fester Reihenfolge.
 - **[Option](./option.md)** repräsentiert benannte, reihenfolgeunabhängige Eingaben (wie `--verbose` oder `--output=file.txt`). Optionen können **lokal** für einen Befehl oder **global** für die gesamte Anwendung sein.
-- **[Config](./config.md)** verwaltet dauerhafte TOML-Einstellungen auf der Festplatte und validiert diese beim Start mithilfe von `ConfigSchema`.
+- **[Config](./config.md)** verwaltet dauerhafte YAML-, JSON- oder TOML-Dateien und
+  validiert geladene Werte mithilfe von `ConfigSchema`.
 - **[Parsers](./parsers.md)** bieten Hilfsfunktionen (`load_json`, `render_yaml`, `load_toml` etc.) zum Parsen und Formatieren strukturierter Daten.
 - **[Plugin](./plugin.md)** ermöglicht es externen Paketen oder Modulen, neue Befehle an eine `Application` anzuhängen, ohne den Kerncode zu verändern.
 
@@ -43,7 +44,7 @@ Jede `quickli`-CLI besitzt eine einzelne **[Application](./application.md)**-Ins
 | Positionale Eingaben (z. B. Dateipfade) akzeptieren | `Argument` | [Argument](./argument.md) |
 | Benannte Flags, Schalter oder Schlüssel-Wert-Einstellungen akzeptieren | `Option` | [Option](./option.md) |
 | Flags definieren, die für *alle* Befehle gelten | Globale `Option` an der `Application` | [Option](./option.md#globale-und-lokale-optionen) |
-| Benutzereinstellungen in einer TOML-Datei dauerhaft speichern | `Config` + `ConfigSchema` | [Config](./config.md) |
+| Benutzereinstellungen in einer YAML-, JSON- oder TOML-Datei dauerhaft speichern | `Config` + `ConfigSchema` | [Config](./config.md) |
 | JSON, YAML oder TOML-Daten innerhalb von Befehlen verarbeiten | `parsers`-Helfer | [Parsers](./parsers.md) |
 | Wiederverwendbare Befehlssätze in Paketen auslagern | `Plugin` | [Plugin](./plugin.md) |
 
@@ -52,7 +53,12 @@ Jede `quickli`-CLI besitzt eine einzelne **[Application](./application.md)**-Ins
 :::
 
 :::tip[Trennung der Ausführungsmodelle]
-Beim Ausführen einer CLI führt `Application.run()` den ausgewählten Befehl aus und gibt dessen String-Ergebnis zurück, ohne Ausgaben zu drucken oder `sys.exit()` aufzurufen. Das macht Unit-Tests denkbar einfach. Für ausführbare Programme ergänzt `Application.main()` `run()` um Standardausgabe-Formatierung, strukturierte Fehlerbehandlung und Prozess-Exit-Codes. Siehe die **[Application](./application.md#ausführungsmodelle-run-vs-main)**-Dokumentation für Details.
+`Application.run()` führt den ausgewählten Handler aus und gibt dessen ursprüngliches
+Ergebnis zurück, ohne selbst Ausgaben zu drucken oder den Prozess zu beenden. Ein Handler,
+der beispielsweise `{"status": "ready"}` zurückgibt, liefert in Tests ein Dictionary und
+keinen String. Für ausführbare Programme ergänzt `Application.main()` `run()` um
+Ausgabeformatierung, strukturierte Fehlerbehandlung und Prozess-Exit-Codes. Siehe die
+**[Application](./application.md#ausführungsmodelle-run-vs-main)**-Dokumentation für Details.
 :::
 
 :::note[Wo anfangen?]
@@ -65,7 +71,6 @@ Wenn du neu bei `quickli` bist, beginne mit der Anleitung **[Erste Schritte](../
 - **[Command](./command.md)** — Befehlserstellung, Docstrings, Subcommands, Signaturbindung und Validierung.
 - **[Argument](./argument.md)** — Positionale Eingaben, Konverter, integrierte Validatoren und Metavar-Formatierung.
 - **[Option](./option.md)** — Kurz-/Langoptionen, Boolesche Flags, wiederholbare Flags/Werte, lokaler vs. globaler Scope.
-- **[Config](./config.md)** — Native TOML-Konfigurationsdateien, Feldvalidierung, Auto-Initialisierung und Schema-JSON.
+- **[Config](./config.md)** — YAML-, JSON- und TOML-Konfigurationsdateien, Feldvalidierung, Auto-Initialisierung und Schema-JSON.
 - **[Parsers](./parsers.md)** — Format-Helfer für JSON-, YAML- und TOML-Serialisierung und -Deserialisierung.
 - **[Plugin](./plugin.md)** — Plugin-Vertrag, Registrierungslebenszyklus, Duplikatschutz und Fehlerbehandlung.
-

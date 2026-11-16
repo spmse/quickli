@@ -13,9 +13,10 @@ This guide creates a small command-line application with one entrypoint, one pos
 argument, and one flag. quickli supports Python 3.12, 3.13, and 3.14.
 
 :::note[Source checkout versus released package]
-These pages follow the current source checkout. New initialization and automatic-help APIs
-may not yet be in the latest PyPI release. To try unreleased behavior, use the editable
-repository installation below; for production, select and test a published version.
+These pages follow the current source checkout, which may differ from the latest published
+PyPI version. Check the release notes for the version you use when relying on a particular
+API. To try unreleased behavior, use the editable repository installation below; for
+production, select and test a published version.
 :::
 
 ## Install quickli
