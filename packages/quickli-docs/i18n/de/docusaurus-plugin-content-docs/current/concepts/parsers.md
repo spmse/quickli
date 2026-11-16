@@ -116,12 +116,22 @@ print(app.run(["info", "-f", "yaml"]))
 
 :::note[Parsers vs. Config]
 - Verwende **`parsers`**-Helfer für einmaliges Parsen oder Rendern beliebiger JSON/YAML/TOML-Strings oder Dateien innerhalb der Befehlslogik.
-- Verwende **[Config](./config.md)**, wenn du eine dauerhafte, schema-validierte TOML-Konfigurationsdatei auf der Festplatte benötigst.
+- Verwende **[Config](./config.md)**, wenn du dauerhafte, schema-validierte YAML-, JSON- oder
+  TOML-Konfigurationsdateien auf der Festplatte benötigst.
+:::
+
+:::warning[YAML-Parserumfang]
+`load_yaml()` und `render_yaml()` sind minimale String-Hilfsfunktionen ohne zusätzliche
+Abhängigkeiten und keine vollständigen YAML-Implementierungen. `Config` verwendet PyYAML zum
+sicheren Laden und Schreiben von Konfigurationsdateien und unterstützt unter anderem
+Flow-Collections und mehrzeilige Strings.
+Lade eine YAML-Konfiguration beispielsweise mit `Config("settings.yaml").load()`, statt
+anzunehmen, dass jedes YAML-Dokument von `load_yaml()` unterstützt wird.
 :::
 
 ## Wie geht es weiter?
 
 - Erfahre mehr über Konverter in positionalen Eingaben in **[Argument](./argument.md)**.
 - Erfahre mehr über CLI-Optionen in **[Option](./option.md)**.
-- Siehe, wie dauerhafte TOML-Konfiguration funktioniert in **[Config](./config.md)**.
-
+- Weitere Informationen zur dauerhaften YAML-, JSON- und TOML-Konfiguration findest du unter
+  **[Config](./config.md)**.
